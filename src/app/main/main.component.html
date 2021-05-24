@@ -1,0 +1,51 @@
+<div class="alert alert-primary alert-dismissible fade show" role="alert">
+    Bienvenido, <strong>{{ userService.user.user }}</strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 m-3 d-flex justify-content-center">
+            <img src="../../assets/img/logo.png" />
+        </div>
+        <div class="col-12 col-md-4 m-1">
+            <mat-card>
+                <mat-card-content>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-12 m-1 d-flex justify-content-center"
+                                *ngFor="let campus of campusService.campusList">
+                                <button mat-raised-button color="primary" routerLink="campus/{{campus.idcampus}}" *ngIf="!borrar">
+                                    {{ campus.nombre | uppercase }}</button>
+                                <button mat-raised-button color="warn" (click)="deleteCampus(campus.idcampus)" *ngIf="borrar">
+                                    {{ campus.nombre | uppercase }}</button>
+                            </div>
+                            <div class="col-12 m-3">
+                                <mat-divider></mat-divider>
+                            </div>
+                            <div class="col-5 d-flex justify-content-center">
+                                <button mat-raised-button color="accent" routerLink="/main/nuevo">
+                                    <mat-icon>add_circle_outline</mat-icon> Nuevo
+                                </button>
+                            </div>
+                            <div class="col-5 d-flex justify-content-center">
+                                <button mat-raised-button color="warn" (click)="deleteOn()" *ngIf="!borrar">
+                                    <mat-icon>delete</mat-icon> Borrar
+                                </button>
+                                <button mat-raised-button color="primary" (click)="deleteOff()" *ngIf="borrar">
+                                    <mat-icon>close</mat-icon> Volver
+                                </button>
+                            </div>
+                            <div class="col-12 m-2 d-flex justify-content-center">
+                                <button mat-raised-button color="warn" (click)="userService.logout()">
+                                    <mat-icon>logout</mat-icon>Desconectar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>

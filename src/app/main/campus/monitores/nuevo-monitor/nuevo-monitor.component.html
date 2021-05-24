@@ -1,0 +1,68 @@
+<app-header></app-header>
+
+<div *ngIf="monitorAdded" class="alert alert-success alert-dismissible fade show" role="alert">
+    ¡{{ nombreMonitor }}, añadido!
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div *ngIf="monitorDuplicated" class="alert alert-danger alert-dismissible fade show" role="alert">
+    Ya existe un monitor con el mismo DNI. Por favor, comprueba los datos.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 m-2">
+            <mat-card>
+                <form class="d-flex flex-column" #monitorForm="ngForm" (ngSubmit)="onNewMonitor(monitorForm)">
+                    <mat-form-field appearance="fill">
+                        <mat-label>DNI: </mat-label>
+                        <input type="text" matInput name="dni" ngModel required #dni="ngModel" />
+                        <mat-error *ngIf="dni.errors?.required">Por favor, introduce el dni del monitor</mat-error>
+                        <mat-error *ngIf="dni.errors?.incorrect">El dni es incorrecto</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Nombre: </mat-label>
+                        <input type="text" matInput name="nombre" ngModel required #nombre="ngModel" />
+                        <mat-error *ngIf="nombre.invalid">Por favor, introduce el nombre del monitor</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Apellidos:</mat-label>
+                        <input type="text" matInput name="apellidos" ngModel required #apellidos="ngModel" />
+                        <mat-error *ngIf="apellidos.invalid">Por favor, introduce los apellidos del monitor</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Teléfono:</mat-label>
+                        <input type="number" matInput name="telefono" ngModel required #telefono="ngModel" />
+                        <mat-error *ngIf="telefono.invalid">Por favor, introduce el teléfono del monitor</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Email:</mat-label>
+                        <input type="email" matInput name="email" ngModel required #email="ngModel" />
+                        <mat-error *ngIf="email.invalid">Por favor, introduce el email del campus</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Especialidad:</mat-label>
+                        <input type="text" matInput name="especialidad" ngModel required #especialidad="ngModel" />
+                        <mat-error *ngIf="especialidad.invalid">Por favor, introduce la especialidad del monitor</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Grupo:</mat-label>
+                        <mat-select name="idgrupo" ngModel required #idgrupo="ngModel">
+                            <mat-option *ngFor="let grupo of campusService.gruposList" [value]="grupo.idgrupo">
+                                {{grupo.nombre}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button mat-raised-button color="accent" type="submit">Guardar</button>
+                </form>
+                <hr/>
+                <a mat-raised-button color="primary" routerLink="/main/campus/{{campusService.campus.idcampus}}/monitores">Volver</a>
+            </mat-card>
+        </div>
+    </div>
+</div>

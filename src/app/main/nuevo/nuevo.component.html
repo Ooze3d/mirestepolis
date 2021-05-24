@@ -1,0 +1,48 @@
+<div *ngIf="campusAdded" class="alert alert-success alert-dismissible fade show" role="alert">
+    ¡{{ nombreCampus }}, añadido!
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 m-3 d-flex justify-content-center">
+            <img src="../../assets/img/logo.png" />
+        </div>
+        <div class="col-12 col-md-6 m-2">
+            <mat-card>
+                <form class="d-flex flex-column" #campusForm="ngForm" (ngSubmit)="onNewCampus(campusForm)">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Nombre: </mat-label>
+                        <input type="text" matInput name="nombre" ngModel required #nombre="ngModel" />
+                        <mat-error *ngIf="nombre.invalid">Por favor, introduce el nombre del campus</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Dirección</mat-label>
+                        <input type="text" matInput name="direccion" ngModel required #direccion="ngModel" />
+                        <mat-error *ngIf="direccion.invalid">Por favor, introduce la dirección del campus</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Fecha de inicio</mat-label>
+                        <input matInput [matDatepicker]="ini" name="fechaini" ngModel required #fechaini="ngModel">
+                        <mat-datepicker-toggle matSuffix [for]="ini"></mat-datepicker-toggle>
+                        <mat-datepicker touchUi #ini></mat-datepicker>
+                        <mat-error *ngIf="fechaini.invalid">Por favor, introduce la fecha de inicio del campus
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Fecha de fin</mat-label>
+                        <input matInput [matDatepicker]="fin" name="fechafin" ngModel required #fechafin="ngModel">
+                        <mat-datepicker-toggle matSuffix [for]="fin"></mat-datepicker-toggle>
+                        <mat-datepicker touchUi #fin></mat-datepicker>
+                        <mat-error *ngIf="fechafin.invalid">Por favor, introduce la fecha de fin del campus</mat-error>
+                    </mat-form-field>
+                    <button mat-raised-button color="accent" type="submit">Guardar</button>
+                </form>
+                <hr/>
+                <a mat-raised-button color="primary" routerLink="/main">Volver</a>
+            </mat-card>
+        </div>
+    </div>
+</div>

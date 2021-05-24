@@ -1,0 +1,7 @@
+<p>Nómina de {{ monitorService.monitor.nombre }} {{ monitorService.monitor.apellidos }} de {{ month }}/{{ year }}</p>
+<p>El total de horas trabajadas es de: {{ totalHoras }}</p>
+<p>Salario Base: {{ salarioBase }}€</p>
+<p>PRORRATA: {{ extra }}€</p>
+<p>Total Devengado: {{ totalDevengado }}€</p>
+
+<button mat-raised-button color="accent" routerLink="/main/campus/{{campusService.campus.idcampus}}/monitores/{{monitorService.monitor.dni}}">Atrás</button>

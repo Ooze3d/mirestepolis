@@ -1,0 +1,111 @@
+<app-header></app-header>
+<div *ngIf="actividadAdded" class="alert alert-success alert-dismissible fade show" role="alert">
+    ¡{{ nombreActividad }}, añadido!
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div *ngIf="actividadService.error!=''" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{actividadService.error}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 m-2">
+            <mat-card>
+                <form class="d-flex flex-column" #actividadForm="ngForm" (ngSubmit)="onNewActividad(actividadForm)">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Nombre</mat-label>
+                        <input type="text"
+                               aria-label="nombre"
+                               matInput
+                               required
+                               [formControl]="nombre"
+                               [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          <mat-option *ngFor="let actividad of actividadService.actividadList" [value]="actividad.idactividad">
+                            {{actividad.nombre}}
+                          </mat-option>
+                        </mat-autocomplete>
+                        <mat-error *ngIf="nombre.errors?.required">Por favor, introduce el nombre de la actividad</mat-error>
+                      </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Descripción</mat-label>
+                        <textarea type="text" matInput name="descripcion" ngModel required #descripcion="ngModel"
+                            placeholder="Descripción de la actividad..."></textarea>
+                        <mat-error *ngIf="descripcion.invalid">Por favor, introduce la descripción de la actividad
+                        </mat-error>
+                    </mat-form-field>
+                    <div class="row justify-content-center">
+                        <mat-form-field appearance="fill" class="col-6">
+                            <mat-label>Hora inicio</mat-label>
+                            <mat-select name="horaini" ngModel required #horaini="ngModel">
+                                <mat-option *ngFor="let hora of horas" [value]="hora">
+                                    {{hora}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill" class="col-6">
+                            <mat-label>Minutos</mat-label>
+                            <mat-select name="minini" ngModel required #minini="ngModel">
+                                <mat-option *ngFor="let minuto of minutos" [value]="minuto">
+                                    {{minuto}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="row justify-content-center">
+                        <mat-form-field appearance="fill" class="col-6">
+                            <mat-label>Hora fin</mat-label>
+                            <mat-select name="horafin" ngModel required #horafin="ngModel">
+                                <mat-option *ngFor="let hora of horas" [value]="hora">
+                                    {{hora}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill" class="col-6">
+                            <mat-label>Minutos</mat-label>
+                            <mat-select name="minfin" ngModel required #minfin="ngModel">
+                                <mat-option *ngFor="let minuto of minutos" [value]="minuto">
+                                    {{minuto}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Color</mat-label>
+                        <mat-select name="color" ngModel required #color="ngModel">
+                            <mat-option *ngFor="let color of colores" [value]="color.hex">
+                                <div class="colorselector" [style.color]="color.hex">{{color.nombre}}</div>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Grupo:</mat-label>
+                        <mat-select name="idgrupo" ngModel required #idgrupo="ngModel">
+                            <mat-option *ngFor="let grupo of campusService.gruposList" [value]="grupo.idgrupo">
+                                {{grupo.nombre}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Monitor:</mat-label>
+                        <mat-select name="dnimonitor" ngModel required #dnimonitor="ngModel">
+                            <mat-option *ngFor="let monitor of monitorService.monitorList" [value]="monitor.dni">
+                                {{monitor.nombre}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button mat-raised-button color="accent" type="submit">Guardar</button>
+                </form>
+                <hr />
+                <a mat-raised-button color="primary"
+                    routerLink="/main/campus/{{campusService.campus.idcampus}}/calendario">Volver</a>
+            </mat-card>
+        </div>
+    </div>
+</div>

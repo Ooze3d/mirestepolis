@@ -1,1 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css", */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+mat-card {
+    border-top: 5px solid #0267c1;
+}
+
+.mat-card-title {
+    text-align: center;
+    font-weight: 500;
+    font-size: large;
+    text-transform: uppercase;
+    margin: 1em;
+    color: #0267c1;
+}
+
+.greetings {
+    font-size: small;
+}
+
+.message-red {
+    font-size: smaller;
+    color:red;
+}
+
+.campus-name {
+    text-decoration: none;
+    color: white;
+}
+
+.campus-name:hover {
+    text-decoration: none;
+    color:skyblue;
+}
+
+.mat-dialog-container h1 {
+    font-size: medium;
+}
+
+.mat-dialog-container {
+    border-top: 5px solid #0267c1;
+}

@@ -1,0 +1,50 @@
+<app-header></app-header>
+
+<div *ngIf="justDeleted" class="alert alert-success alert-dismissible fade show" role="alert">
+    ¡Monitor borrado!
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-4 m-1">
+            <mat-card>
+                <mat-card-title>Monitores</mat-card-title>
+                <mat-card-content>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-12 m-2">
+                                <mat-divider></mat-divider>
+                            </div>
+                            <div class="col-12 m-1 d-flex justify-content-center"
+                                *ngFor="let monitor of monitorService.monitorList">
+                                <button mat-raised-button color="primary" routerLink="/main/campus/{{ campusService.campus.idcampus }}/monitores/{{ monitor.dni }}" *ngIf="!borrar">
+                                    {{ monitor.nombre | uppercase }} {{ monitor.apellidos | uppercase }}</button>
+                                <button mat-raised-button color="warn" (click)="deleteMonitor(monitor.dni)" *ngIf="borrar">
+                                    {{ monitor.nombre | uppercase }} {{ monitor.apellidos | uppercase }}</button>
+                            </div>
+                            <div class="col-12 m-3">
+                                <mat-divider></mat-divider>
+                            </div>
+                            <div class="col-5 d-flex justify-content-center">
+                                <button mat-raised-button color="accent" routerLink="/main/campus/{{ campusService.campus.idcampus }}/monitor/nuevo">
+                                    <mat-icon>add_circle_outline</mat-icon> Nuevo
+                                </button>
+                            </div>
+                            <div class="col-5 d-flex justify-content-center">
+                                <button mat-raised-button color="warn" (click)="deleteOn()" *ngIf="!borrar">
+                                    <mat-icon>delete</mat-icon> Borrar
+                                </button>
+                                <button mat-raised-button color="primary" (click)="deleteOff()" *ngIf="borrar">
+                                    <mat-icon>close</mat-icon> Volver
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>
