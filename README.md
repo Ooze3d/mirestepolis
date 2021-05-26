@@ -2,26 +2,21 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.2.
 
+Full management web app to run a summer sports camp business. Developed for Mirestepolis Sports Association.
+
+Includes options to:
+
+- Add/delete new users + auth system
+- Add/edit/delete new camp (100% working)
+- Add/edit/delete payments (0% working)
+- Add/edit/delete monitors (100% working)
+- Add/edit/delete working days + create paychecks (90% working)
+- Add/edit/delete attendants and their family members (0% working)
+- Fully operative calendar divided in age groups (50% working)
+- Add/edit/delete meals (0% working)
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Run `npm run start:server` for the backend server. The SQL file to restore the database is inside de 'backend' folder.
