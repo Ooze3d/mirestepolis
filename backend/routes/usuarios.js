@@ -49,10 +49,11 @@ router.post('/login', (req, res, next) => {
                         message: 'Password incorrect'
                     })
                 } else {
-                    jwt.sign({ user: results.user }, jwt_secret, { expiresIn: '3h' }, function (error, token) { //Si el password es correcto, pasamos a generar un token
+                    jwt.sign({ user: results.user }, jwt_secret, { expiresIn: '1h' }, function (error, token) { //Si el password es correcto, pasamos a generar un token
                         if (error) throw error;
                         res.status(200).json({ //Y lo enviamos al frontend
-                            token: token 
+                            token: token,
+                            expiresIn: 3600
                         });
                     });
                 }

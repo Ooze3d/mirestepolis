@@ -3,6 +3,7 @@ import { MonitorService } from '../../../monitor.service';
 import { UserService } from '../../../user.service';
 import { DialogService } from 'dialog-service';
 import { CampusService } from 'src/app/campus.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-monitores',
@@ -14,12 +15,21 @@ export class MonitoresComponent implements OnInit, AfterViewInit {
   borrar:boolean = false;
   justDeleted:boolean = false;
 
-  constructor(public monitorService:MonitorService, public campusService:CampusService, public userService:UserService, private changes:ChangeDetectorRef, private dialog: DialogService) {
+  constructor(public monitorService:MonitorService, public campusService:CampusService, public userService:UserService, private changes:ChangeDetectorRef, private dialog: DialogService, private route:ActivatedRoute) {
 
   }
 
   ngOnInit() {
     this.userService.checkLogin();
+    this.route.params.subscribe((params) => {
+      let id = params['idcampus'];
+      if(this.campusService.campus.idcampus!=id) { //Comprueba la url y vuelve a cargar el idcampus si lo pierde por recarga de la página
+        this.campusService.getCampus(id);
+        this.campusService.getCampusListener().subscribe(campus => {
+          this.monitorService.getMonitorList();
+        });
+      }
+    });
   }
 
   ngAfterViewInit() {

@@ -1,18 +1,29 @@
 <app-header></app-header>
 <div class="container">
     <div class="row justify-content-center">
-        <div class="m-2">
-            <mat-card>
+        <div class="col-12 col-lg-8 m-2">
+            <mat-card style="overflow-x: scroll;">
                 <mat-card-title>Calendario</mat-card-title>
                 <mat-divider></mat-divider>
-                <form [formGroup]="calendarForm" class="d-flex flex-column m-2">
-                    <mat-form-field style="padding: 6px; width: 130px; height: 50px; margin-left: auto; margin-right: auto; margin-top: 10px; margin-bottom: 10px;">
-                        <input matInput [matDatepicker]="fecha" name="dia" required formControlName="dia" style="margin-top: -20px;">
-                        <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
-                        <mat-datepicker touchUi #fecha style="margin-top: -20px;"></mat-datepicker>
-                    </mat-form-field>
+                <form class="d-flex flex-column m-2">
+                    <div>
+                        <button mat-icon-button color="basic" (click)="diaAnt()">
+                            <mat-icon>arrow_back_ios</mat-icon>
+                        </button>
+                        <mat-form-field
+                            style="padding: 6px; width: 130px; height: 50px; margin-left: auto; margin-right: auto; margin-top: 10px; margin-bottom: 10px;">
+                            <input matInput [matDatepicker]="fecha" name="dia" required
+                                [(ngModel)]="actividadService.fecha" style="margin-top: -20px;">
+                            <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #fecha style="margin-top: -20px;" (change)="cleanRedraw()"></mat-datepicker>
+                        </mat-form-field>
+                        <button mat-icon-button color="basic" (click)="diaPost()">
+                            <mat-icon>arrow_forward_ios</mat-icon>
+                        </button>
+                    </div>
                     <button mat-raised-button color="accent"
-                        routerLink="/main/campus/{{campusService.campus.idcampus}}/calendario/new">Añadir Actividad</button>
+                        routerLink="/main/campus/{{campusService.campus.idcampus}}/calendario/new">Añadir
+                        Actividad</button>
                 </form>
                 <canvas id="myCanvas" width="701" height="500"></canvas>
             </mat-card>

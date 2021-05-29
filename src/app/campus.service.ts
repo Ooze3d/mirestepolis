@@ -32,10 +32,10 @@ export class CampusService implements OnInit {
         this.http.get<Campus[]>('http://localhost:3000/api/campus/'+idcampus).subscribe((campusData) => {
             this.campus = campusData[0];
             this.campusListener.next(this.campus);
+            this.getGruposList();
         }, error => {
             console.log(error);
         });
-        this.getGruposList();
     }
 
     getCampusList() {

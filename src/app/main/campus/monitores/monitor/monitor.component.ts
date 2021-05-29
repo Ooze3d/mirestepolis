@@ -17,7 +17,7 @@ export class MonitorComponent implements OnInit, AfterViewInit {
 
   public dni: string = '';
   public monitorUpdated = false;
-  public indexEdit:number = -1;
+  public indexEdit: number = -1;
   public jornadasList: Jornada[] = [];
 
   monitorForm = new FormGroup({ //Necesario para la actualización dinámica del formulario
@@ -30,13 +30,20 @@ export class MonitorComponent implements OnInit, AfterViewInit {
     idgrupo: new FormControl('')
   });
 
-  constructor(public campusService: CampusService, private userService: UserService, private route: ActivatedRoute, 
-    public monitorService: MonitorService, public jornadaService:JornadaService, private changes:ChangeDetectorRef) { }
+  constructor(public campusService: CampusService, private userService: UserService, private route: ActivatedRoute,
+    public monitorService: MonitorService, public jornadaService: JornadaService, private changes: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.userService.checkLogin(); //Comprobamos que estamos logueados
     this.route.params.subscribe((params) => { //Extraemos el DNI de la url
       this.dni = params['dni'];
+      let id = params['idcampus'];
+      if (this.campusService.campus.idcampus != id) { //Comprueba la url y vuelve a cargar el idcampus si lo pierde por recarga de la página
+        this.campusService.getCampus(id);
+        this.campusService.getCampusListener().subscribe(campus => {
+          this.monitorService.getMonitorList();
+        });
+      }
     });
 
     this.campusService.getGruposList();
@@ -54,18 +61,18 @@ export class MonitorComponent implements OnInit, AfterViewInit {
         idgrupo: newMonitor.idgrupo
       });
 
-      if(this.jornadaService.monthyear!='')
-            this.jornadaService.getJornadasMes(this.jornadaService.mes.year, this.jornadaService.mes.month);
+      if (this.jornadaService.monthyear != '')
+        this.jornadaService.getJornadasMes(this.jornadaService.mes.year, this.jornadaService.mes.month);
       else
-            this.jornadaService.getJornadasList();
-            
+        this.jornadaService.getJornadasList();
+
       this.jornadaService.getMesesList();
     });
 
   }
 
   ngAfterViewInit() {
-    
+
   }
 
   onMesChange() {
@@ -73,9 +80,9 @@ export class MonitorComponent implements OnInit, AfterViewInit {
     this.jornadaService.getJornadasMes(this.jornadaService.mes.year, this.jornadaService.mes.month);
   }
 
-  onClickEdit(i:number) {
+  onClickEdit(i: number) {
     this.jornadaService.jornada = this.jornadaService.jornadasList[i]; //Metemos la posición "i" de la lista de jornadas en el objeto jornada de jornadaService
-    this.indexEdit = this.indexEdit!=i? i : -1; //Intercambia editable/no editable
+    this.indexEdit = this.indexEdit != i ? i : -1; //Intercambia editable/no editable
   }
 
   onJornadaUpdate() {
@@ -90,7 +97,7 @@ export class MonitorComponent implements OnInit, AfterViewInit {
     //this.changes.detectChanges();
   }
 
-  onNewJornada(f:NgForm) {
+  onNewJornada(f: NgForm) {
     if (f.invalid)
       return;
     else {

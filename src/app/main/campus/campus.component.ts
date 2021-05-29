@@ -30,6 +30,8 @@ export class CampusComponent implements OnInit, AfterViewInit {
       this.id = params['idcampus'];
     }); //Extraemos el id del campus de la url
 
+    //localStorage.setItem('idcampus', this.id); //Para mantener la información si recargamos la página en cualquier sección
+
     this.campusService.getCampus(this.id); //Cargamos el campus mediante el ID de la url
 
     this.campusService.getCampusListener().subscribe(newCampus => { //Cargamos la info del campus en el formulario

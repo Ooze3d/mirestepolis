@@ -13,7 +13,8 @@ import { NuevoComponent } from './main/nuevo/nuevo.component';
 import { RegisterComponent } from './register/register.component';
 
 const routes: Routes = [
-    { path: '', component: LoginComponent }, //Login
+    { path: '', component: MainComponent }, //Intenta ir a Main y si no está logueado, va a login
+    { path: 'login', component: LoginComponent },
     { path: 'main', component: MainComponent }, //Ver lista de campus
     { path: 'main/campus/:idcampus', component: CampusComponent }, //Ver campus por ID
     { path: 'main/campus/:idcampus/calendario', component: CalendarioComponent}, //Ver campus por ID

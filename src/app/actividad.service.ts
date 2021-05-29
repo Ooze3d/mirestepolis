@@ -11,6 +11,7 @@ export class ActividadService implements OnInit {
     actividad: Actividad = new Actividad('nombre', 'descripcion', new Date().toISOString(), new Date().toISOString(), '#FFADAD', 'abc000', '00000000A');
     actividadList: Actividad[] = [];
     private actividadListener = new Subject<Actividad>();
+    private actividadListListener = new Subject<Actividad[]>();
     error:string = '';
     private errorListener = new Subject<string>();
 
@@ -22,31 +23,33 @@ export class ActividadService implements OnInit {
 
     }
 
-
     getActividadListener() {
         return this.actividadListener;
     }
 
+    getActividadListListener() {
+        return this.actividadListListener;
+    }
 
     getErrorListener() {
         return this.errorListener;
     }
 
     getActividad(idactividad: number) {
-        this.http.get<Actividad[]>('http://localhost:3000/api/actividades/' + this.campusService.campus.idcampus).subscribe((actividadData) => {
-            this.actividadList = actividadData;
+        this.http.get<Actividad>('http://localhost:3000/api/actividades/' + idactividad).subscribe((actividadData) => {
+            this.actividad = actividadData;
         }, error => {
             console.log(error);
         });
     }
 
     getActividadList() {
-        this.http.get<Actividad[]>('http://localhost:3000/api/actividades/campus/' + this.campusService.campus.idcampus).subscribe((actividadData) => {
+        this.http.get<Actividad[]>('http://localhost:3000/api/actividades/campus/' + this.campusService.campus.idcampus + '/' +this.fecha.toISOString().substr(0,10)).subscribe((actividadData) => {
             this.actividadList = actividadData;
+            this.actividadListListener.next(this.actividadList);
         }, error => {
             console.log(error);
         });
-        return this.actividadList;
     }
 
     addActividad(nombre: string, descripcion: string, horaini: string, minini: string, horafin: string, minfin: string, color: string, idgrupo: string, dnimonitor: string) {
