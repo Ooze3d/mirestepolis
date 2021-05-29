@@ -15,6 +15,10 @@ Includes options to:
 - Fully operative calendar divided in age groups (50% working)
 - Add/edit/delete meals (0% working)
 
+## About UI
+
+This UI is mainly designed to be used in small screens such as tablets and phones. It's also adapted for computer screens although it's not its main purpose.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
