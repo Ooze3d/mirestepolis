@@ -24,6 +24,7 @@
     "@angular/platform-browser-dynamic": "~11.2.3",
     "@angular/router": "~11.2.3",
     "@types/fabric": "^4.2.6",
+    "animate.css": "^4.1.1",
     "bcrypt": "^5.0.1",
     "bootstrap": "^4.6.0",
     "cors": "^2.8.5",

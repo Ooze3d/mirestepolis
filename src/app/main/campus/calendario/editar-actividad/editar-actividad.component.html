@@ -1,6 +1,6 @@
 <app-header></app-header>
-<div *ngIf="actividadAdded" class="alert alert-success alert-dismissible fade show" role="alert">
-    ¡{{ nombreActividad }}, añadido!
+<div *ngIf="actividadUpdated" class="alert alert-success alert-dismissible fade show" role="alert">
+    ¡{{ nombreActividad }}, editada!
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -17,33 +17,29 @@
     <div class="row justify-content-center">
         <div class="col-12 col-md-6 m-2">
             <mat-card>
-                <form class="d-flex flex-column" #actividadForm="ngForm" (ngSubmit)="onNewActividad(actividadForm)">
+                <form class="d-flex flex-column" [formGroup]="actividadForm" (ngSubmit)="onActividadUpdate()">
                     <mat-form-field appearance="fill">
                         <mat-label>Nombre</mat-label>
                         <input type="text"
-                               aria-label="nombre"
                                matInput
+                               name="nombre"
                                required
-                               [formControl]="nombre"
+                               formControlName="nombre"
                                [matAutocomplete]="auto">
-                        <mat-autocomplete #auto="matAutocomplete">
+                        <mat-autocomplete #auto="matAutocomplete"> <!--[formControl]="nombre"-->
                           <mat-option *ngFor="let actividad of actividadService.actividadList" [value]="actividad.idactividad">
                             {{actividad.nombre}}
                           </mat-option>
                         </mat-autocomplete>
-                        <mat-error *ngIf="nombre.errors?.required">Por favor, introduce el nombre de la actividad</mat-error>
                       </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Descripción</mat-label>
-                        <textarea type="text" matInput name="descripcion" ngModel required #descripcion="ngModel"
-                            placeholder="Descripción de la actividad..."></textarea>
-                        <mat-error *ngIf="descripcion.invalid">Por favor, introduce la descripción de la actividad
-                        </mat-error>
+                        <textarea type="text" matInput name="descripcion" required formControlName="descripcion"></textarea>
                     </mat-form-field>
                     <div class="row justify-content-center">
                         <mat-form-field appearance="fill" class="col-6">
                             <mat-label>Hora inicio</mat-label>
-                            <mat-select name="horaini" ngModel required #horaini="ngModel">
+                            <mat-select name="horaini" required formControlName="horaini">
                                 <mat-option *ngFor="let hora of horas" [value]="hora">
                                     {{hora}}
                                 </mat-option>
@@ -51,7 +47,7 @@
                         </mat-form-field>
                         <mat-form-field appearance="fill" class="col-6">
                             <mat-label>Minutos</mat-label>
-                            <mat-select name="minini" ngModel required #minini="ngModel">
+                            <mat-select name="minini" required formControlName="minini">
                                 <mat-option *ngFor="let minuto of minutos" [value]="minuto">
                                     {{minuto}}
                                 </mat-option>
@@ -61,7 +57,7 @@
                     <div class="row justify-content-center">
                         <mat-form-field appearance="fill" class="col-6">
                             <mat-label>Hora fin</mat-label>
-                            <mat-select name="horafin" ngModel required #horafin="ngModel">
+                            <mat-select name="horafin" required formControlName="horafin">
                                 <mat-option *ngFor="let hora of horas" [value]="hora">
                                     {{hora}}
                                 </mat-option>
@@ -69,7 +65,7 @@
                         </mat-form-field>
                         <mat-form-field appearance="fill" class="col-6">
                             <mat-label>Minutos</mat-label>
-                            <mat-select name="minfin" ngModel required #minfin="ngModel">
+                            <mat-select name="minfin" required formControlName="minfin">
                                 <mat-option *ngFor="let minuto of minutos" [value]="minuto">
                                     {{minuto}}
                                 </mat-option>
@@ -78,7 +74,7 @@
                     </div>
                     <mat-form-field appearance="fill">
                         <mat-label>Color</mat-label>
-                        <mat-select name="color" ngModel required #color="ngModel">
+                        <mat-select name="color" required formControlName="color">
                             <mat-option *ngFor="let color of colores" [value]="color.hex">
                                 <div class="colorselector" [style.color]="color.hex">{{color.nombre}}</div>
                             </mat-option>
@@ -86,7 +82,7 @@
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Grupo:</mat-label>
-                        <mat-select name="idgrupo" ngModel required #idgrupo="ngModel">
+                        <mat-select name="idgrupo" required formControlName="idgrupo">
                             <mat-option *ngFor="let grupo of campusService.gruposList" [value]="grupo.idgrupo">
                                 {{grupo.nombre}}
                             </mat-option>
@@ -94,13 +90,14 @@
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Monitor:</mat-label>
-                        <mat-select name="dnimonitor" ngModel required #dnimonitor="ngModel">
+                        <mat-select name="dnimonitor" required formControlName="dnimonitor">
                             <mat-option *ngFor="let monitor of monitorService.monitorList" [value]="monitor.dni">
                                 {{monitor.nombre}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                     <button mat-raised-button color="accent" type="submit">Guardar</button>
+                    <button mat-raised-button color="warn" type="button" class="mt-2" (click)="askDelete()">Borrar</button>
                 </form>
                 <hr />
                 <a mat-raised-button color="primary"

@@ -18,7 +18,7 @@ router.get('/campus/:idcampus/:date', (req, res, next) => {
 });
 
 router.get('/:idactividad', checkAuth, (req, res, next) => {
-    let dni = req.params.dni;
+    let idactividad = req.params.idactividad;
     con.query('SELECT * FROM actividades WHERE idactividad=?', [idactividad], function (error, results) {
         if (error) {
             res.status(400).json({
@@ -59,14 +59,29 @@ router.post('/new', checkAuth, (req, res, next) => {
 });
 
 router.put('/update/:idactividad', checkAuth, (req, res, next) => {
-    con.query('UPDATE monitores SET nombre=?, apellidos=?, telefono=?, email=?, especialidad=?, idcampus=?, idgrupo=? WHERE dni=?', [req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email, req.body.especialidad, req.body.idcampus, req.body.idgrupo, req.body.dni], function (error, results) {
+    con.query('SELECT idactividad FROM actividades WHERE idgrupo=? AND ((fechaini>=? AND fechaini<?) OR (fechafin>? AND fechafin<=?))', [req.body.idgrupo, req.body.fechaini, req.body.fechafin, req.body.fechaini, req.body.fechafin], function(error, results) {
+        if(error) {
+            res.status(400).json({
+                error: error
+            });
+        } else if(results.length!=0) {
+            res.status(400).json({ //Si hay resultados, la actividad está pisando grupo y horas
+                message: 'La actividad está solapada con otra previa. Por favor, comprueba los datos.'
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    let idactividad = req.params.idactividad;
+    con.query('UPDATE actividades SET nombre=?, descripcion=?, fechaini=?, fechafin=?, color=?, idgrupo=?, dnimonitor=? WHERE idactividad=?', [req.body.nombre, req.body.descripcion, req.body.fechaini, req.body.fechafin, req.body.color, req.body.idgrupo, req.body.dnimonitor, idactividad], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
             });
         } else {
             res.status(200).json({
-                message: 'Monitor updated'
+                message: 'Actividad updated'
             });
         }
     });

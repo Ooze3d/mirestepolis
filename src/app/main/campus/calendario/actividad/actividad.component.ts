@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, NgForm } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ActividadService } from 'src/app/actividad.service';
 import { CampusService } from 'src/app/campus.service';
 import { MonitorService } from 'src/app/monitor.service';
@@ -10,6 +11,7 @@ import { UserService } from 'src/app/user.service';
   templateUrl: './actividad.component.html',
   styleUrls: ['./actividad.component.css']
 })
+
 export class ActividadComponent implements OnInit {
 
   nombre:FormControl = new FormControl();
@@ -28,11 +30,20 @@ export class ActividadComponent implements OnInit {
     {nombre: "Mauve", hex: "#FFC6FF"}
   ];
 
-  constructor(private userService:UserService, public campusService:CampusService, public actividadService:ActividadService, public monitorService:MonitorService) { }
+  constructor(private userService:UserService, public campusService:CampusService, public actividadService:ActividadService, public monitorService:MonitorService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.userService.checkLogin();
     this.actividadService.error = '';
+    this.route.params.subscribe((params) => {
+      let id = params['idcampus'];
+      if (this.campusService.campus.idcampus != id) {
+        this.campusService.getCampus(id);
+        this.campusService.getCampusListener().subscribe(() => {
+          this.monitorService.getMonitorList();
+        });
+      }
+    });
   }
 
   onNewActividad(f:NgForm) {

@@ -1,6 +1,7 @@
 import { ThrowStmt } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { CampusService } from 'src/app/campus.service';
 import { MonitorService } from 'src/app/monitor.service';
 import { UserService } from 'src/app/user.service';
@@ -17,11 +18,19 @@ export class NuevoMonitorComponent implements OnInit {
   nombreMonitor: string = '';
   gruposList: { idgrupo: string, nombre: string }[] = [];
 
-  constructor(private userService: UserService, private monitorService: MonitorService, public campusService: CampusService) { }
+  constructor(private userService: UserService, private monitorService: MonitorService, public campusService: CampusService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.userService.checkLogin();
-    this.campusService.getGruposList();
+    this.route.params.subscribe((params) => {
+      let id = params['idcampus'];
+      if (this.campusService.campus.idcampus != id) { //Comprueba la url y vuelve a cargar el idcampus si lo pierde por recarga de la página
+        this.campusService.getCampus(id);
+        this.campusService.getCampusListener().subscribe(() => {
+          this.campusService.getGruposList();
+        });
+      }
+    });
   }
 
   onNewMonitor(f: NgForm) {

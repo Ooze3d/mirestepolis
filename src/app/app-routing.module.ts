@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { ActividadComponent } from './main/campus/calendario/actividad/actividad.component';
 import { CalendarioComponent } from './main/campus/calendario/calendario.component';
+import { EditarActividadComponent } from './main/campus/calendario/editar-actividad/editar-actividad.component';
 import { CampusComponent } from './main/campus/campus.component';
 import { MonitorComponent } from './main/campus/monitores/monitor/monitor.component';
 import { NominaComponent } from './main/campus/monitores/monitor/nomina/nomina.component';
@@ -18,7 +19,8 @@ const routes: Routes = [
     { path: 'main', component: MainComponent }, //Ver lista de campus
     { path: 'main/campus/:idcampus', component: CampusComponent }, //Ver campus por ID
     { path: 'main/campus/:idcampus/calendario', component: CalendarioComponent}, //Ver campus por ID
-    { path: 'main/campus/:idcampus/calendario/new', component: ActividadComponent}, //Ver campus por ID
+    { path: 'main/campus/:idcampus/calendario/new', component: ActividadComponent}, //Ver calendario por ID de campus
+    { path: 'main/campus/:idcampus/calendario/edit/:idactividad', component: EditarActividadComponent}, //Editar actividad por ID
     { path: 'main/campus/:idcampus/monitores', component: MonitoresComponent}, //Ver lista de monitores
     { path: 'main/campus/:idcampus/monitores/:dni', component: MonitorComponent}, //Ver monitor por ID
     { path: 'main/campus/:idcampus/monitores/:dni/nomina/:year/:month', component: NominaComponent}, //Ver nómina por DNI, año y mes

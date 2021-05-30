@@ -43,6 +43,7 @@ import { NominaComponent } from './main/campus/monitores/monitor/nomina/nomina.c
 import { CalendarioComponent } from './main/campus/calendario/calendario.component';
 import { ActividadComponent } from './main/campus/calendario/actividad/actividad.component';
 import { ActividadService } from './actividad.service';
+import { EditarActividadComponent } from './main/campus/calendario/editar-actividad/editar-actividad.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { ActividadService } from './actividad.service';
     PersonalComponent,
     NominaComponent,
     CalendarioComponent,
-    ActividadComponent
+    ActividadComponent,
+    EditarActividadComponent
   ],
   imports: [
     BrowserModule,

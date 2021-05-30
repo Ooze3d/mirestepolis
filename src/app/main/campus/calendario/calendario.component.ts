@@ -5,13 +5,15 @@ import { _MatRadioGroupBase } from '@angular/material/radio';
 import { ActividadService } from 'src/app/actividad.service';
 import { Actividad } from 'src/app/actividad.model';
 import { UserService } from 'src/app/user.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MonitorService } from 'src/app/monitor.service';
 
 @Component({
   selector: 'app-calendario',
   templateUrl: './calendario.component.html',
   styleUrls: ['./calendario.component.css']
 })
+
 export class CalendarioComponent implements OnInit, AfterViewInit {
 
   canvas: any;
@@ -30,12 +32,12 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
   blueGrad: string[] = ['rgba(33, 150, 243, 0.4)', 'rgba(33, 150, 243, 0.6)', 'rgba(33, 150, 243, 0.8)', 'rgba(33, 150, 243, 1)'];
   colorText: string = 'darkorange';
 
-  constructor(public campusService: CampusService, public actividadService: ActividadService, public userService: UserService, private route: ActivatedRoute) { }
+  constructor(public campusService: CampusService, public monitorService: MonitorService, public actividadService: ActividadService, public userService: UserService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
     this.userService.checkLogin();
     this.canvas = new fabric.Canvas('myCanvas');
-    this.route.params.subscribe((params) => { //Extraemos el DNI de la url
+    this.route.params.subscribe((params) => {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //Comprueba la url y vuelve a cargar el idcampus si lo pierde por recarga de la página
         this.campusService.getCampus(id);
@@ -48,27 +50,36 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.campusService.getCampusListener().subscribe(() => {
       this.campusService.getGruposListener().subscribe(() => {
+        this.monitorService.getMonitorList();
         this.drawCalendar();
+        this.actividadService.getActividadList(); //Está duplicado pero se necesita para cuando se fuerza la recarga (revisar por si se puede hacer de otra forma)
+        this.actividadService.getActividadListListener().subscribe(list => {
+          this.drawActividades(list);
+        });
       });
     });
     this.actividadService.getActividadList();
     this.actividadService.getActividadListListener().subscribe(list => {
       this.drawActividades(list);
     });
+    console.log(this.actividadService.fecha);
   }
 
   diaAnt() { //Cambia a día anterior y carga el array de actividades
+    if(!(this.actividadService.fecha instanceof Date)) //Al usar el datepicker, pierde el formato Date
+      this.actividadService.fecha = new Date(this.actividadService.fecha);
     this.actividadService.fecha = new Date(this.actividadService.fecha.setDate(this.actividadService.fecha.getDate() - 1));
     this.cleanRedraw();
   }
 
   diaPost() { //Cambia a día posterior y carga el array de actividades
+    if(!(this.actividadService.fecha instanceof Date)) //Al usar el datepicker, pierde el formato Date
+      this.actividadService.fecha = new Date(this.actividadService.fecha);
     this.actividadService.fecha = new Date(this.actividadService.fecha.setDate(this.actividadService.fecha.getDate() + 1));
     this.cleanRedraw();
   }
 
   cleanRedraw() { //Limpia actividades, carga las del nuevo día y vuelve a pintarlas
-    console.log(this.actividadService.fecha+', redrawing...');
     while (this.canvas.getObjects().length > 42) {
       this.canvas.remove(this.canvas.item(this.canvas.getObjects().length - 1));
     }
@@ -96,7 +107,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
         strokeWidth: 1,
         hoverCursor: 'pointer'
       }).on('mousedown', (event) => {
-        alert(act.idactividad);
+        this.router.navigate(['/main/campus/' + this.campusService.campus.idcampus + '/calendario/edit/' + act.idactividad]);
       }));
 
       //En caso de que el nombre de la actividad tenga más de 20 caracteres
@@ -294,10 +305,6 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
       this.drawGrupos(this.canvas, this.x, this.y, this.campusService.gruposList[i].nombre, this.blueGrad[i]);
       this.x += 150;
     }
-  }
-
-  resizeCanvas(event: UIEvent) {
-    //TODO resize algorithm
   }
 
 }
