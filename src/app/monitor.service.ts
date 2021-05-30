@@ -7,7 +7,7 @@ import { Monitor } from './monitor.model';
 @Injectable({providedIn: 'root'})
 export class MonitorService implements OnInit {
 
-    //Esta información genérica tiene el propósito de avisar si en algún momento no hay conexión a la base de datos
+    //Dummy info so a database error or a failed refresh can be easily identified
     monitor:Monitor = new Monitor('00000000A', 'Nombre', 'Apellidos', 999111222, 'nombre@mail.com', 'especialidad', 'abc000', 'grupo0');
     monitorList:Monitor[] = [];
     private monitorListener = new Subject<Monitor>();

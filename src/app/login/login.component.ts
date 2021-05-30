@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
   }
 
   onLoginRequest(f:NgForm) {
-    if(f.invalid)
+    if(f.invalid) //If the form is invalid in any way, it returns and shows the errors
       return;
     this.userService.loginUser(f.value.user, f.value.password);
   }

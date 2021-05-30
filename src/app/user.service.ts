@@ -58,15 +58,15 @@ export class UserService implements OnInit {
             const expiresInDuration = userBack.expiresIn;
             this.login = true;
             localStorage.setItem('user', this.user.user);
-            this.userStatusListener.next(this.login); //Pasamos el estado de login al resto de la aplicación
-            const now = new Date(); //Configuramos el tiempo de expiración del token
+            this.userStatusListener.next(this.login); //Once the user is logged in, that info is sent to the rest of the app
+            const now = new Date(); //Setup for token expiration
             const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
             this.saveAuthData(userBack.token, expirationDate);
             this.router.navigate(['/main']);
         });
     }
 
-    autoAuthUser() { //Intenta capturar la información de autorización del localStorage para mantener la sesión abierta
+    autoAuthUser() { //Checks LocalStorage for a valid, unexpired token and leaves 'session' open if found
         const authInformation = this.getAuthData();
         const now = new Date();
         if (authInformation && authInformation.expirationDate > now) {
@@ -75,15 +75,15 @@ export class UserService implements OnInit {
             this.userStatusListener.next(this.login);
             this.user.user = localStorage.getItem('user') || '';
         } else {
-            this.clearAuthData(); //Por si acaso
+            this.clearAuthData(); //Just in case, if the token is no longer valid, deletes all info
 
         }
     }
 
     logout() {
-        this.clearAuthData(); //Borramos la información de autorización del localStorage
+        this.clearAuthData(); //Deletes all previous login info
         this.router.navigate(['/login']);
-        this.justLoggedOut = true; //Para el mensaje diciendo que acabamos de hacer logout
+        this.justLoggedOut = true;
     }
 
     private saveAuthData(token: string, expirationDate: Date) {

@@ -24,7 +24,7 @@ export class NuevoMonitorComponent implements OnInit {
     this.userService.checkLogin();
     this.route.params.subscribe((params) => {
       let id = params['idcampus'];
-      if (this.campusService.campus.idcampus != id) { //Comprueba la url y vuelve a cargar el idcampus si lo pierde por recarga de la página
+      if (this.campusService.campus.idcampus != id) { //Checks the url for the campus and compares it to the service in case the page gets refreshed
         this.campusService.getCampus(id);
         this.campusService.getCampusListener().subscribe(() => {
           this.campusService.getGruposList();
@@ -39,7 +39,7 @@ export class NuevoMonitorComponent implements OnInit {
     else if (this.validaNif(f.value.dni)) {
       this.monitorService.addMonitor(f.value.dni, f.value.nombre, f.value.apellidos, f.value.telefono, f.value.email, f.value.especialidad, this.campusService.campus.idcampus, f.value.idgrupo);
       this.monitorService.getErrorListener().subscribe(error => {
-        if(error=='DUPLICADO')
+        if(error=='DUPLICADO') //Checks for duplicated DNIs
           this.monitorDuplicated = true;
         else {
           this.nombreMonitor = f.value.nombre;
@@ -53,7 +53,7 @@ export class NuevoMonitorComponent implements OnInit {
     }
   }
 
-  validaNif(docu: string) {
+  validaNif(docu: string) { //DNI letter validator
     let codigo: string[] = ['T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E'];
     docu = docu.trim();
     if (docu.length != 9) {

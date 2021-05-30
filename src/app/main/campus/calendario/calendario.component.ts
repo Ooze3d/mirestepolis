@@ -39,7 +39,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     this.canvas = new fabric.Canvas('myCanvas');
     this.route.params.subscribe((params) => {
       let id = params['idcampus'];
-      if (this.campusService.campus.idcampus != id) { //Comprueba la url y vuelve a cargar el idcampus si lo pierde por recarga de la página
+      if (this.campusService.campus.idcampus != id) { //Checks the url and changes the campus attribute in the service if needed
         this.campusService.getCampus(id);
       } else {
         this.drawCalendar();
@@ -52,7 +52,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
       this.campusService.getGruposListener().subscribe(() => {
         this.monitorService.getMonitorList();
         this.drawCalendar();
-        this.actividadService.getActividadList(); //Está duplicado pero se necesita para cuando se fuerza la recarga (revisar por si se puede hacer de otra forma)
+        this.actividadService.getActividadList(); //These two lines are duplicated, but they're needed since they're called in two different moments in time, depending on the page load
         this.actividadService.getActividadListListener().subscribe(list => {
           this.drawActividades(list);
         });
@@ -65,21 +65,21 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     console.log(this.actividadService.fecha);
   }
 
-  diaAnt() { //Cambia a día anterior y carga el array de actividades
-    if(!(this.actividadService.fecha instanceof Date)) //Al usar el datepicker, pierde el formato Date
+  diaAnt() { //Changes the date to previous day and reloads the activities array
+    if(!(this.actividadService.fecha instanceof Date)) //DatePicker causes the attribute to lose the Date type
       this.actividadService.fecha = new Date(this.actividadService.fecha);
     this.actividadService.fecha = new Date(this.actividadService.fecha.setDate(this.actividadService.fecha.getDate() - 1));
     this.cleanRedraw();
   }
 
-  diaPost() { //Cambia a día posterior y carga el array de actividades
-    if(!(this.actividadService.fecha instanceof Date)) //Al usar el datepicker, pierde el formato Date
+  diaPost() { //Changes the date to next day and reloads the activities array
+    if(!(this.actividadService.fecha instanceof Date))
       this.actividadService.fecha = new Date(this.actividadService.fecha);
     this.actividadService.fecha = new Date(this.actividadService.fecha.setDate(this.actividadService.fecha.getDate() + 1));
     this.cleanRedraw();
   }
 
-  cleanRedraw() { //Limpia actividades, carga las del nuevo día y vuelve a pintarlas
+  cleanRedraw() { //Clears the calendar of previous activities and draws the new list
     while (this.canvas.getObjects().length > 42) {
       this.canvas.remove(this.canvas.item(this.canvas.getObjects().length - 1));
     }
@@ -89,7 +89,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     });
   }
 
-  drawActividades(list: Actividad[]) { //Una vez que el calendario está dibujado, añadimos las distintas actividades
+  drawActividades(list: Actividad[]) { //Once the calendar is visible, we can draw each activity from the list
     list.forEach(act => {
       let left: number = this.calculaLeft(act);
       let top: number = this.calculaTop(act);
@@ -110,7 +110,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
         this.router.navigate(['/main/campus/' + this.campusService.campus.idcampus + '/calendario/edit/' + act.idactividad]);
       }));
 
-      //En caso de que el nombre de la actividad tenga más de 20 caracteres
+      //In case the activity name has more than 20 characters
 
       let newName: string;
       if (act.nombre.length > 20)
@@ -134,7 +134,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     });
   }
 
-  calculaLeft(act: Actividad): number { //Cálculo de la posición horizontal de la actividad
+  calculaLeft(act: Actividad): number { //Different horizontal positions depending on the group
     let left: number = 0;
 
     switch (act.idgrupo.substr(-3, 3)) {
@@ -154,13 +154,13 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     return left;
   }
 
-  calculaTop(act: Actividad): number { //Cálculo de la posición vertical de la actividad
+  calculaTop(act: Actividad): number { //Set distance from the top, depending on the time each activity starts
     let horaini: number = Number(act.fechaini.substr(11, 2));
     let minini: number = Number(act.fechaini.substr(14, 2));
     return 45 + ((horaini - 8) * 60) + minini;
   }
 
-  calculaHeight(act: Actividad): number { //Cálculo del tamaño mediante la duración
+  calculaHeight(act: Actividad): number { //The difference between start and end times gives us the size for the box
     let horaini: number = Number(act.fechaini.substr(11, 2));
     let minini: number = Number(act.fechaini.substr(14, 2));
     let horafin: number = Number(act.fechafin.substr(11, 2));
@@ -168,7 +168,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     return ((horafin - horaini) * 60) + (minfin - minini);
   }
 
-  drawCajaHora(x: number, y: number, color: string) { //Dibuja una caja lateral con la hora
+  drawCajaHora(x: number, y: number, color: string) { //Left boxes with the hours
     return new fabric.Rect({
       selectable: false,
       top: y,
@@ -183,7 +183,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     });
   }
 
-  drawTextHora(x: number, y: number, text: string) { //Escribe la hora en la caja lateral
+  drawTextHora(x: number, y: number, text: string) { //Hour text
     return new fabric.Text(text, {
       selectable: false,
       originX: 'center',
@@ -199,7 +199,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     })
   }
 
-  drawGrupos(canvas: any, x: number, y: number, nombreGrupo: string, color: string) { //Dibuja una caja de grupo por coordenadas
+  drawGrupos(canvas: any, x: number, y: number, nombreGrupo: string, color: string) { //Set of boxes and text for each group
     canvas.add(new fabric.Rect({
       selectable: false,
       top: y,
@@ -289,16 +289,16 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     }));
   }
 
-  drawCalendar() { //Usa las funciones anteriores para dibujar el calendario completo
+  drawCalendar() { //Main method to draw the whole calendar
     this.x = 0;
     this.y = 45;
-    //Cajas horas
+    //Hour boxes
     for (let i = 0; i < 7; i++) {
       this.canvas.add(this.drawCajaHora(this.x, this.y, this.horas[i].color));
       this.canvas.add(this.drawTextHora(this.x, this.y, this.horas[i].text));
       this.y += 60;
     }
-    //Grupos
+    //Groups
     this.x = 100;
     this.y = 5;
     for (let i = 0; i < 4; i++) {

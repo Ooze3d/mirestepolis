@@ -20,7 +20,7 @@ export class MonitorComponent implements OnInit, AfterViewInit {
   public indexEdit: number = -1;
   public jornadasList: Jornada[] = [];
 
-  monitorForm = new FormGroup({ //Necesario para la actualización dinámica del formulario
+  monitorForm = new FormGroup({ //FormGroup allows the form to be dynamically filled
     nombre: new FormControl(''),
     apellidos: new FormControl(''),
     telefono: new FormControl(''),
@@ -34,11 +34,11 @@ export class MonitorComponent implements OnInit, AfterViewInit {
     public monitorService: MonitorService, public jornadaService: JornadaService, private changes: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.userService.checkLogin(); //Comprobamos que estamos logueados
-    this.route.params.subscribe((params) => { //Extraemos el DNI de la url
+    this.userService.checkLogin(); //Checking if the user is logged in
+    this.route.params.subscribe((params) => { //Monitor DNI gets extracted from the url
       this.dni = params['dni'];
       let id = params['idcampus'];
-      if (this.campusService.campus.idcampus != id) { //Comprueba la url y vuelve a cargar el idcampus si lo pierde por recarga de la página
+      if (this.campusService.campus.idcampus != id) { //In case the page is refreshed, the campus ID is also captured and used to check the service
         this.campusService.getCampus(id);
         this.campusService.getCampusListener().subscribe(campus => {
           this.monitorService.getMonitorList();
@@ -48,9 +48,9 @@ export class MonitorComponent implements OnInit, AfterViewInit {
 
     this.campusService.getGruposList();
 
-    this.monitorService.getMonitor(this.dni); //Cargamos el monitor en el servicio a través del DNI
+    this.monitorService.getMonitor(this.dni); //The monitor gets loaded into the service using the DNI
 
-    this.monitorService.getMonitorListener().subscribe(newMonitor => { //Actualizar los valores del formulario de edición del monitor
+    this.monitorService.getMonitorListener().subscribe(newMonitor => { //The form gets dynamically filled
       this.monitorForm.setValue({
         nombre: newMonitor.nombre,
         apellidos: newMonitor.apellidos,
@@ -81,13 +81,13 @@ export class MonitorComponent implements OnInit, AfterViewInit {
   }
 
   onClickEdit(i: number) {
-    this.jornadaService.jornada = this.jornadaService.jornadasList[i]; //Metemos la posición "i" de la lista de jornadas en el objeto jornada de jornadaService
-    this.indexEdit = this.indexEdit != i ? i : -1; //Intercambia editable/no editable
+    this.jornadaService.jornada = this.jornadaService.jornadasList[i]; //If the user clicks "edit" on a certain day, it gets automatically sent to the service to edit
+    this.indexEdit = this.indexEdit != i ? i : -1; //Switch edit mode
   }
 
   onJornadaUpdate() {
     this.jornadaService.updateJornada();
-    this.indexEdit = -1; //Quitamos el modo de edición
+    this.indexEdit = -1; //Turn off edit mode
     //this.changes.detectChanges();
   }
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const con = require('../mysql');
 const checkAuth = require('../middleware/check-auth');
 
+//List of monitors by campus
 router.get('/campus/:idcampus', checkAuth, (req, res, next) => {
     let idcampus = req.params.idcampus;
     con.query('SELECT * FROM monitores WHERE idcampus=?', [idcampus], function (error, results) {
@@ -16,6 +17,7 @@ router.get('/campus/:idcampus', checkAuth, (req, res, next) => {
     });
 });
 
+//Monitor data by key (DNI)
 router.get('/:dni', checkAuth, (req, res, next) => {
     let dni = req.params.dni;
     con.query('SELECT * FROM monitores WHERE dni=?', [dni], function (error, results) {
@@ -29,6 +31,7 @@ router.get('/:dni', checkAuth, (req, res, next) => {
     });
 });
 
+//New monitor
 router.post('/new', checkAuth, (req, res, next) => {
     con.query('INSERT INTO monitores(dni, nombre, apellidos, telefono, email, especialidad, idcampus, idgrupo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [req.body.dni, req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email, req.body.especialidad, req.body.idcampus, req.body.idgrupo], function (error, results) {
         if (error) {
@@ -49,6 +52,7 @@ router.post('/new', checkAuth, (req, res, next) => {
     });
 });
 
+//Edit monitor
 router.put('/update/:dni', checkAuth, (req, res, next) => {
     con.query('UPDATE monitores SET nombre=?, apellidos=?, telefono=?, email=?, especialidad=?, idcampus=?, idgrupo=? WHERE dni=?', [req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email, req.body.especialidad, req.body.idcampus, req.body.idgrupo, req.body.dni], function (error, results) {
         if (error) {
@@ -63,6 +67,7 @@ router.put('/update/:dni', checkAuth, (req, res, next) => {
     });
 });
 
+//Delete monitor
 router.delete('/delete/:dni', checkAuth, (req, res, next) => {
     let dni = req.params.dni;
     con.query('DELETE FROM monitores WHERE dni=?', [dni], function (error, results) {

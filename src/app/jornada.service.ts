@@ -48,7 +48,7 @@ export class JornadaService implements OnInit {
         });
     }
 
-    getJornadasMes(year:number, month:number) { //Jornadas por monitor, año y mes
+    getJornadasMes(year:number, month:number) { //Days worked by year and month
         this.http.get<Jornada[]>('http://localhost:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni+'/'+year+'/'+month).subscribe((jornadasData) => {
             this.jornadasList = jornadasData;
         }, error => {
@@ -56,7 +56,7 @@ export class JornadaService implements OnInit {
         });
     }
 
-    getHorasMes() { //Solo se usa cuando estamos en la página de nómina, donde el mes ya está cargado
+    getHorasMes() { //Only used inside the paycheck view, when 'month' is already loaded
         let numHoras:number = 0;
         for(let jor of this.jornadasList) {
             numHoras += this.calculaHorasDia(jor);

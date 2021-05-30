@@ -14,19 +14,19 @@ import { NuevoComponent } from './main/nuevo/nuevo.component';
 import { RegisterComponent } from './register/register.component';
 
 const routes: Routes = [
-    { path: '', component: MainComponent }, //Intenta ir a Main y si no está logueado, va a login
+    { path: '', component: MainComponent }, //Tries /main, but switches to /login if the user is not logged in
     { path: 'login', component: LoginComponent },
-    { path: 'main', component: MainComponent }, //Ver lista de campus
-    { path: 'main/campus/:idcampus', component: CampusComponent }, //Ver campus por ID
-    { path: 'main/campus/:idcampus/calendario', component: CalendarioComponent}, //Ver campus por ID
-    { path: 'main/campus/:idcampus/calendario/new', component: ActividadComponent}, //Ver calendario por ID de campus
-    { path: 'main/campus/:idcampus/calendario/edit/:idactividad', component: EditarActividadComponent}, //Editar actividad por ID
-    { path: 'main/campus/:idcampus/monitores', component: MonitoresComponent}, //Ver lista de monitores
-    { path: 'main/campus/:idcampus/monitores/:dni', component: MonitorComponent}, //Ver monitor por ID
-    { path: 'main/campus/:idcampus/monitores/:dni/nomina/:year/:month', component: NominaComponent}, //Ver nómina por DNI, año y mes
-    { path: 'main/campus/:idcampus/monitor/nuevo', component: NuevoMonitorComponent}, //Nuevo monitor
-    { path: 'main/nuevo', component: NuevoComponent }, //Nuevo campus
-    { path: 'register', component: RegisterComponent } //Nuevo usuario
+    { path: 'main', component: MainComponent }, //Campus list
+    { path: 'main/campus/:idcampus', component: CampusComponent }, //Campus info by ID
+    { path: 'main/campus/:idcampus/calendario', component: CalendarioComponent}, //Calendar by campus ID
+    { path: 'main/campus/:idcampus/calendario/new', component: ActividadComponent}, //New activity by campus ID
+    { path: 'main/campus/:idcampus/calendario/edit/:idactividad', component: EditarActividadComponent}, //Edit activity by ID
+    { path: 'main/campus/:idcampus/monitores', component: MonitoresComponent}, //Monitor list
+    { path: 'main/campus/:idcampus/monitores/:dni', component: MonitorComponent}, //Monitor info by ID
+    { path: 'main/campus/:idcampus/monitores/:dni/nomina/:year/:month', component: NominaComponent}, //Paycheck by DNI, year and month
+    { path: 'main/campus/:idcampus/monitor/nuevo', component: NuevoMonitorComponent}, //New monitor
+    { path: 'main/nuevo', component: NuevoComponent }, //New campus
+    { path: 'register', component: RegisterComponent } //New user
 ];
 
 @NgModule({

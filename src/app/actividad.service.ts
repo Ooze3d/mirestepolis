@@ -53,6 +53,12 @@ export class ActividadService implements OnInit {
         });
     }
 
+
+    /*
+        Angular automatically checks for the timezone offset and applies it, but the server doesn't take that offset into account and always saves it to the database
+        as the same date, two hours before. For now, we manually compensate for that error.
+    */
+
     addActividad(nombre: string, descripcion: string, horaini: string, minini: string, horafin: string, minfin: string, color: string, idgrupo: string, dnimonitor: string) {
         let fechaIni: Date = new Date(this.fecha.setHours(Number(horaini) + 2));
         fechaIni.setMinutes(Number(minini));

@@ -15,7 +15,7 @@ export class CampusComponent implements OnInit, AfterViewInit {
   public id: string = '';
   public campusUpdated = false;
 
-  campusForm = new FormGroup({ //Necesario para la actualización dinámica del formulario
+  campusForm = new FormGroup({ //FormGroup allows the form to be dynamically filled
     nombre: new FormControl(''),
     direccion: new FormControl(''),
     fechaini: new FormControl(''),
@@ -28,20 +28,18 @@ export class CampusComponent implements OnInit, AfterViewInit {
     this.userService.checkLogin();
     this.route.params.subscribe((params) => {
       this.id = params['idcampus'];
-    }); //Extraemos el id del campus de la url
+    }); //Checking if the campus on the service and the id on the url match
 
-    //localStorage.setItem('idcampus', this.id); //Para mantener la información si recargamos la página en cualquier sección
+    this.campusService.getCampus(this.id); //If not, the campus from the url gets reloaded
 
-    this.campusService.getCampus(this.id); //Cargamos el campus mediante el ID de la url
-
-    this.campusService.getCampusListener().subscribe(newCampus => { //Cargamos la info del campus en el formulario
+    this.campusService.getCampusListener().subscribe(newCampus => {  //Once the form is ready, we can fill the fields
       this.campusForm.setValue({
         nombre: newCampus.nombre,
         direccion: newCampus.direccion,
         fechaini: newCampus.fechaini,
         fechafin: newCampus.fechafin
       });
-      this.campusService.getGruposList(); //Precargamos lista de grupos y de monitores para las secciones
+      this.campusService.getGruposList(); //Preload the list of groups and monitors 
       this.monitorService.getMonitorList();
     });
 

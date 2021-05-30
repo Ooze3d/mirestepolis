@@ -3,7 +3,8 @@ const router = express.Router();
 const con = require('../mysql');
 const checkAuth = require('../middleware/check-auth');
 
-router.get('/jornadas/:dnimonitor', checkAuth, (req, res, next) => { //Listado de jornadas del monitor
+//Full list of days worked
+router.get('/jornadas/:dnimonitor', checkAuth, (req, res, next) => {
     let dnimonitor = req.params.dnimonitor;
     con.query('SELECT * FROM jornadas WHERE dnimonitor=?', [dnimonitor], function (error, results) {
         if (error) {
@@ -16,7 +17,8 @@ router.get('/jornadas/:dnimonitor', checkAuth, (req, res, next) => { //Listado d
     });
 });
 
-router.get('/jornadas/:dnimonitor/:year/:month', (req, res, next) => { //Nómina de un mes
+//List of days worked by moth
+router.get('/jornadas/:dnimonitor/:year/:month', (req, res, next) => {
     let dnimonitor = req.params.dnimonitor;
     let year = req.params.year;
     let month = req.params.month;
@@ -32,7 +34,8 @@ router.get('/jornadas/:dnimonitor/:year/:month', (req, res, next) => { //Nómina
     });
 });
 
-router.get('/:dnimonitor', (req, res, next) => { //Listado de meses trabajados
+//List of months worked
+router.get('/:dnimonitor', (req, res, next) => {
     let dnimonitor = req.params.dnimonitor;
     con.query("SELECT DISTINCT DATE_FORMAT(fecha, '%m/%Y') AS 'full' FROM jornadas WHERE dnimonitor=?", [dnimonitor], function (error, results) {
         if (error) {
@@ -45,7 +48,8 @@ router.get('/:dnimonitor', (req, res, next) => { //Listado de meses trabajados
     });
 });
 
-router.post('/jornadas/new', checkAuth, (req, res, next) => { //Administrador registra un día completo
+//New day worked, added by admin
+router.post('/jornadas/new', checkAuth, (req, res, next) => {
     con.query('INSERT INTO jornadas(fecha, horaent, horasal, dnimonitor) VALUES (?, ?, ?, ?)', [req.body.fecha, req.body.horaent, req.body.horasal, req.body.dnimonitor], function (error, results) {
         if (error) {
             if(error.code=='ER_DUP_ENTRY') {
@@ -65,7 +69,8 @@ router.post('/jornadas/new', checkAuth, (req, res, next) => { //Administrador re
     });
 });
 
-router.post('jornadas/newentrada', checkAuth, (req, res, next) => { //Botón entrada
+//In time, enter button
+router.post('jornadas/newentrada', checkAuth, (req, res, next) => {
     con.query('INSERT INTO jornadas(fecha, horaent, dnimonitor) VALUES (?, ?, ?)', [req.body.fecha, req.body.horaent, req.body.dnimonitor], function (error, results) {
         if (error) {
             if(error.code=='ER_DUP_ENTRY') {
@@ -85,7 +90,8 @@ router.post('jornadas/newentrada', checkAuth, (req, res, next) => { //Botón ent
     });
 });
 
-router.put('/jornadas/newsalida', checkAuth, (req, res, next) => { //Botón salida
+//Out time, exit button
+router.put('/jornadas/newsalida', checkAuth, (req, res, next) => {
     con.query('UPDATE jornadas SET horasal=? WHERE fecha=? AND dnimonitor=?', [req.body.horasal, req.body.fecha, req.body.dnimonitor], function (error, results) {
         if (error) {
             res.status(400).json({
@@ -99,7 +105,8 @@ router.put('/jornadas/newsalida', checkAuth, (req, res, next) => { //Botón sali
     });
 });
 
-router.put('/jornadas', checkAuth, (req, res, next) => { //Editar una jornada
+//Edit a day
+router.put('/jornadas', checkAuth, (req, res, next) => {
     let fecha = req.body.fecha.substr(0,10);
     con.query('UPDATE jornadas SET horaent=?, horasal=? WHERE fecha=? AND dnimonitor=?', [req.body.horaent, req.body.horasal, fecha, req.body.dnimonitor], function (error, results) {
         if (error) {
@@ -115,6 +122,7 @@ router.put('/jornadas', checkAuth, (req, res, next) => { //Editar una jornada
     });
 });
 
+//Delete a day
 router.delete('/jornadas/delete/:fecha/:dnimonitor', checkAuth, (req, res, next) => {
     con.query('DELETE FROM jornadas WHERE fecha=? AND dnimonitor=?', [req.params.fecha, req.params.dnimonitor], function (error, results) {
         if (error) {

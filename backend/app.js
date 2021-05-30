@@ -5,7 +5,7 @@ const monitoresRoutes = require('./routes/monitores');
 const nominasRoutes = require('./routes/nominas');
 const usuariosRoutes = require('./routes/usuarios');
 const actividadesRoutes = require('./routes/actividades');
-const app = express();
+const app = express(); //Loading ExpressJS module
 
 /*app.use((req,res,next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,9 +15,11 @@ const app = express();
     next();
 });*/
 
-app.use(cors());
+app.use(cors()); //Substitute of the previous set of headers to avoid cors problems
 
 app.use(express.json());
+
+//The backend is divided in routes matching each service in the frontend
 
 app.use('/api/campus', campusRoutes);
 app.use('/api/monitores', monitoresRoutes);

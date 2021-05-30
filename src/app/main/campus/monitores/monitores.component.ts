@@ -23,7 +23,7 @@ export class MonitoresComponent implements OnInit, AfterViewInit {
     this.userService.checkLogin();
     this.route.params.subscribe((params) => {
       let id = params['idcampus'];
-      if(this.campusService.campus.idcampus!=id) { //Comprueba la url y vuelve a cargar el idcampus si lo pierde por recarga de la página
+      if(this.campusService.campus.idcampus!=id) { //Checks the url for the campus and compares it to the service in case the page gets refreshed
         this.campusService.getCampus(id);
         this.campusService.getCampusListener().subscribe(campus => {
           this.monitorService.getMonitorList();

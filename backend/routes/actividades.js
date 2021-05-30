@@ -3,6 +3,7 @@ const router = express.Router();
 const con = require('../mysql');
 const checkAuth = require('../middleware/check-auth');
 
+//List of activities by campus on a certain day
 router.get('/campus/:idcampus/:date', (req, res, next) => {
     let idcampus = req.params.idcampus;
     let fecha = req.params.date;
@@ -17,6 +18,7 @@ router.get('/campus/:idcampus/:date', (req, res, next) => {
     });
 });
 
+//Activity info by ID
 router.get('/:idactividad', checkAuth, (req, res, next) => {
     let idactividad = req.params.idactividad;
     con.query('SELECT * FROM actividades WHERE idactividad=?', [idactividad], function (error, results) {
@@ -30,6 +32,7 @@ router.get('/:idactividad', checkAuth, (req, res, next) => {
     });
 });
 
+//New activity
 router.post('/new', checkAuth, (req, res, next) => {
     con.query('SELECT idactividad FROM actividades WHERE idgrupo=? AND ((fechaini>=? AND fechaini<?) OR (fechafin>? AND fechafin<=?))', [req.body.idgrupo, req.body.fechaini, req.body.fechafin, req.body.fechaini, req.body.fechafin], function(error, results) {
         if(error) {
@@ -37,7 +40,7 @@ router.post('/new', checkAuth, (req, res, next) => {
                 error: error
             });
         } else if(results.length!=0) {
-            res.status(400).json({ //Si hay resultados, la actividad está pisando grupo y horas
+            res.status(400).json({ //If this query gets results, the new activity is trying to be added on top of another
                 message: 'La actividad está solapada con otra previa. Por favor, comprueba los datos.'
             });
         } else {
@@ -58,6 +61,7 @@ router.post('/new', checkAuth, (req, res, next) => {
     });
 });
 
+//Edit activity by ID
 router.put('/update/:idactividad', checkAuth, (req, res, next) => {
     con.query('SELECT idactividad FROM actividades WHERE idgrupo=? AND ((fechaini>=? AND fechaini<?) OR (fechafin>? AND fechafin<=?))', [req.body.idgrupo, req.body.fechaini, req.body.fechafin, req.body.fechaini, req.body.fechafin], function(error, results) {
         if(error) {
@@ -65,7 +69,7 @@ router.put('/update/:idactividad', checkAuth, (req, res, next) => {
                 error: error
             });
         } else if(results.length!=0) {
-            res.status(400).json({ //Si hay resultados, la actividad está pisando grupo y horas
+            res.status(400).json({ //If this query gets results, the new activity is trying to be added on top of another
                 message: 'La actividad está solapada con otra previa. Por favor, comprueba los datos.'
             });
         } else {
@@ -87,6 +91,7 @@ router.put('/update/:idactividad', checkAuth, (req, res, next) => {
     });
 });
 
+//Delete activity by ID
 router.delete('/delete/:idactividad', checkAuth, (req, res, next) => {
     let idactividad = req.params.idactividad;
     con.query('DELETE FROM actividades WHERE idactividad=?', [idactividad], function (error, results) {

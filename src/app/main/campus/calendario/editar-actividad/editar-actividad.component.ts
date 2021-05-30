@@ -13,12 +13,11 @@ import { UserService } from 'src/app/user.service';
   styleUrls: ['./editar-actividad.component.css']
 })
 
-//Si actualizamos dentro de este formulario, la fecha se resetea al día de hoy
-//Comprobar la fecha que se carga al pulsar sobre la actividad
+//If the page gets refreshed while on this form, the date on the service gets replaced for today
 
 export class EditarActividadComponent implements OnInit, AfterViewInit {
 
-  actividadForm = new FormGroup({ //Necesario para la actualización dinámica del formulario
+  actividadForm = new FormGroup({ //FormGroup allows the form to be dynamically filled
     nombre: new FormControl(''),
     descripcion: new FormControl(''),
     horaini: new FormControl(''),
@@ -50,25 +49,25 @@ export class EditarActividadComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.userService.checkLogin();
     this.actividadService.error = '';
-    this.route.params.subscribe((params) => { //Comprobamos idcampus e idactividad
+    this.route.params.subscribe((params) => { //Check for idcampus and idactividad
       let id = params['idcampus'];
       let idactividad = params['idactividad'];
-      if (this.campusService.campus.idcampus != id) { //Si el idcampus es otro (hemos cargado desde historial o recargado), volvemos al que dice la URL
+      if (this.campusService.campus.idcampus != id) { //Checking if the campus on the service and the id on the url match
         this.campusService.getCampus(id);
         this.campusService.getCampusListener().subscribe(() => {
-          this.monitorService.getMonitorList(); //Cuando tenemos el campus correcto, cargamos la lista de monitores
+          this.monitorService.getMonitorList(); //When the correct campus is loaded, the rest of the info is updated
           this.monitorService.getMonitorListListener().subscribe(() => {
-            this.actividadService.getActividad(idactividad); //Cuando tenemos toda la información, cargamos la actividad para que aparezca en el formulario
+            this.actividadService.getActividad(idactividad); //With all needed info ready, the activity is loaded
           });
         });
       } else {
-        this.actividadService.getActividad(idactividad); //Si el campus era el correcto, cargamos la actividad
+        this.actividadService.getActividad(idactividad); //If the campus was correct, we simply load the activity
       }
     });
   }
 
   ngAfterViewInit(): void {
-    this.actividadService.getActividadListener().subscribe(actividad => { //Cuando hemos pintado el formulario, lo rellenamos automáticamente
+    this.actividadService.getActividadListener().subscribe(actividad => { //Once the form is ready, we can fill the fields with the activity
       this.actividadForm.setValue({
         nombre: actividad.nombre,
         descripcion: actividad.descripcion,
@@ -84,7 +83,7 @@ export class EditarActividadComponent implements OnInit, AfterViewInit {
   }
 
   onActividadUpdate() {
-    this.actividadUpdated = false; //Para que muestre correctamente la barra de éxito si hemos mostrado previamente la de error
+    this.actividadUpdated = false; //If an error has been shown already, we need to clean the bar in order to show other messages
     this.actividadService.updateActividad(this.actividadForm.value.nombre, this.actividadForm.value.descripcion, this.actividadForm.value.horaini, this.actividadForm.value.minini, this.actividadForm.value.horafin, this.actividadForm.value.minfin, this.actividadForm.value.color, this.actividadForm.value.idgrupo, this.actividadForm.value.dnimonitor);
     this.actividadService.getErrorListener().subscribe(error => {
       if(error=='') {

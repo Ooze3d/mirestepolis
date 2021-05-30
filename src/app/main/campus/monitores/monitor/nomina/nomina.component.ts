@@ -23,7 +23,7 @@ export class NominaComponent implements OnInit {
   constructor(public campusService: CampusService, private userService: UserService, private route: ActivatedRoute, 
     public monitorService: MonitorService, public jornadaService:JornadaService) { }
 
-  ngOnInit(): void {
+  ngOnInit(): void { //Paychecks are dynamically generated based on the list of days worked for each month
     this.userService.checkLogin();
     this.route.params.subscribe((params) => {
       this.year = params['year'];
