@@ -46,3 +46,7 @@ mat-card {
 .mat-dialog-container {
     border-top: 5px solid #0267c1;
 }
+
+.noitems {
+    list-style:none;
+}

@@ -35,7 +35,7 @@
             <span>Inscripciones</span>
         </button>
             <mat-menu #inscriptions="matMenu">
-                <button mat-menu-item>
+                <button mat-menu-item routerLink="/main/campus/{{ campusService.campus.idcampus }}/inscripcion/nueva">
                     <mat-icon>account_box</mat-icon>
                     <span>Nueva inscripción</span>
                 </button>

@@ -1,0 +1,128 @@
+<app-header></app-header>
+
+<div *ngIf="inscripcionService.exito!=''" class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ inscripcionService.exito }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div *ngIf="inscripcionService.error!=''" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ inscripcionService.error }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="container animate__animated animate__fadeInUp">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-5 m-2">
+            <mat-card>
+                <h2>Matrícula</h2>
+                <form class="d-flex flex-column" #inscripcionForm="ngForm"
+                    (ngSubmit)="onNewInscripcion(inscripcionForm)">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Nombre: </mat-label>
+                        <input type="text" matInput name="nombre" ngModel required #nombre="ngModel" />
+                        <mat-error *ngIf="nombre.invalid">Por favor, introduce el nombre</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Apellidos:</mat-label>
+                        <input type="text" matInput name="apellidos" ngModel required #apellidos="ngModel" />
+                        <mat-error *ngIf="apellidos.invalid">Por favor, introduce los apellidos</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Fecha de nacimiento</mat-label>
+                        <input matInput [matDatepicker]="nac" name="fechanac" ngModel required #fechanac="ngModel">
+                        <mat-datepicker-toggle matSuffix [for]="nac"></mat-datepicker-toggle>
+                        <mat-datepicker touchUi #nac></mat-datepicker>
+                        <mat-error *ngIf="fechanac.invalid">Por favor, introduce la fecha de nacimiento
+                        </mat-error>
+                    </mat-form-field>
+                    <section>
+                        <ul class="noitems">
+                            <li><mat-checkbox name="aulamat" ngModel #aulamat="ngModel">Aula Matinal</mat-checkbox></li>
+                            <li><mat-checkbox name="comedor" ngModel #comedor="ngModel">Comedor</mat-checkbox></li>
+                            <li><mat-checkbox name="postcom" ngModel #postcom="ngModel">Post-Comedor</mat-checkbox></li>
+                        </ul>
+                    </section>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Grupo:</mat-label>
+                        <mat-select name="idgrupo" ngModel required #idgrupo="ngModel">
+                            <mat-option *ngFor="let grupo of campusService.gruposList" [value]="grupo.idgrupo">
+                                {{grupo.nombre}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button mat-raised-button color="accent" type="submit">Guardar</button>
+                    <a mat-raised-button color="primary"
+                        routerLink="/main/campus/{{campusService.campus.idcampus}}/inscripciones"
+                        class="mt-2">Volver</a>
+                </form>
+            </mat-card>
+        </div>
+        <div class="col-12 col-md-5 m-2">
+            <mat-card>
+                <h2>Familiares</h2>
+                <form class="d-flex flex-column" #famForm="ngForm" (ngSubmit)="onNewFam(famForm)">
+                    <mat-form-field>
+                        <mat-label>DNI: </mat-label>
+                        <input type="text" aria-label="dni" matInput required autocomplete="off" [formControl]="dni"
+                            [matAutocomplete]="auto" (input)="filterFamList()">
+                        <!--Real time search for previously saved activities-->
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let fam of filteredFamList" [value]="fam.dni">
+                                {{fam.nombre}} {{fam.apellidos}} ({{fam.dni}})
+                            </mat-option>
+                        </mat-autocomplete>
+                        <mat-error *ngIf="dni.errors?.required">Por favor, introduce el DNI del familiar</mat-error>
+                        <mat-error *ngIf="dni.errors?.incorrect">El dni es incorrecto</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Nombre: </mat-label>
+                        <input type="text" matInput name="nombre" ngModel required #nombrefam="ngModel" />
+                        <mat-error *ngIf="nombre.invalid">Por favor, introduce el nombre del familiar</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Apellidos:</mat-label>
+                        <input type="text" matInput name="apellidos" ngModel required #apefam="ngModel" />
+                        <mat-error *ngIf="apellidos.invalid">Por favor, introduce los apellidos del familiar</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Teléfono:</mat-label>
+                        <input type="number" matInput name="telefono" ngModel required #telefono="ngModel" />
+                        <mat-error *ngIf="telefono.invalid">Por favor, introduce el teléfono del familiar</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Email:</mat-label>
+                        <input type="email" matInput name="email" ngModel required #email="ngModel" />
+                        <mat-error *ngIf="email.invalid">Por favor, introduce el email del familiar</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Tipo de familiar:</mat-label>
+                        <mat-select name="tipofam" ngModel required #tipofam="ngModel">
+                            <mat-option *ngFor="let tipo of tipoFamList" [value]="tipo">
+                                {{tipo}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <section class="ml-2">
+                        <mat-checkbox name="esprincipal" ngModel #esprincipal="ngModel"
+                            [disabled]="checkForPrincipal()">Familiar principal</mat-checkbox>
+                    </section>
+                    <button mat-raised-button color="accent" type="submit">Añadir</button>
+                </form>
+                <hr />
+                <div class="d-flex flex-column">
+                    <ul *ngFor="let fam of famList; index as i">
+                        <li>{{ fam.nombre | slice:0:15}} {{ fam.apellidos | slice:0:15 }} ({{ fam.tipofam }})<span
+                                *ngIf="fam.esprincipal"><strong>(P)</strong></span><button type="button" mat-icon-button
+                                color="warn" (click)="deleteFam(i)">
+                                <mat-icon>close</mat-icon>
+                            </button></li>
+                    </ul>
+                </div>
+            </mat-card>
+        </div>
+    </div>
+</div>

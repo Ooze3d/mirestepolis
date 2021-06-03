@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { CampusService } from 'src/app/campus.service';
 import { fabric } from 'fabric';
 import { _MatRadioGroupBase } from '@angular/material/radio';
@@ -14,7 +14,7 @@ import { MonitorService } from 'src/app/monitor.service';
   styleUrls: ['./calendario.component.css']
 })
 
-export class CalendarioComponent implements OnInit, AfterViewInit {
+export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   canvas: any;
   x: number = 0;
@@ -36,7 +36,11 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.userService.checkLogin();
+    if(localStorage.getItem('fechaAct')!='')
+      this.actividadService.fecha = new Date(localStorage.getItem('fechaAct')!); //Capture localStorage date from previous views
     this.canvas = new fabric.Canvas('myCanvas');
+    this.canvas.objectCaching = 'false';
+    console.log(this.canvas.objectCaching);
     this.route.params.subscribe((params) => {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //Checks the url and changes the campus attribute in the service if needed
@@ -62,7 +66,6 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     this.actividadService.getActividadListListener().subscribe(list => {
       this.drawActividades(list);
     });
-    console.log(this.actividadService.fecha);
   }
 
   diaAnt() { //Changes the date to previous day and reloads the activities array
@@ -87,6 +90,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     this.actividadService.getActividadListListener().subscribe(list => {
       this.drawActividades(list);
     });
+    localStorage.setItem('fechaAct', this.actividadService.fecha.toISOString());
   }
 
   drawActividades(list: Actividad[]) { //Once the calendar is visible, we can draw each activity from the list
@@ -305,6 +309,12 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
       this.drawGrupos(this.canvas, this.x, this.y, this.campusService.gruposList[i].nombre, this.blueGrad[i]);
       this.x += 150;
     }
+  }
+
+  ngOnDestroy(): void {
+    /*this.campusService.getCampusListener().unsubscribe();
+    this.campusService.getGruposListener().unsubscribe();
+    this.actividadService.getActividadListListener().unsubscribe();*/
   }
 
 }

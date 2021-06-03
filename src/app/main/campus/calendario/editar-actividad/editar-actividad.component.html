@@ -25,9 +25,10 @@
                                name="nombre"
                                required
                                formControlName="nombre"
-                               [matAutocomplete]="auto">
-                        <mat-autocomplete #auto="matAutocomplete"> <!--[formControl]="nombre"-->
-                          <mat-option *ngFor="let actividad of actividadService.actividadList" [value]="actividad.idactividad">
+                               [matAutocomplete]="auto"
+                               (input)="filterActividades()"> <!--Real time search for previously saved activities-->
+                        <mat-autocomplete #auto="matAutocomplete">
+                          <mat-option *ngFor="let actividad of filteredActividadList" [value]="actividad.idactividad">
                             {{actividad.nombre}}
                           </mat-option>
                         </mat-autocomplete>

@@ -18,6 +18,20 @@ router.get('/campus/:idcampus/:date', (req, res, next) => {
     });
 });
 
+//List of all activities, regardless of campus and date
+router.get('/', (req, res, next) => {
+    let keyword = req.params.keyword;
+    con.query("SELECT * FROM actividades", [keyword], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.json(results);
+        }
+    });
+});
+
 //Activity info by ID
 router.get('/:idactividad', checkAuth, (req, res, next) => {
     let idactividad = req.params.idactividad;
@@ -63,7 +77,8 @@ router.post('/new', checkAuth, (req, res, next) => {
 
 //Edit activity by ID
 router.put('/update/:idactividad', checkAuth, (req, res, next) => {
-    con.query('SELECT idactividad FROM actividades WHERE idgrupo=? AND ((fechaini>=? AND fechaini<?) OR (fechafin>? AND fechafin<=?))', [req.body.idgrupo, req.body.fechaini, req.body.fechafin, req.body.fechaini, req.body.fechafin], function(error, results) {
+    let idactividad = req.params.idactividad;
+    con.query('SELECT idactividad FROM actividades WHERE idgrupo=? AND idactividad!=? AND ((fechaini>=? AND fechaini<?) OR (fechafin>? AND fechafin<=?))', [req.body.idgrupo, idactividad, req.body.fechaini, req.body.fechafin, req.body.fechaini, req.body.fechafin], function(error, results) {
         if(error) {
             res.status(400).json({
                 error: error

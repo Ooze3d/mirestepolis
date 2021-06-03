@@ -55,4 +55,8 @@ export class MonitoresComponent implements OnInit, AfterViewInit {
     });
   }
 
+  ngOnDestroy(): void {
+    //this.campusService.getCampusListener().unsubscribe();
+  }
+
 }

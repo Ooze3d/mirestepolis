@@ -1,7 +1,7 @@
-import { ThrowStmt } from '@angular/compiler';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { CampusService } from 'src/app/campus.service';
 import { MonitorService } from 'src/app/monitor.service';
 import { UserService } from 'src/app/user.service';
@@ -11,8 +11,9 @@ import { UserService } from 'src/app/user.service';
   templateUrl: './nuevo-monitor.component.html',
   styleUrls: ['./nuevo-monitor.component.css']
 })
-export class NuevoMonitorComponent implements OnInit {
+export class NuevoMonitorComponent implements OnInit, OnDestroy {
 
+  routeParams:Subscription = new Subscription();
   monitorAdded: boolean = false;
   monitorDuplicated: boolean = false;
   nombreMonitor: string = '';
@@ -22,7 +23,7 @@ export class NuevoMonitorComponent implements OnInit {
 
   ngOnInit(): void {
     this.userService.checkLogin();
-    this.route.params.subscribe((params) => {
+    this.routeParams = this.route.params.subscribe((params) => {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //Checks the url for the campus and compares it to the service in case the page gets refreshed
         this.campusService.getCampus(id);
@@ -67,6 +68,12 @@ export class NuevoMonitorComponent implements OnInit {
         return true;
     }
     return false;
+  }
+
+  ngOnDestroy(): void {
+    this.routeParams.unsubscribe();
+    //this.campusService.getCampusListener().unsubscribe();
+    //this.monitorService.getErrorListener().unsubscribe();
   }
 
 }

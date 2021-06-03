@@ -24,10 +24,12 @@
                                aria-label="nombre"
                                matInput
                                required
+                               autocomplete="off"
                                [formControl]="nombre"
-                               [matAutocomplete]="auto">
+                               [matAutocomplete]="auto"
+                               (input)="filterActividades()"> <!--Real time search for previously saved activities-->
                         <mat-autocomplete #auto="matAutocomplete">
-                          <mat-option *ngFor="let actividad of actividadService.actividadList" [value]="actividad.idactividad">
+                          <mat-option *ngFor="let actividad of filteredActividadList" [value]="actividad.idactividad">
                             {{actividad.nombre}}
                           </mat-option>
                         </mat-autocomplete>

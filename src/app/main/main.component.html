@@ -14,9 +14,9 @@
                 <mat-card-content>
                     <div class="container">
                         <div class="row justify-content-center">
-                            <div class="col-12 m-1 d-flex justify-content-center"
-                                *ngFor="let campus of campusService.campusList">
-                                <button mat-raised-button color="primary" routerLink="campus/{{campus.idcampus}}" *ngIf="!borrar">
+                            <div class="col-12 m-1 d-flex justify-content-center" 
+                                *ngFor="let campus of campusService.campusList"><!---->
+                                <button mat-raised-button color="primary" routerLink="campus/{{ campus.idcampus }}" *ngIf="!borrar">
                                     {{ campus.nombre | uppercase }}</button>
                                 <button mat-raised-button color="warn" (click)="deleteCampus(campus.idcampus)" *ngIf="borrar">
                                     {{ campus.nombre | uppercase }}</button>
