@@ -3,14 +3,14 @@ import { Injectable, OnInit } from '@angular/core';
 import { User } from './user.model';
 import { Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { stringify } from '@angular/compiler/src/util';
 import { CampusService } from './campus.service';
 import { MonitorService } from './monitor.service';
-import { ThrowStmt } from '@angular/compiler';
 
 @Injectable({ providedIn: 'root' })
 export class UserService implements OnInit {
 
+    error: string = '';
+    exito: string = '';
     user: User = new User('Anonimo', '0000');
     login: boolean = false;
     justLoggedOut: boolean = false;
@@ -46,23 +46,35 @@ export class UserService implements OnInit {
     addUser(user: string, password: string, level: string) {
         this.user = new User(user, password);
         this.user.level = level;
-        this.http.post<JSON>('http://localhost:3000/api/usuarios/signup', this.user).subscribe((response) => {
-            console.log(response);
+        this.http.post<{ message: string }>('http://localhost:3000/api/usuarios/signup', this.user).subscribe((response) => {
+            this.exito = response.message;
+        }, (error) => {
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
     }
 
     loginUser(user: string, password: string) {
         this.user = new User(user, password);
-        this.http.post<{ token: string, expiresIn: number }>('http://localhost:3000/api/usuarios/login', this.user).subscribe((userBack) => {
+        this.http.post<{ token: string, expiresIn: number, user:string, level:string }>('http://localhost:3000/api/usuarios/login', this.user).subscribe((userBack) => {
             this.token = userBack.token;
             const expiresInDuration = userBack.expiresIn;
             this.login = true;
-            localStorage.setItem('user', this.user.user);
+            this.user.level = userBack.level; //Saving user info to localStorage
+            localStorage.setItem('user', userBack.user);
+            localStorage.setItem('level', userBack.level);
             this.userStatusListener.next(this.login); //Once the user is logged in, that info is sent to the rest of the app
             const now = new Date(); //Setup for token expiration
             const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
             this.saveAuthData(userBack.token, expirationDate);
             this.router.navigate(['/main']);
+        }, (error) => {
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
     }
 
@@ -74,9 +86,9 @@ export class UserService implements OnInit {
             this.login = true;
             this.userStatusListener.next(this.login);
             this.user.user = localStorage.getItem('user') || '';
+            this.user.level = localStorage.getItem('level') || '';
         } else {
             this.clearAuthData(); //Just in case, if the token is no longer valid, deletes all info
-
         }
     }
 
@@ -84,6 +96,9 @@ export class UserService implements OnInit {
         this.clearAuthData(); //Deletes all previous login info
         this.router.navigate(['/login']);
         this.justLoggedOut = true;
+        setTimeout(() => {
+            this.justLoggedOut = false;
+        }, 3000);
     }
 
     private saveAuthData(token: string, expirationDate: Date) {
@@ -111,6 +126,8 @@ export class UserService implements OnInit {
         localStorage.removeItem('login');
         localStorage.removeItem('idcampus');
         localStorage.removeItem('user');
+        localStorage.removeItem('fechaAct');
+        localStorage.removeItem('level');
     }
 
 }

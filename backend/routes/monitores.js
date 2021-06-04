@@ -37,7 +37,7 @@ router.post('/new', checkAuth, (req, res, next) => {
         if (error) {
             if(error.code=='ER_DUP_ENTRY') {
                 res.status(400).json({
-                    message: 'DUPLICADO'
+                    error: 'Ya existe un monitor con el mismo DNI. Por favor, comprueba los datos.'
                 });
             } else {
                 res.status(400).json({
@@ -46,7 +46,7 @@ router.post('/new', checkAuth, (req, res, next) => {
             }
         } else {
             res.status(200).json({
-                message: 'Monitor registered'
+                message: '¡'+req.body.nombre+' registrado!'
             });
         }
     });
@@ -61,7 +61,7 @@ router.put('/update/:dni', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: 'Monitor updated'
+                message: '¡'+req.body.nombre+' editado!'
             });
         }
     });
@@ -77,7 +77,7 @@ router.delete('/delete/:dni', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: 'Monitor deleted'
+                message: '¡Monitor borrado!'
             });
         }
     });

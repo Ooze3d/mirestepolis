@@ -22,7 +22,7 @@ export class ActividadService implements OnInit {
     }
 
     ngOnInit() {
-        
+
     }
 
     getActividadListener() {

@@ -14,12 +14,9 @@ import { UserService } from 'src/app/user.service';
 export class NuevoMonitorComponent implements OnInit, OnDestroy {
 
   routeParams:Subscription = new Subscription();
-  monitorAdded: boolean = false;
-  monitorDuplicated: boolean = false;
-  nombreMonitor: string = '';
   gruposList: { idgrupo: string, nombre: string }[] = [];
 
-  constructor(private userService: UserService, private monitorService: MonitorService, public campusService: CampusService, private route: ActivatedRoute) { }
+  constructor(private userService: UserService, public monitorService: MonitorService, public campusService: CampusService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.userService.checkLogin();
@@ -39,15 +36,6 @@ export class NuevoMonitorComponent implements OnInit, OnDestroy {
       return;
     else if (this.validaNif(f.value.dni)) {
       this.monitorService.addMonitor(f.value.dni, f.value.nombre, f.value.apellidos, f.value.telefono, f.value.email, f.value.especialidad, this.campusService.campus.idcampus, f.value.idgrupo);
-      this.monitorService.getErrorListener().subscribe(error => {
-        if(error=='DUPLICADO') //Checks for duplicated DNIs
-          this.monitorDuplicated = true;
-        else {
-          this.nombreMonitor = f.value.nombre;
-          this.monitorDuplicated = false;
-          this.monitorAdded = true;
-        }
-      });
     } else {
       f.controls['dni'].setErrors({'incorrect': true});
       return;

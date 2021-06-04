@@ -38,7 +38,7 @@ router.post('/fam/new/:matricula', checkAuth, (req, res, next) => {
         if (error) {
             if(error.code=='ER_DUP_ENTRY') {
                 res.status(400).json({
-                    message: 'DUPLICADO'
+                    error: 'Ya existe un familiar con el mismo DNI. Por favor, comprueba los datos.'
                 });
             } else {
                 res.status(400).json({
@@ -58,7 +58,7 @@ router.post('/fam/new/:matricula', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: 'Familiar registered'
+                message: '¡'+req.body.nombre+' registrado!'
             });
         }
     });
@@ -74,7 +74,7 @@ router.put('/fam/update/:dni', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: 'Familiar updated'
+                message: '¡'+req.body.nombre+' editado!'
             });
         }
     });
@@ -116,7 +116,7 @@ router.post('/new/:idcampus', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: req.body.nombre+' se ha registrado con éxito!'
+                message: '¡'+req.body.nombre+' se ha registrado con éxito!'
             });
         }
     });

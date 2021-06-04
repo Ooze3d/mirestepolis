@@ -68,7 +68,7 @@
                     <mat-form-field>
                         <mat-label>DNI: </mat-label>
                         <input type="text" aria-label="dni" matInput required autocomplete="off" [formControl]="dni"
-                            [matAutocomplete]="auto" (input)="filterFamList()">
+                            [matAutocomplete]="auto" (input)="filterFamList()" (change)="rellenaFam()">
                         <!--Real time search for previously saved activities-->
                         <mat-autocomplete #auto="matAutocomplete">
                             <mat-option *ngFor="let fam of filteredFamList" [value]="fam.dni">

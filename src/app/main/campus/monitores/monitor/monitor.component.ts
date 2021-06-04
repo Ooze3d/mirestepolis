@@ -16,7 +16,6 @@ import { MonthYear } from 'src/app/monthyear.model';
 export class MonitorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public dni: string = '';
-  public monitorUpdated = false;
   public indexEdit: number = -1;
   public jornadasList: Jornada[] = [];
 
@@ -40,6 +39,7 @@ export class MonitorComponent implements OnInit, AfterViewInit, OnDestroy {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //In case the page is refreshed, the campus ID is also captured and used to check the service
         this.campusService.getCampus(id);
+        this.campusService.getCampusList();
         this.campusService.getCampusListener().subscribe(campus => {
           this.monitorService.getMonitorList();
         });
@@ -108,7 +108,6 @@ export class MonitorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onMonitorUpdate() {
     this.monitorService.updateMonitor(this.dni, this.monitorForm.value.nombre, this.monitorForm.value.apellidos, this.monitorForm.value.telefono, this.monitorForm.value.email, this.monitorForm.value.especialidad, this.monitorForm.value.idcampus, this.monitorForm.value.idgrupo);
-    this.monitorUpdated = true;
     this.changes.detectChanges();
   }
 

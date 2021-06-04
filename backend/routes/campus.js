@@ -60,7 +60,7 @@ router.post('/new', checkAuth, (req, res, next) => {
             });
         } else { 
             res.status(200).json({
-                message: 'Campus registered'
+                message: '¡'+req.body.nombre+' registrado!'
             });
         }
     });
@@ -75,7 +75,7 @@ router.put('/update/:idcampus', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: 'Campus updated'
+                message: '¡'+req.body.nombre+' editado!'
             });
         }
     });
@@ -91,7 +91,7 @@ router.delete('/delete/:idcampus', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: 'Campus deleted'
+                message: '¡Campus borrado!'
             });
         }
     });

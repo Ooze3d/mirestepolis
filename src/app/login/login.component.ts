@@ -15,7 +15,7 @@ export class LoginComponent implements OnInit {
   constructor(public userService:UserService) { }
 
   ngOnInit(): void {
-    localStorage.removeItem('fechaAct');
+    
   }
 
   onLoginRequest(f:NgForm) {

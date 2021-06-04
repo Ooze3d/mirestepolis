@@ -35,6 +35,9 @@ export class NuevaInscripcionComponent implements OnInit, AfterViewInit, OnDestr
           this.inscripcionService.getInscripcionList();
           this.inscripcionService.getFamList();
         });
+      } else {
+        this.inscripcionService.getInscripcionList();
+        this.inscripcionService.getFamList();
       }
     });
   }
@@ -96,6 +99,10 @@ export class NuevaInscripcionComponent implements OnInit, AfterViewInit, OnDestr
 
   filterFamList() {
     this.filteredFamList = this.inscripcionService.allFamList.filter(x => x.dni.toLowerCase().includes(this.dni.value.toLowerCase()));
+  }
+
+  rellenaFam() {
+    let fam:Familiar = this.inscripcionService.allFamList.filter(x => x.dni.toLowerCase().includes(this.dni.value.toLowerCase()))[0];
   }
 
   validaNif(docu: string) { //DNI letter validator

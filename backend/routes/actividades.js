@@ -69,7 +69,7 @@ router.post('/new', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: 'Actividad registered'
+                message: '¡'+req.body.nombre+' añadida!'
             });
         }
     });
@@ -100,7 +100,7 @@ router.put('/update/:idactividad', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: 'Actividad updated'
+                message: '¡'+req.body.nombre+' editada!'
             });
         }
     });
@@ -116,7 +116,7 @@ router.delete('/delete/:idactividad', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: 'Actividad deleted'
+                message: '¡Actividad borrada!'
             });
         }
     });

@@ -1,14 +1,14 @@
 <app-header></app-header>
 
-<div *ngIf="monitorAdded" class="alert alert-success alert-dismissible fade show" role="alert">
-    ¡{{ nombreMonitor }}, añadido!
+<div *ngIf="monitorService.exito!=''" class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ monitorService.exito }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 
-<div *ngIf="monitorDuplicated" class="alert alert-danger alert-dismissible fade show" role="alert">
-    Ya existe un monitor con el mismo DNI. Por favor, comprueba los datos.
+<div *ngIf="monitorService.error!=''" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ monitorService.error }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
