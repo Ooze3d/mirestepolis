@@ -8,20 +8,10 @@
             <mat-icon>settings</mat-icon>
             <span>Campus</span>
         </button>
-        <button mat-menu-item [matMenuTriggerFor]="payments">
-            <mat-icon>paid</mat-icon>
-            <span>Pagos</span>
+        <button mat-menu-item>
+            <mat-icon>how_to_reg</mat-icon>
+            <span>Lista Diaria</span>
         </button>
-            <mat-menu #payments="matMenu">
-                <button mat-menu-item>
-                    <mat-icon>payment</mat-icon>
-                    <span>Añadir pago</span>
-                </button>
-                <button mat-menu-item>
-                    <mat-icon>savings</mat-icon>
-                    <span>Buscar pago</span>
-                </button>
-            </mat-menu>
         <button mat-menu-item routerLink="/main/campus/{{ campusService.campus.idcampus }}/monitores">
             <mat-icon>assignments</mat-icon>
             <span>Monitores</span>
@@ -39,12 +29,12 @@
                     <mat-icon>account_box</mat-icon>
                     <span>Nueva inscripción</span>
                 </button>
-                <button mat-menu-item>
+                <button mat-menu-item routerLink="/main/campus/{{ campusService.campus.idcampus }}/inscripciones">
                     <mat-icon>supervised_user_circle</mat-icon>
                     <span>Buscar inscripción</span>
                 </button>
             </mat-menu>
-        <button mat-menu-item>
+        <button mat-menu-item disabled>
             <mat-icon>group_work</mat-icon>
             <span>Menus</span>
         </button>

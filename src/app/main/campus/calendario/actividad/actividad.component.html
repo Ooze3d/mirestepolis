@@ -1,13 +1,13 @@
 <app-header></app-header>
-<div *ngIf="actividadAdded" class="alert alert-success alert-dismissible fade show" role="alert">
-    ¡{{ nombreActividad }}, añadido!
+<div *ngIf="actividadService.exito!=''" class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ actividadService.exito }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 
 <div *ngIf="actividadService.error!=''" class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{actividadService.error}}
+    {{ actividadService.error }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>

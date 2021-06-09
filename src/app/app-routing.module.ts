@@ -5,6 +5,7 @@ import { ActividadComponent } from './main/campus/calendario/actividad/actividad
 import { CalendarioComponent } from './main/campus/calendario/calendario.component';
 import { EditarActividadComponent } from './main/campus/calendario/editar-actividad/editar-actividad.component';
 import { CampusComponent } from './main/campus/campus.component';
+import { InscripcionesComponent } from './main/campus/inscripciones/inscripciones.component';
 import { NuevaInscripcionComponent } from './main/campus/inscripciones/nueva-inscripcion/nueva-inscripcion.component';
 import { MonitorComponent } from './main/campus/monitores/monitor/monitor.component';
 import { NominaComponent } from './main/campus/monitores/monitor/nomina/nomina.component';
@@ -26,7 +27,9 @@ const routes: Routes = [
     { path: 'main/campus/:idcampus/monitores/:dni', component: MonitorComponent}, //Monitor info by ID
     { path: 'main/campus/:idcampus/monitores/:dni/nomina/:year/:month', component: NominaComponent}, //Paycheck by DNI, year and month
     { path: 'main/campus/:idcampus/monitor/nuevo', component: NuevoMonitorComponent}, //New monitor
-    { path: 'main/campus/:idcampus/inscripcion/nueva', component: NuevaInscripcionComponent}, //New atendee
+    { path: 'main/campus/:idcampus/inscripcion/nueva', component: NuevaInscripcionComponent}, //New child
+    { path: 'main/campus/:idcampus/inscripcion/edit/:matricula', component: NuevaInscripcionComponent}, //Edit child
+    { path: 'main/campus/:idcampus/inscripciones', component: InscripcionesComponent}, //Children list
     { path: 'main/nuevo', component: NuevoComponent }, //New campus
     { path: 'register', component: RegisterComponent } //New user
 ];

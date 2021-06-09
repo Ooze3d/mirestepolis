@@ -40,10 +40,11 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userService.checkLogin();
     this.canvas = new fabric.Canvas('myCanvas');
     if (localStorage.getItem('fechaAct')) {
-      console.log('Fecha encontrada!');
       this.actividadService.fecha = new Date(localStorage.getItem('fechaAct')!); //Capture localStorage date from previous views
+    } else {
+      localStorage.setItem('fechaAct', this.actividadService.fecha.toISOString());
     }
-      this.route.params.subscribe((params) => {
+    this.route.params.subscribe((params) => {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //Checks the url and changes the campus attribute in the service if needed
         this.campusService.getCampus(id);
@@ -62,7 +63,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
         this.actividadService.getActividadListListener().subscribe(list => {
           try {
             this.drawActividades(list);
-          } catch (e:any) { } //this.canvas appears as NULL inside the subscription but the method works
+          } catch (e: any) { } //this.canvas appears as NULL inside the subscription but the method works
         });
       });
     });
@@ -70,7 +71,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
     this.actividadService.getActividadListListener().subscribe(list => {
       try {
         this.drawActividades(list);
-      } catch (e:any) { }
+      } catch (e: any) { }
     });
   }
 
@@ -96,7 +97,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
     this.actividadService.getActividadListListener().subscribe(list => {
       try {
         this.drawActividades(list);
-      } catch (e:any) { }
+      } catch (e: any) { }
     });
     localStorage.setItem('fechaAct', this.actividadService.fecha.toISOString());
   }

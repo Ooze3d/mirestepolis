@@ -16,8 +16,6 @@ import { UserService } from 'src/app/user.service';
 export class ActividadComponent implements OnInit, OnDestroy {
 
   nombre:FormControl = new FormControl();
-  actividadAdded:boolean = false;
-  nombreActividad:string = '';
   filteredActividadList: Actividad[] = [];
   horas:string[] = ['08', '09', '10', '11', '12', '13', '14'];
   minutos:string[] = ['00', '15', '30', '45'];
@@ -58,12 +56,6 @@ export class ActividadComponent implements OnInit, OnDestroy {
 
   onNewActividad(f:NgForm) { //Simple call to service to register a new actiivity
     this.actividadService.addActividad(this.nombre.value, f.value.descripcion, f.value.horaini, f.value.minini, f.value.horafin, f.value.minfin, f.value.color, f.value.idgrupo, f.value.dnimonitor);
-    this.actividadService.getErrorListener().subscribe(error => {
-      if(error=='') {
-        this.nombreActividad = this.nombre.value;
-        this.actividadAdded = true;
-      }
-    });
   }
 
   ngOnDestroy(): void {

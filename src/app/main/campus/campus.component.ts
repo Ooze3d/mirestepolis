@@ -13,7 +13,6 @@ import { MonitorService } from 'src/app/monitor.service';
 export class CampusComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public id: string = '';
-  public campusUpdated = false;
 
 
   campusForm = new FormGroup({ //FormGroup allows the form to be dynamically filled
@@ -52,7 +51,6 @@ export class CampusComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onCampusUpdate() {
     this.campusService.updateCampus(this.campusService.campus.idcampus, this.campusForm.value.nombre, this.campusForm.value.direccion, new Date(this.campusForm.value.fechaini), new Date(this.campusForm.value.fechafin));
-    this.campusUpdated = true;
   }
 
   ngOnDestroy(): void {

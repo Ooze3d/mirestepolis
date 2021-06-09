@@ -1,1 +1,26 @@
-<p>inscripciones works!</p>
+<app-header></app-header>
+
+<div class="container animate__animated animate__fadeIn">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 m-2">
+            <mat-card>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let peque of inscripcionService.inscripcionList; index as i">
+                            <td><a routerLink="/main/campus/{{ campusService.campus.idcampus }}/inscripcion/edit/{{ peque.matricula }}">
+                                {{peque.apellidos }}, {{ peque.nombre }}
+                                <span *ngFor="let ale of peque.alergias" class="red-alert">({{ale.nombre}})</span>
+                                <span *ngFor="let tras of peque.trastornos" class="green-alert">({{tras.nombre}})</span>
+                            </a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </mat-card>
+        </div>
+    </div>
+</div>

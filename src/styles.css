@@ -29,6 +29,16 @@ mat-card {
     color:red;
 }
 
+.red-alert {
+    font-weight: 600;
+    color:firebrick;
+}
+
+.green-alert {
+    font-weight: 600;
+    color:limegreen;
+}
+
 .campus-name {
     text-decoration: none;
     color: white;

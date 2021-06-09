@@ -4,6 +4,21 @@
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
+
+<div *ngIf="campusService.exito!=''" class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ campusService.exito }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div *ngIf="campusService.error!=''" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ campusService.error }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
 <div class="container animate__animated animate__fadeIn">
     <div class="row justify-content-center">
         <div class="col-12 m-3 d-flex justify-content-center">

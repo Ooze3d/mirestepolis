@@ -30,8 +30,6 @@ export class EditarActividadComponent implements OnInit, AfterViewInit, OnDestro
     dnimonitor: new FormControl('')
   });
 
-  actividadUpdated: boolean = false;
-  nombreActividad: string = '';
   idactividad: number = 0;
   filteredActividadList: Actividad[] = [];
   horas: string[] = ['08', '09', '10', '11', '12', '13', '14'];
@@ -96,14 +94,7 @@ export class EditarActividadComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   onActividadUpdate() {
-    this.actividadUpdated = false; //If an error has been shown already, we need to clean the bar in order to show other messages
     this.actividadService.updateActividad(this.idactividad, this.actividadForm.value.nombre, this.actividadForm.value.descripcion, this.actividadForm.value.horaini, this.actividadForm.value.minini, this.actividadForm.value.horafin, this.actividadForm.value.minfin, this.actividadForm.value.color, this.actividadForm.value.idgrupo, this.actividadForm.value.dnimonitor);
-    this.actividadService.getErrorListener().subscribe(error => {
-      if(error=='') {
-        this.nombreActividad = this.actividadForm.value.nombre;
-        this.actividadUpdated = true;
-      }
-    });
   }
 
   askDelete() {

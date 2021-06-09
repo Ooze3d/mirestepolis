@@ -6,6 +6,8 @@ import { Campus } from './campus.model';
 @Injectable({providedIn: 'root'})
 export class CampusService implements OnInit {
 
+    exito:string = '';
+    error:string = '';
     campus:Campus = new Campus('abc000', 'Campus de Prueba', 'Dirección de prueba', new Date().toISOString(), new Date().toISOString());
     campusList:Campus[] = [];
     gruposList:{idgrupo:string, nombre:string}[] = [];
@@ -34,7 +36,10 @@ export class CampusService implements OnInit {
             this.campusListener.next(this.campus);
             this.getGruposList();
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
     }
 
@@ -42,7 +47,10 @@ export class CampusService implements OnInit {
         this.http.get<Campus[]>('http://localhost:3000/api/campus').subscribe((campusData) => {
             this.campusList = campusData;
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
         return this.campusList;
     }
@@ -52,36 +60,57 @@ export class CampusService implements OnInit {
             this.gruposList = gruposData;
             this.gruposListener.next(this.gruposList);
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
     }
 
     addCampus(nombre:string, direccion:string, fechaini:Date, fechafin:Date) {
         const idcampus:string = nombre.toLowerCase().substr(0,3)+Math.round(Math.random()*899+100); //Auto ID
         this.campus = new Campus(idcampus, nombre, direccion, fechaini.toISOString(), fechafin.toISOString());
-        this.http.post<JSON>('http://localhost:3000/api/campus/new', this.campus).subscribe(response => {
-            console.log(response);
+        this.http.post<{ message: string }>('http://localhost:3000/api/campus/new', this.campus).subscribe(response => {
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
         this.getCampusList();
     }
 
     updateCampus(idcampus:string, nombre:string, direccion:string, fechaini:Date, fechafin:Date) {
         this.campus = new Campus(idcampus, nombre, direccion, fechaini.toISOString(), fechafin.toISOString());
-        this.http.put<JSON>('http://localhost:3000/api/campus/update/'+idcampus, this.campus).subscribe(response => {
-            console.log(response);
+        this.http.put<{ message: string }>('http://localhost:3000/api/campus/update/'+idcampus, this.campus).subscribe(response => {
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
         this.getCampusList();
     }
 
     deleteCampus(idcampus:string) {
-        this.http.delete<JSON>('http://localhost:3000/api/campus/delete/'+idcampus).subscribe(response => {
-            console.log(response);
+        this.http.delete<{ message: string }>('http://localhost:3000/api/campus/delete/'+idcampus).subscribe(response => {
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
         this.getCampusList();
     }

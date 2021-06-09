@@ -20,7 +20,8 @@ import { MatDialogServiceModule } from 'dialog-service';
 import { MatTableModule } from '@angular/material/table';
 import { MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from "@angular/material-moment-adapter";
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
@@ -47,7 +48,6 @@ import { EditarActividadComponent } from './main/campus/calendario/editar-activi
 import { InscripcionesComponent } from './main/campus/inscripciones/inscripciones.component';
 import { NuevaInscripcionComponent } from './main/campus/inscripciones/nueva-inscripcion/nueva-inscripcion.component';
 import { InscripcionService } from './inscripcion.service';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -91,7 +91,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     FormsModule,
     MatTableModule,
     MatMomentDateModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatRadioModule
   ],
   providers: [CampusService, 
     UserService, 
