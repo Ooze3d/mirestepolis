@@ -7,12 +7,15 @@ import { CampusService } from './campus.service';
 @Injectable({ providedIn: 'root' })
 export class ActividadService implements OnInit {
 
-    fecha: Date = new Date(new Date().getTime() + (2*60*60*1000)); //Compensando la zona horaria
+    error: string = '';
+    exito: string = '';
+    fecha: Date = new Date(new Date().getTime() + (2 * 60 * 60 * 1000)); //Compensando la zona horaria
     actividad: Actividad = new Actividad('nombre', 'descripcion', new Date().toISOString(), new Date().toISOString(), '#FFADAD', 'abc000', '00000000A');
     actividadList: Actividad[] = [];
+    allActividadList: Actividad[] = [];
     private actividadListener = new Subject<Actividad>();
     private actividadListListener = new Subject<Actividad[]>();
-    error:string = '';
+    private allActividadListListener = new Subject<Actividad[]>();
     private errorListener = new Subject<string>();
 
     constructor(private http: HttpClient, private campusService: CampusService) {
@@ -20,7 +23,7 @@ export class ActividadService implements OnInit {
     }
 
     ngOnInit() {
-        
+
     }
 
     getActividadListener() {
@@ -29,6 +32,10 @@ export class ActividadService implements OnInit {
 
     getActividadListListener() {
         return this.actividadListListener;
+    }
+
+    getAllActividadListListener() {
+        return this.allActividadListListener;
     }
 
     getErrorListener() {
@@ -40,16 +47,34 @@ export class ActividadService implements OnInit {
             this.actividad = actividadData[0];
             this.actividadListener.next(this.actividad);
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
     }
 
     getActividadList() {
-        this.http.get<Actividad[]>('http://localhost:3000/api/actividades/campus/' + this.campusService.campus.idcampus + '/' +this.fecha.toISOString().substr(0,10)).subscribe((actividadData) => {
+        this.http.get<Actividad[]>('http://localhost:3000/api/actividades/campus/' + this.campusService.campus.idcampus + '/' + this.fecha.toISOString().substr(0, 10)).subscribe((actividadData) => {
             this.actividadList = actividadData;
             this.actividadListListener.next(this.actividadList);
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
+        });
+    }
+
+    getAllActividadList() {
+        this.http.get<Actividad[]>('http://localhost:3000/api/actividades').subscribe((actividadData) => {
+            this.allActividadList = actividadData;
+            this.allActividadListListener.next(this.allActividadList);
+        }, error => {
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
     }
 
@@ -73,20 +98,22 @@ export class ActividadService implements OnInit {
             this.errorListener.next(this.error);
         } else {
             this.actividad = new Actividad(nombre, descripcion, fechaIni.toISOString(), fechaFin.toISOString(), color, idgrupo, dnimonitor);
-            this.http.post<JSON>('http://localhost:3000/api/actividades/new', this.actividad).subscribe(response => {
-                console.log(response);
-                this.error = '';
-                this.errorListener.next(this.error);
+            this.http.post<{ message: string }>('http://localhost:3000/api/actividades/new', this.actividad).subscribe(response => {
+                this.exito = response.message;
+                setTimeout(() => {
+                    this.exito = '';
+                }, 3000);
             }, error => {
-                console.log(error);
-                this.error = error.error.message;
-                this.errorListener.next(this.error);
+                this.error = error.error.error;
+                setTimeout(() => {
+                    this.error = '';
+                }, 3000);
             });
             this.getActividadList();
         }
     }
 
-    updateActividad(nombre: string, descripcion: string, horaini: string, minini: string, horafin: string, minfin: string, color: string, idgrupo: string, dnimonitor: string) {
+    updateActividad(idactividad: number, nombre: string, descripcion: string, horaini: string, minini: string, horafin: string, minfin: string, color: string, idgrupo: string, dnimonitor: string) {
         let fechaIni: Date = new Date(this.fecha.setHours(Number(horaini) + 2));
         fechaIni.setMinutes(Number(minini));
         fechaIni.setSeconds(0);
@@ -99,26 +126,34 @@ export class ActividadService implements OnInit {
             this.error = 'La hora de fin no puede ser menor que la de inicio';
             this.errorListener.next(this.error);
         } else {
-            let idactividad = this.actividad.idactividad;
             this.actividad = new Actividad(nombre, descripcion, fechaIni.toISOString(), fechaFin.toISOString(), color, idgrupo, dnimonitor);
-            this.http.put<JSON>('http://localhost:3000/api/actividades/update/'+idactividad, this.actividad).subscribe(response => {
-                console.log(response);
-                this.error = '';
-                this.errorListener.next(this.error);
+            this.actividad.idactividad = idactividad;
+            this.http.put<{ message: string }>('http://localhost:3000/api/actividades/update/' + idactividad, this.actividad).subscribe(response => {
+                this.exito = response.message;
+                setTimeout(() => {
+                    this.exito = '';
+                }, 3000);
             }, error => {
-                console.log(error);
-                this.error = error.error.message;
-                this.errorListener.next(this.error);
+                this.error = error.error.error;
+                setTimeout(() => {
+                    this.error = '';
+                }, 3000);
             });
             this.getActividadList();
         }
     }
 
     deleteActividad(idactividad: number) {
-        this.http.delete<JSON>('http://localhost:3000/api/actividades/delete/' + idactividad).subscribe(response => {
-            console.log(response);
+        this.http.delete<{ message: string }>('http://localhost:3000/api/actividades/delete/' + idactividad).subscribe(response => {
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
         this.getActividadList();
     }

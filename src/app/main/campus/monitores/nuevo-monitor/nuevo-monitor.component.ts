@@ -1,7 +1,7 @@
-import { ThrowStmt } from '@angular/compiler';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { CampusService } from 'src/app/campus.service';
 import { MonitorService } from 'src/app/monitor.service';
 import { UserService } from 'src/app/user.service';
@@ -11,18 +11,16 @@ import { UserService } from 'src/app/user.service';
   templateUrl: './nuevo-monitor.component.html',
   styleUrls: ['./nuevo-monitor.component.css']
 })
-export class NuevoMonitorComponent implements OnInit {
+export class NuevoMonitorComponent implements OnInit, OnDestroy {
 
-  monitorAdded: boolean = false;
-  monitorDuplicated: boolean = false;
-  nombreMonitor: string = '';
+  routeParams:Subscription = new Subscription();
   gruposList: { idgrupo: string, nombre: string }[] = [];
 
-  constructor(private userService: UserService, private monitorService: MonitorService, public campusService: CampusService, private route: ActivatedRoute) { }
+  constructor(private userService: UserService, public monitorService: MonitorService, public campusService: CampusService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.userService.checkLogin();
-    this.route.params.subscribe((params) => {
+    this.routeParams = this.route.params.subscribe((params) => {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //Checks the url for the campus and compares it to the service in case the page gets refreshed
         this.campusService.getCampus(id);
@@ -38,15 +36,6 @@ export class NuevoMonitorComponent implements OnInit {
       return;
     else if (this.validaNif(f.value.dni)) {
       this.monitorService.addMonitor(f.value.dni, f.value.nombre, f.value.apellidos, f.value.telefono, f.value.email, f.value.especialidad, this.campusService.campus.idcampus, f.value.idgrupo);
-      this.monitorService.getErrorListener().subscribe(error => {
-        if(error=='DUPLICADO') //Checks for duplicated DNIs
-          this.monitorDuplicated = true;
-        else {
-          this.nombreMonitor = f.value.nombre;
-          this.monitorDuplicated = false;
-          this.monitorAdded = true;
-        }
-      });
     } else {
       f.controls['dni'].setErrors({'incorrect': true});
       return;
@@ -67,6 +56,12 @@ export class NuevoMonitorComponent implements OnInit {
         return true;
     }
     return false;
+  }
+
+  ngOnDestroy(): void {
+    this.routeParams.unsubscribe();
+    //this.campusService.getCampusListener().unsubscribe();
+    //this.monitorService.getErrorListener().unsubscribe();
   }
 
 }

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CampusService } from 'src/app/campus.service';
 import { fabric } from 'fabric';
 import { _MatRadioGroupBase } from '@angular/material/radio';
@@ -14,9 +14,9 @@ import { MonitorService } from 'src/app/monitor.service';
   styleUrls: ['./calendario.component.css']
 })
 
-export class CalendarioComponent implements OnInit, AfterViewInit {
+export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  canvas: any;
+  canvas!: any;
   x: number = 0;
   y: number = 0;
   horas: { text: string, color: string }[] = [ //
@@ -32,11 +32,18 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
   blueGrad: string[] = ['rgba(33, 150, 243, 0.4)', 'rgba(33, 150, 243, 0.6)', 'rgba(33, 150, 243, 0.8)', 'rgba(33, 150, 243, 1)'];
   colorText: string = 'darkorange';
 
-  constructor(public campusService: CampusService, public monitorService: MonitorService, public actividadService: ActividadService, public userService: UserService, private route: ActivatedRoute, private router: Router) { }
+  constructor(public campusService: CampusService, public monitorService: MonitorService, public actividadService: ActividadService, public userService: UserService, private route: ActivatedRoute, private router: Router) {
+
+  }
 
   ngOnInit(): void {
     this.userService.checkLogin();
     this.canvas = new fabric.Canvas('myCanvas');
+    if (localStorage.getItem('fechaAct')) {
+      this.actividadService.fecha = new Date(localStorage.getItem('fechaAct')!); //Capture localStorage date from previous views
+    } else {
+      localStorage.setItem('fechaAct', this.actividadService.fecha.toISOString());
+    }
     this.route.params.subscribe((params) => {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //Checks the url and changes the campus attribute in the service if needed
@@ -54,26 +61,29 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
         this.drawCalendar();
         this.actividadService.getActividadList(); //These two lines are duplicated, but they're needed since they're called in two different moments in time, depending on the page load
         this.actividadService.getActividadListListener().subscribe(list => {
-          this.drawActividades(list);
+          try {
+            this.drawActividades(list);
+          } catch (e: any) { } //this.canvas appears as NULL inside the subscription but the method works
         });
       });
     });
     this.actividadService.getActividadList();
     this.actividadService.getActividadListListener().subscribe(list => {
-      this.drawActividades(list);
+      try {
+        this.drawActividades(list);
+      } catch (e: any) { }
     });
-    console.log(this.actividadService.fecha);
   }
 
   diaAnt() { //Changes the date to previous day and reloads the activities array
-    if(!(this.actividadService.fecha instanceof Date)) //DatePicker causes the attribute to lose the Date type
+    if (!(this.actividadService.fecha instanceof Date)) //DatePicker causes the attribute to lose the Date type
       this.actividadService.fecha = new Date(this.actividadService.fecha);
     this.actividadService.fecha = new Date(this.actividadService.fecha.setDate(this.actividadService.fecha.getDate() - 1));
     this.cleanRedraw();
   }
 
   diaPost() { //Changes the date to next day and reloads the activities array
-    if(!(this.actividadService.fecha instanceof Date))
+    if (!(this.actividadService.fecha instanceof Date))
       this.actividadService.fecha = new Date(this.actividadService.fecha);
     this.actividadService.fecha = new Date(this.actividadService.fecha.setDate(this.actividadService.fecha.getDate() + 1));
     this.cleanRedraw();
@@ -85,8 +95,11 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
     }
     this.actividadService.getActividadList();
     this.actividadService.getActividadListListener().subscribe(list => {
-      this.drawActividades(list);
+      try {
+        this.drawActividades(list);
+      } catch (e: any) { }
     });
+    localStorage.setItem('fechaAct', this.actividadService.fecha.toISOString());
   }
 
   drawActividades(list: Actividad[]) { //Once the calendar is visible, we can draw each activity from the list
@@ -117,7 +130,6 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
         newName = act.nombre.substr(0, 20) + '...';
       else
         newName = act.nombre;
-
       this.canvas.add(new fabric.Text(newName, {
         selectable: false,
         originX: 'center',
@@ -305,6 +317,13 @@ export class CalendarioComponent implements OnInit, AfterViewInit {
       this.drawGrupos(this.canvas, this.x, this.y, this.campusService.gruposList[i].nombre, this.blueGrad[i]);
       this.x += 150;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.canvas = null;
+    /*this.campusService.getCampusListener().unsubscribe();
+    this.campusService.getGruposListener().unsubscribe();
+    this.actividadService.getActividadListListener().unsubscribe();*/
   }
 
 }

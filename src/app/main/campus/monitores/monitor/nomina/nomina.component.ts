@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MonitorService } from 'src/app/monitor.service';
 import { JornadaService } from 'src/app/jornada.service';
 import { ActivatedRoute } from '@angular/router';
@@ -35,9 +35,5 @@ export class NominaComponent implements OnInit {
     this.extra = (this.salarioBase*2)/14;
     this.totalDevengado = this.salarioBase+this.extra;
   }
-
-
-
-  
 
 }

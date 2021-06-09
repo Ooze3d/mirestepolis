@@ -15,9 +15,7 @@ export class MonitoresComponent implements OnInit, AfterViewInit {
   borrar:boolean = false;
   justDeleted:boolean = false;
 
-  constructor(public monitorService:MonitorService, public campusService:CampusService, public userService:UserService, private changes:ChangeDetectorRef, private dialog: DialogService, private route:ActivatedRoute) {
-
-  }
+  constructor(public monitorService:MonitorService, public campusService:CampusService, public userService:UserService, private changes:ChangeDetectorRef, private dialog: DialogService, private route:ActivatedRoute) { }
 
   ngOnInit() {
     this.userService.checkLogin();
@@ -25,7 +23,7 @@ export class MonitoresComponent implements OnInit, AfterViewInit {
       let id = params['idcampus'];
       if(this.campusService.campus.idcampus!=id) { //Checks the url for the campus and compares it to the service in case the page gets refreshed
         this.campusService.getCampus(id);
-        this.campusService.getCampusListener().subscribe(campus => {
+        this.campusService.getCampusListener().subscribe(() => {
           this.monitorService.getMonitorList();
         });
       }
@@ -49,10 +47,14 @@ export class MonitoresComponent implements OnInit, AfterViewInit {
       if(response) {
         this.monitorService.deleteMonitor(dni);
         this.borrar = false;
-        this.justDeleted = true;
+        this.monitorService.getMonitorList();
         this.changes.detectChanges();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    //this.campusService.getCampusListener().unsubscribe();
   }
 
 }

@@ -54,7 +54,7 @@ router.post('/jornadas/new', checkAuth, (req, res, next) => {
         if (error) {
             if(error.code=='ER_DUP_ENTRY') {
                 res.status(400).json({
-                    message: 'DUPLICADO'
+                    error: 'Ya existe un registro para este día. Por favor, comprueba los datos.'
                 });
             } else {
                 res.status(400).json({
@@ -63,7 +63,7 @@ router.post('/jornadas/new', checkAuth, (req, res, next) => {
             }
         } else {
             res.status(200).json({
-                message: 'Day registered'
+                message: '¡Día registrado!'
             });
         }
     });
@@ -75,7 +75,7 @@ router.post('jornadas/newentrada', checkAuth, (req, res, next) => {
         if (error) {
             if(error.code=='ER_DUP_ENTRY') {
                 res.status(400).json({
-                    message: 'DUPLICADO'
+                    error: 'Ya existe una entrada registrada para este día. Por favor, comprueba los datos.'
                 });
             } else {
                 res.status(400).json({
@@ -84,7 +84,7 @@ router.post('jornadas/newentrada', checkAuth, (req, res, next) => {
             }
         } else {
             res.status(200).json({
-                message: 'Start registered'
+                message: '¡Entrada registrada!'
             });
         }
     });
@@ -99,7 +99,7 @@ router.put('/jornadas/newsalida', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: 'Exit registered'
+                message: '¡Salida registrada!'
             });
         }
     });
@@ -116,7 +116,7 @@ router.put('/jornadas', checkAuth, (req, res, next) => {
         } else {
             res.status(200).json({
                 res: results,
-                message: 'Day edited'
+                message: '¡Día editado!'
             });
         }
     });
@@ -131,7 +131,7 @@ router.delete('/jornadas/delete/:fecha/:dnimonitor', checkAuth, (req, res, next)
             });
         } else {
             res.status(200).json({
-                message: 'Day deleted'
+                message: '¡Día borrado!'
             });
         }
     });

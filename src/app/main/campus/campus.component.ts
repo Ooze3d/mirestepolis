@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from 'src/app/user.service';
 import { CampusService } from '../../campus.service';
@@ -10,10 +10,10 @@ import { MonitorService } from 'src/app/monitor.service';
   templateUrl: './campus.component.html',
   styleUrls: ['./campus.component.css']
 })
-export class CampusComponent implements OnInit, AfterViewInit {
+export class CampusComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public id: string = '';
-  public campusUpdated = false;
+
 
   campusForm = new FormGroup({ //FormGroup allows the form to be dynamically filled
     nombre: new FormControl(''),
@@ -45,13 +45,16 @@ export class CampusComponent implements OnInit, AfterViewInit {
 
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     
   }
 
   onCampusUpdate() {
     this.campusService.updateCampus(this.campusService.campus.idcampus, this.campusForm.value.nombre, this.campusForm.value.direccion, new Date(this.campusForm.value.fechaini), new Date(this.campusForm.value.fechafin));
-    this.campusUpdated = true;
+  }
+
+  ngOnDestroy(): void {
+    //this.campusService.getCampusListener().unsubscribe();
   }
 
 }

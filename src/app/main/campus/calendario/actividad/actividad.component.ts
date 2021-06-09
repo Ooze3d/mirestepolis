@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { Actividad } from 'src/app/actividad.model';
 import { ActividadService } from 'src/app/actividad.service';
 import { CampusService } from 'src/app/campus.service';
 import { MonitorService } from 'src/app/monitor.service';
@@ -12,11 +13,10 @@ import { UserService } from 'src/app/user.service';
   styleUrls: ['./actividad.component.css']
 })
 
-export class ActividadComponent implements OnInit {
+export class ActividadComponent implements OnInit, OnDestroy {
 
   nombre:FormControl = new FormControl();
-  actividadAdded:boolean = false;
-  nombreActividad:string = '';
+  filteredActividadList: Actividad[] = [];
   horas:string[] = ['08', '09', '10', '11', '12', '13', '14'];
   minutos:string[] = ['00', '15', '30', '45'];
   colores:{nombre:string, hex:string}[] = [
@@ -34,6 +34,8 @@ export class ActividadComponent implements OnInit {
 
   ngOnInit(): void {
     this.userService.checkLogin();
+    if(localStorage.getItem('fechaAct')!='')
+            this.actividadService.fecha = new Date(localStorage.getItem('fechaAct')!);
     this.actividadService.error = '';
     this.route.params.subscribe((params) => { //Page refresh failsafe checks if the page is showing the info that the url is pointing to
       let id = params['idcampus'];
@@ -41,19 +43,25 @@ export class ActividadComponent implements OnInit {
         this.campusService.getCampus(id);
         this.campusService.getCampusListener().subscribe(() => {
           this.monitorService.getMonitorList();
+          this.actividadService.getAllActividadList(); //A full list of all activities ever created is needed
+          this.actividadService.getAllActividadListListener().subscribe();
         });
       }
     });
   }
 
+  filterActividades() { //Narrows down the list comparing it to the name that's being written
+    this.filteredActividadList = this.actividadService.allActividadList.filter(x => x.nombre.toLowerCase().includes(this.nombre.value.toLowerCase()));
+  }
+
   onNewActividad(f:NgForm) { //Simple call to service to register a new actiivity
     this.actividadService.addActividad(this.nombre.value, f.value.descripcion, f.value.horaini, f.value.minini, f.value.horafin, f.value.minfin, f.value.color, f.value.idgrupo, f.value.dnimonitor);
-    this.actividadService.getErrorListener().subscribe(error => {
-      if(error=='') {
-        this.nombreActividad = this.nombre.value;
-        this.actividadAdded = true;
-      }
-    });
+  }
+
+  ngOnDestroy(): void {
+    /*this.campusService.getCampusListener().unsubscribe();
+    this.actividadService.getAllActividadListListener().unsubscribe();
+    this.actividadService.getErrorListener().unsubscribe();*/
   }
 
 }

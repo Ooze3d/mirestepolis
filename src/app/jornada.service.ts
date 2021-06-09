@@ -8,6 +8,8 @@ import { MonthYear } from 'src/app/monthyear.model';
 @Injectable({providedIn: 'root'})
 export class JornadaService implements OnInit {
 
+    error:string = '';
+    exito:string = '';
     jornada:Jornada = new Jornada(new Date().toISOString(), '00:00', '00:00', '00000000A');
     jornadasList:Jornada[] = [];
     private jornadasListListener = new Subject<Jornada[]>();
@@ -35,7 +37,10 @@ export class JornadaService implements OnInit {
         this.http.get<Jornada[]>('http://localhost:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni).subscribe((jornadasData) => {
             this.jornadasList = jornadasData;
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
         return this.jornadasList;
     }
@@ -44,7 +49,10 @@ export class JornadaService implements OnInit {
         this.http.get<MonthYear[]>('http://localhost:3000/api/nominas/'+this.monitorService.monitor.dni).subscribe((mesesData) => {
             this.mesesList = mesesData;
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
     }
 
@@ -52,7 +60,10 @@ export class JornadaService implements OnInit {
         this.http.get<Jornada[]>('http://localhost:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni+'/'+year+'/'+month).subscribe((jornadasData) => {
             this.jornadasList = jornadasData;
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
     }
 
@@ -75,10 +86,16 @@ export class JornadaService implements OnInit {
     }
 
     updateJornada() {
-        this.http.put<JSON>('http://localhost:3000/api/nominas/jornadas', this.jornada).subscribe(response => {
-            console.log(response);
+        this.http.put<{message:string}>('http://localhost:3000/api/nominas/jornadas', this.jornada).subscribe(response => {
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
         if(this.monthyear!='')
             this.getJornadasMes(this.mes.year, this.mes.month);
@@ -88,10 +105,16 @@ export class JornadaService implements OnInit {
 
     addJornada(fecha:string, horaent:string, horasal:string, dnimonitor:string) {
         this.jornada = new Jornada(fecha, horaent, horasal, dnimonitor);
-        this.http.post<JSON>('http://localhost:3000/api/nominas/jornadas/new', this.jornada).subscribe(response => {
-            console.log(response);
+        this.http.post<{message:string}>('http://localhost:3000/api/nominas/jornadas/new', this.jornada).subscribe(response => {
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
 
         if(this.monthyear!='')
@@ -104,10 +127,16 @@ export class JornadaService implements OnInit {
 
     deleteJornada() {
         let fecha = this.transformDate(this.jornada.fecha);
-        this.http.delete<JSON>('http://localhost:3000/api/nominas/jornadas/delete/'+fecha+'/'+this.jornada.dnimonitor).subscribe(response => {
-            console.log(response);
+        this.http.delete<{message:string}>('http://localhost:3000/api/nominas/jornadas/delete/'+fecha+'/'+this.jornada.dnimonitor).subscribe(response => {
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
         }, error => {
-            console.log(error);
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
         });
 
         if(this.monthyear!='')

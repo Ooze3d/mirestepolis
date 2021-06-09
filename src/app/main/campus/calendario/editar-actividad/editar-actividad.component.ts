@@ -1,7 +1,8 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from 'dialog-service';
+import { Actividad } from 'src/app/actividad.model';
 import { ActividadService } from 'src/app/actividad.service';
 import { CampusService } from 'src/app/campus.service';
 import { MonitorService } from 'src/app/monitor.service';
@@ -15,7 +16,7 @@ import { UserService } from 'src/app/user.service';
 
 //If the page gets refreshed while on this form, the date on the service gets replaced for today
 
-export class EditarActividadComponent implements OnInit, AfterViewInit {
+export class EditarActividadComponent implements OnInit, AfterViewInit, OnDestroy {
 
   actividadForm = new FormGroup({ //FormGroup allows the form to be dynamically filled
     nombre: new FormControl(''),
@@ -29,8 +30,8 @@ export class EditarActividadComponent implements OnInit, AfterViewInit {
     dnimonitor: new FormControl('')
   });
 
-  actividadUpdated: boolean = false;
-  nombreActividad: string = '';
+  idactividad: number = 0;
+  filteredActividadList: Actividad[] = [];
   horas: string[] = ['08', '09', '10', '11', '12', '13', '14'];
   minutos: string[] = ['00', '15', '30', '45'];
   colores: { nombre: string, hex: string }[] = [
@@ -49,24 +50,28 @@ export class EditarActividadComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.userService.checkLogin();
     this.actividadService.error = '';
+    if(localStorage.getItem('fechaAct')!='')
+            this.actividadService.fecha = new Date(localStorage.getItem('fechaAct')!);
     this.route.params.subscribe((params) => { //Check for idcampus and idactividad
       let id = params['idcampus'];
-      let idactividad = params['idactividad'];
+      this.idactividad = params['idactividad'];
       if (this.campusService.campus.idcampus != id) { //Checking if the campus on the service and the id on the url match
         this.campusService.getCampus(id);
         this.campusService.getCampusListener().subscribe(() => {
           this.monitorService.getMonitorList(); //When the correct campus is loaded, the rest of the info is updated
           this.monitorService.getMonitorListListener().subscribe(() => {
-            this.actividadService.getActividad(idactividad); //With all needed info ready, the activity is loaded
+            this.actividadService.getActividad(this.idactividad); //With all needed info ready, the activity is loaded
           });
         });
       } else {
-        this.actividadService.getActividad(idactividad); //If the campus was correct, we simply load the activity
+        this.actividadService.getActividad(this.idactividad); //If the campus was correct, we simply load the activity
       }
     });
   }
 
   ngAfterViewInit(): void {
+    this.actividadService.getAllActividadList(); //A full list of all activities ever created is needed
+    this.actividadService.getAllActividadListListener().subscribe();
     this.actividadService.getActividadListener().subscribe(actividad => { //Once the form is ready, we can fill the fields with the activity
       this.actividadForm.setValue({
         nombre: actividad.nombre,
@@ -82,15 +87,14 @@ export class EditarActividadComponent implements OnInit, AfterViewInit {
     });
   }
 
+  filterActividades() { //Narrows down the list comparing it to the name that's being written
+    this.filteredActividadList = this.actividadService.allActividadList.filter(x => x.nombre.toLowerCase().includes(this.actividadForm.value.nombre.toLowerCase()));
+    console.log(this.actividadForm.value.nombre);
+    console.log(this.filteredActividadList);
+  }
+
   onActividadUpdate() {
-    this.actividadUpdated = false; //If an error has been shown already, we need to clean the bar in order to show other messages
-    this.actividadService.updateActividad(this.actividadForm.value.nombre, this.actividadForm.value.descripcion, this.actividadForm.value.horaini, this.actividadForm.value.minini, this.actividadForm.value.horafin, this.actividadForm.value.minfin, this.actividadForm.value.color, this.actividadForm.value.idgrupo, this.actividadForm.value.dnimonitor);
-    this.actividadService.getErrorListener().subscribe(error => {
-      if(error=='') {
-        this.nombreActividad = this.actividadForm.value.nombre;
-        this.actividadUpdated = true;
-      }
-    });
+    this.actividadService.updateActividad(this.idactividad, this.actividadForm.value.nombre, this.actividadForm.value.descripcion, this.actividadForm.value.horaini, this.actividadForm.value.minini, this.actividadForm.value.horafin, this.actividadForm.value.minfin, this.actividadForm.value.color, this.actividadForm.value.idgrupo, this.actividadForm.value.dnimonitor);
   }
 
   askDelete() {
@@ -102,6 +106,15 @@ export class EditarActividadComponent implements OnInit, AfterViewInit {
         });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    /*this.campusService.getCampusListener().unsubscribe();
+    this.actividadService.getAllActividadListListener().unsubscribe();
+    this.actividadService.getActividadListListener().unsubscribe();
+    this.actividadService.getActividadListener().unsubscribe();
+    this.monitorService.getMonitorListListener().unsubscribe();
+    this.actividadService.getErrorListener().unsubscribe();*/
   }
 
 }

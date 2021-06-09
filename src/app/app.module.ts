@@ -20,7 +20,8 @@ import { MatDialogServiceModule } from 'dialog-service';
 import { MatTableModule } from '@angular/material/table';
 import { MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from "@angular/material-moment-adapter";
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
@@ -44,6 +45,9 @@ import { CalendarioComponent } from './main/campus/calendario/calendario.compone
 import { ActividadComponent } from './main/campus/calendario/actividad/actividad.component';
 import { ActividadService } from './actividad.service';
 import { EditarActividadComponent } from './main/campus/calendario/editar-actividad/editar-actividad.component';
+import { InscripcionesComponent } from './main/campus/inscripciones/inscripciones.component';
+import { NuevaInscripcionComponent } from './main/campus/inscripciones/nueva-inscripcion/nueva-inscripcion.component';
+import { InscripcionService } from './inscripcion.service';
 
 @NgModule({
   declarations: [
@@ -61,7 +65,9 @@ import { EditarActividadComponent } from './main/campus/calendario/editar-activi
     NominaComponent,
     CalendarioComponent,
     ActividadComponent,
-    EditarActividadComponent
+    EditarActividadComponent,
+    InscripcionesComponent,
+    NuevaInscripcionComponent
   ],
   imports: [
     BrowserModule,
@@ -79,18 +85,21 @@ import { EditarActividadComponent } from './main/campus/calendario/editar-activi
     MatListModule,
     MatDividerModule,
     MatDialogServiceModule,
+    MatCheckboxModule,
     ReactiveFormsModule,
     HttpClientModule,
     FormsModule,
     MatTableModule,
     MatMomentDateModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatRadioModule
   ],
   providers: [CampusService, 
     UserService, 
     MonitorService,
     JornadaService,
     ActividadService,
+    InscripcionService,
     { provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
     { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     { provide: HTTP_INTERCEPTORS, useClass: UserInterceptor, multi: true },

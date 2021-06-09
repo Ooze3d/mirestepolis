@@ -1,14 +1,14 @@
 <app-header></app-header>
 
-<div *ngIf="monitorAdded" class="alert alert-success alert-dismissible fade show" role="alert">
-    ¡{{ nombreMonitor }}, añadido!
+<div *ngIf="monitorService.exito!=''" class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ monitorService.exito }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 
-<div *ngIf="monitorDuplicated" class="alert alert-danger alert-dismissible fade show" role="alert">
-    Ya existe un monitor con el mismo DNI. Por favor, comprueba los datos.
+<div *ngIf="monitorService.error!=''" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ monitorService.error }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -43,7 +43,7 @@
                     <mat-form-field appearance="fill">
                         <mat-label>Email:</mat-label>
                         <input type="email" matInput name="email" ngModel required #email="ngModel" />
-                        <mat-error *ngIf="email.invalid">Por favor, introduce el email del campus</mat-error>
+                        <mat-error *ngIf="email.invalid">Por favor, introduce el email del monitor</mat-error>
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Especialidad:</mat-label>

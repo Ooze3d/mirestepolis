@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from 'src/app/user.service';
 import { CampusService } from 'src/app/campus.service';
@@ -13,10 +13,9 @@ import { MonthYear } from 'src/app/monthyear.model';
   templateUrl: './monitor.component.html',
   styleUrls: ['./monitor.component.css']
 })
-export class MonitorComponent implements OnInit, AfterViewInit {
+export class MonitorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public dni: string = '';
-  public monitorUpdated = false;
   public indexEdit: number = -1;
   public jornadasList: Jornada[] = [];
 
@@ -40,6 +39,7 @@ export class MonitorComponent implements OnInit, AfterViewInit {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //In case the page is refreshed, the campus ID is also captured and used to check the service
         this.campusService.getCampus(id);
+        this.campusService.getCampusList();
         this.campusService.getCampusListener().subscribe(campus => {
           this.monitorService.getMonitorList();
         });
@@ -108,8 +108,12 @@ export class MonitorComponent implements OnInit, AfterViewInit {
 
   onMonitorUpdate() {
     this.monitorService.updateMonitor(this.dni, this.monitorForm.value.nombre, this.monitorForm.value.apellidos, this.monitorForm.value.telefono, this.monitorForm.value.email, this.monitorForm.value.especialidad, this.monitorForm.value.idcampus, this.monitorForm.value.idgrupo);
-    this.monitorUpdated = true;
     this.changes.detectChanges();
+  }
+
+  ngOnDestroy(): void {
+    /*this.campusService.getCampusListener().unsubscribe();
+    this.monitorService.getMonitorListener().unsubscribe();*/
   }
 
 }

@@ -2,7 +2,7 @@
 
 /* "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css", */
 
-@import '~animate.css/animate.min';
+@import '~animate.css/animate.min';*/
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -29,6 +29,16 @@ mat-card {
     color:red;
 }
 
+.red-alert {
+    font-weight: 600;
+    color:firebrick;
+}
+
+.green-alert {
+    font-weight: 600;
+    color:limegreen;
+}
+
 .campus-name {
     text-decoration: none;
     color: white;
@@ -45,4 +55,8 @@ mat-card {
 
 .mat-dialog-container {
     border-top: 5px solid #0267c1;
+}
+
+.noitems {
+    list-style:none;
 }
