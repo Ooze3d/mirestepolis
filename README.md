@@ -6,13 +6,13 @@ Full management web app to run a summer sports camp business. Developed for Mire
 
 Includes options to:
 
-- Add/delete new users + auth system
+- Add/delete new users + auth system (100% working)
 - Add/edit/delete new camp (100% working)
 - Add/edit/delete payments (0% working)
 - Add/edit/delete monitors (100% working)
 - Add/edit/delete working days + create paychecks (90% working)
-- Add/edit/delete attendants and their family members (50% working)
-- Fully operative calendar divided in age groups (95% working)
+- Add/edit/delete children and their family members (70% working)
+- Fully operative calendar divided in age groups (100% working)
 - Add/edit/delete meals (0% working)
 
 ## About UI
