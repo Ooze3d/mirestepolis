@@ -7,6 +7,10 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+a {
+   color: #0267c1; 
+}
+
 mat-card {
     border-top: 5px solid #0267c1;
 }
@@ -30,12 +34,12 @@ mat-card {
 }
 
 .red-alert {
-    font-weight: 600;
+    font-size: small;
     color:firebrick;
 }
 
 .green-alert {
-    font-weight: 600;
+    font-size: small;
     color:limegreen;
 }
 
