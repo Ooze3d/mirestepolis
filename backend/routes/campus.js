@@ -84,7 +84,117 @@ router.put('/update/:idcampus', checkAuth, (req, res, next) => {
 //Delete campus by ID
 router.delete('/delete/:idcampus', checkAuth, (req, res, next) => {
     let idcampus = req.params.idcampus;
-    con.query('DELETE FROM grupos WHERE idcampus=?; DELETE FROM campus WHERE idcampus=?', [idcampus, idcampus], function(error, results) {
+    con.query('DELETE FROM actividades WHERE idgrupo IN (SELECT idgrupo FROM GRUPOS WHERE idcampus=?)', [req.params.idcampus], function(error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM peque_tiene_familiar WHERE matricula IN (SELECT matricula FROM peque_asiste_campus WHERE idcampus=?)', [req.params.idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM peque_tiene_alergia WHERE matricula IN (SELECT matricula FROM peque_asiste_campus WHERE idcampus=?)', [req.params.idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM peque_tiene_trastorno WHERE matricula IN (SELECT matricula FROM peque_asiste_campus WHERE idcampus=?)', [req.params.idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM pagos WHERE matriculapeque IN (SELECT matricula FROM peque_asiste_campus WHERE idcampus=?)', [req.params.idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM peque_asiste_campus WHERE idcampus=?', [req.params.idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM peques WHERE idgrupo IN (SELECT idgrupo FROM grupos WHERE idcampus=?)', [req.params.idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM usuarios WHERE user IN (SELECT dni FROM monitores WHERE idcampus=?)', [req.params.idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM jornadas WHERE dnimonitor IN (SELECT dni FROM monitores WHERE idcampus=?)', [req.params.idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM monitores WHERE idcampus=?', [req.params.idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM grupos WHERE idcampus=?', [req.params.idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM campus WHERE idcampus=?', [req.params.idcampus], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error

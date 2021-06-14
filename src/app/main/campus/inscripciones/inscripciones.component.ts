@@ -68,13 +68,12 @@ export class InscripcionesComponent implements OnInit, AfterViewInit {
   }
 
   deletePeque(matricula: string, nombre: string) {
-    this.dialog.withConfirm('Estás seguro de que quieres borrar a ' + nombre + '?').subscribe(response => {
+    this.dialog.withConfirm('Estás seguro de que quieres borrar a ' + nombre + '?', {content: '¡Esta acción no puede deshacerse!', acceptButton: 'Sí', cancelButton: 'No'}).subscribe(response => {
       if (response) {
         this.inscripcionService.deleteInscripcion(matricula);
         this.editar = false;
         this.inscripcionService.getInscripcionList();
         this.inscripcionService.getInscripcionListListener().subscribe(list => {
-          this.listaFiltered = [];
           this.listaFiltered = list.sort(this.compara);
         });
       }

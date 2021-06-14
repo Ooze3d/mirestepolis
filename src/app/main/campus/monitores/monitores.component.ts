@@ -43,12 +43,10 @@ export class MonitoresComponent implements OnInit, AfterViewInit {
   }
 
   deleteMonitor(dni:string) {
-    this.dialog.withConfirm('Estás seguro de que quieres borrar el monitor?').subscribe(response => {
+    this.dialog.withConfirm('Estás seguro de que quieres borrar el monitor?', {content: '¡Se borrarán todas las actividades asociadas!', acceptButton: 'Sí', cancelButton: 'No'}).subscribe(response => {
       if(response) {
         this.monitorService.deleteMonitor(dni);
         this.borrar = false;
-        this.monitorService.getMonitorList();
-        this.changes.detectChanges();
       }
     });
   }

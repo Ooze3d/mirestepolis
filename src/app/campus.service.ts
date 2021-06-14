@@ -12,6 +12,7 @@ export class CampusService implements OnInit {
     campusList:Campus[] = [];
     gruposList:{idgrupo:string, nombre:string}[] = [];
     private campusListener = new Subject<Campus>();
+    private campusListListener = new Subject<Campus[]>();
     private gruposListener = new Subject<{idgrupo:string, nombre:string}[]>();
 
     constructor(private http:HttpClient) {
@@ -24,6 +25,10 @@ export class CampusService implements OnInit {
 
     getCampusListener() {
         return this.campusListener;
+    }
+
+    getCampusListListener() {
+        return this.campusListListener;
     }
 
     getGruposListener() {
@@ -82,6 +87,7 @@ export class CampusService implements OnInit {
             }, 3000);
         });
         this.getCampusList();
+        this.campusListListener.next(this.campusList);
     }
 
     updateCampus(idcampus:string, nombre:string, direccion:string, fechaini:Date, fechafin:Date) {
@@ -97,22 +103,25 @@ export class CampusService implements OnInit {
                 this.error = '';
             }, 3000);
         });
-        this.getCampusList();
+        this.campusListener.next(this.campus);
     }
 
     deleteCampus(idcampus:string) {
         this.http.delete<{ message: string }>('http://localhost:3000/api/campus/delete/'+idcampus).subscribe(response => {
             this.exito = response.message;
+            this.getCampusList();
+            this.campusListListener.next(this.campusList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
         }, error => {
             this.error = error.error.error;
+            this.getCampusList();
+            this.campusListListener.next(this.campusList);
             setTimeout(() => {
                 this.error = '';
             }, 3000);
         });
-        this.getCampusList();
     }
 
 }

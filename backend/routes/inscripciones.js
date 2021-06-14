@@ -231,7 +231,7 @@ router.put('/days/checkout',checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: '¡Entrada registrada!'
+                message: '¡Salida registrada!'
             });
         }
     });
@@ -445,7 +445,9 @@ router.delete('/delete/:matricula', checkAuth, (req, res, next) => {
                 error: error
             });
         } else {
-            next();
+            res.status(200).json({
+                message: '¡Inscripción borrada!'
+            });
         }
     });
 });

@@ -98,7 +98,7 @@ export class EditarActividadComponent implements OnInit, AfterViewInit {
   }
 
   askDelete() {
-    this.dialog.withConfirm('Estás seguro de que quieres borrar '+this.actividadService.actividad.nombre+'?').subscribe(response => {
+    this.dialog.withConfirm('Estás seguro de que quieres borrar '+this.actividadService.actividad.nombre+'?', {content: '¡Esta acción no puede deshacerse!', acceptButton: 'Sí', cancelButton: 'No'}).subscribe(response => {
       if(response) {
         this.actividadService.deleteActividad(this.actividadService.actividad.idactividad);
         this.actividadService.getActividadListListener().subscribe(() => {

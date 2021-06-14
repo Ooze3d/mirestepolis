@@ -114,16 +114,19 @@ export class MonitorService implements OnInit {
         this.http.delete<{ message: string }>('http://localhost:3000/api/monitores/delete/' + dni).subscribe(response => {
             this.error = '';
             this.exito = response.message;
+            this.getMonitorList();
+            this.monitorListListener.next(this.monitorList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
         }, error => {
             this.error = error.error.error;
+            this.getMonitorList();
+            this.monitorListListener.next(this.monitorList);
             setTimeout(() => {
                 this.error = '';
             }, 3000);
         });
-        this.getMonitorList();
     }
 
     horaEnt(fechaEnt: Date) {

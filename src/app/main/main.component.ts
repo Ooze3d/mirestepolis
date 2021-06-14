@@ -34,11 +34,11 @@ export class MainComponent implements OnInit, AfterViewInit {
   }
 
   deleteCampus(idcampus:string) {
-    this.dialog.withConfirm('Estás seguro de que quieres borrar el campus?').subscribe(response => {
+    this.dialog.withConfirm('Estás seguro de que quieres borrar el campus?', {content: '¡Se borrará toda la información asociada! (Grupos, Actividades, Inscripciones y Monitores)', acceptButton: 'Sí', cancelButton: 'No'}).subscribe(response => {
       if(response) {
         this.campusService.deleteCampus(idcampus);
+        this.campusService.getCampusListListener().subscribe();
         this.borrar = false;
-        this.changes.detectChanges();
       }
     });
   }

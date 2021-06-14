@@ -56,6 +56,9 @@ export class UserService implements OnInit {
         this.user.level = level;
         this.http.post<{ message: string }>('http://localhost:3000/api/usuarios/signup', this.user).subscribe((response) => {
             this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
         }, (error) => {
             this.error = error.error.error;
             setTimeout(() => {

@@ -15,7 +15,7 @@ import { UserService } from 'src/app/user.service';
   templateUrl: './editar-inscripcion.component.html',
   styleUrls: ['./editar-inscripcion.component.css']
 })
-export class EditarInscripcionComponent implements OnInit, AfterViewInit {
+export class EditarInscripcionComponent implements OnInit, AfterViewInit { //TODO finish component
 
   dni: FormControl = new FormControl();
   alergia: FormControl = new FormControl();

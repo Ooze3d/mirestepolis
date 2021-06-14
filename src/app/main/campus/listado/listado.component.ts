@@ -17,6 +17,7 @@ export class ListadoComponent implements OnInit, AfterViewInit {
   busca: string = '';
   listaFiltered: Inscripcion[] = [];
   editar: boolean = false;
+  fecha: Date = new Date(new Date().getTime() + (2 * 60 * 60 * 1000)); //Compensando la zona horaria
 
   constructor(public campusService: CampusService, public inscripcionService: InscripcionService, public userService: UserService, private route: ActivatedRoute, private dialog: DialogService, private changes: ChangeDetectorRef) { }
 

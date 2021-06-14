@@ -64,14 +64,18 @@ export class InscripcionService implements OnInit {
                 this.http.get<Alergia[]>('http://localhost:3000/api/inscripciones/allergies/child/' + peque.matricula).subscribe(alergiasList => {
                     peque.alergias = alergiasList;
                 });
-                this.http.get<Alergia[]>('http://localhost:3000/api/inscripciones/conditions/child/' + peque.matricula).subscribe(trastornosList => {
+                this.http.get<Trastorno[]>('http://localhost:3000/api/inscripciones/conditions/child/' + peque.matricula).subscribe(trastornosList => {
                     peque.trastornos = trastornosList;
                 });
                 this.http.get<Familiar[]>('http://localhost:3000/api/inscripciones/fam/child/' + peque.matricula).subscribe(famList => {
                     peque.famList = famList;
                 });
+                this.http.get<Pago[]>('http://localhost:3000/api/inscripciones/days/' + peque.matricula).subscribe(dayList => {
+                    peque.dayList = dayList;
+                });
             });
             this.inscripcionListListener.next(this.inscripcionList);
+            console.log(this.inscripcionList);
         }, error => {
             this.error = error.error.error;
             setTimeout(() => {
@@ -185,19 +189,18 @@ export class InscripcionService implements OnInit {
     deleteInscripcion(matricula:string) { 
         this.http.delete<{ message: string }>('http://localhost:3000/api/inscripciones/delete/'+ matricula).subscribe(response => {
             this.exito = response.message;
-            console.log("Just deleted!");
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
-            this.getInscripcionList();
-            this.getInscripcionListListener().next(this.inscripcionList);
         }, error => {
-            this.error = error.error.error;
+            this.error = 'Borrado...';
             console.log(error);
             setTimeout(() => {
                 this.error = '';
             }, 3000);
         });
+        this.getInscripcionList();
+        this.getInscripcionListListener().next(this.inscripcionList);
     }
 
     addFamiliar() {
@@ -217,15 +220,14 @@ export class InscripcionService implements OnInit {
         });
     }
 
-    addDias() {
+    addDias() { //Add registered days to database
         this.inscripcion.dayList.forEach(x => {
-            this.http.post<{message: string}>('http://localhost:3000/api/inscripciones/days/new', x).subscribe(response => {
-                console.log(x.fecha+" añadido!");
+            this.http.post<{message: string}>('http://localhost:3000/api/inscripciones/days/new', x).subscribe(() => {
             });
         });
     }
 
-    convertNombres(list: {numero: number, texto: string}[]) {
+    convertNombres(list: {numero: number, texto: string}[]) { //Convert month names
         let lista:string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         list.forEach(x => {
             x.texto = lista[x.numero-1];
