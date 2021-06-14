@@ -10,7 +10,7 @@ import { MonitorService } from 'src/app/monitor.service';
   templateUrl: './campus.component.html',
   styleUrls: ['./campus.component.css']
 })
-export class CampusComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CampusComponent implements OnInit, AfterViewInit {
 
   public id: string = '';
 
@@ -22,7 +22,7 @@ export class CampusComponent implements OnInit, AfterViewInit, OnDestroy {
     fechafin: new FormControl('')
   });
 
-  constructor(public campusService: CampusService, private userService: UserService, private monitorService:MonitorService, private route: ActivatedRoute) { }
+  constructor(public campusService: CampusService, public userService: UserService, private monitorService:MonitorService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.userService.checkLogin();
@@ -51,10 +51,6 @@ export class CampusComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onCampusUpdate() {
     this.campusService.updateCampus(this.campusService.campus.idcampus, this.campusForm.value.nombre, this.campusForm.value.direccion, new Date(this.campusForm.value.fechaini), new Date(this.campusForm.value.fechafin));
-  }
-
-  ngOnDestroy(): void {
-    //this.campusService.getCampusListener().unsubscribe();
   }
 
 }

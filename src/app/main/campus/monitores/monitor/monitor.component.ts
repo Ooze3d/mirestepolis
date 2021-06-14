@@ -13,7 +13,7 @@ import { MonthYear } from 'src/app/monthyear.model';
   templateUrl: './monitor.component.html',
   styleUrls: ['./monitor.component.css']
 })
-export class MonitorComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MonitorComponent implements OnInit, AfterViewInit {
 
   public dni: string = '';
   public indexEdit: number = -1;
@@ -109,11 +109,6 @@ export class MonitorComponent implements OnInit, AfterViewInit, OnDestroy {
   onMonitorUpdate() {
     this.monitorService.updateMonitor(this.dni, this.monitorForm.value.nombre, this.monitorForm.value.apellidos, this.monitorForm.value.telefono, this.monitorForm.value.email, this.monitorForm.value.especialidad, this.monitorForm.value.idcampus, this.monitorForm.value.idgrupo);
     this.changes.detectChanges();
-  }
-
-  ngOnDestroy(): void {
-    /*this.campusService.getCampusListener().unsubscribe();
-    this.monitorService.getMonitorListener().unsubscribe();*/
   }
 
 }

@@ -18,6 +18,21 @@ router.get('/campus/:idcampus/:date', (req, res, next) => {
     });
 });
 
+//List of activities by monitor on a certain day
+router.get('/monitor/:dni/:date', (req, res, next) => {
+    let dni = req.params.dni;
+    let fecha = req.params.date;
+    con.query("SELECT * FROM actividades WHERE dnimonitor=? AND DATE_FORMAT(fechaini, '%Y-%m-%d')=?", [dni, fecha], function (error, results) { //No es una N:M corriente
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.json(results);
+        }
+    });
+});
+
 //List of all activities, regardless of campus and date
 router.get('/', (req, res, next) => {
     let keyword = req.params.keyword;
@@ -55,7 +70,7 @@ router.post('/new', checkAuth, (req, res, next) => {
             });
         } else if(results.length!=0) {
             res.status(400).json({ //If this query gets results, the new activity is trying to be added on top of another
-                message: 'La actividad está solapada con otra previa. Por favor, comprueba los datos.'
+                error: 'La actividad está solapada con otra previa. Por favor, comprueba los datos.'
             });
         } else {
             next();

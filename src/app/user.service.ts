@@ -25,6 +25,14 @@ export class UserService implements OnInit {
 
     }
 
+    isAdmin():boolean {
+        return localStorage.getItem('level')=='admin';
+    }
+
+    isMonitor(): boolean {
+        return localStorage.getItem('level')=='monitor';
+    }
+
     checkLogin() {
         this.autoAuthUser();
         if (!this.login)

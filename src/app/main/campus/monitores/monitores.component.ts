@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { MonitorService } from '../../../monitor.service';
 import { UserService } from '../../../user.service';
 import { DialogService } from 'dialog-service';
@@ -51,10 +51,6 @@ export class MonitoresComponent implements OnInit, AfterViewInit {
         this.changes.detectChanges();
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    //this.campusService.getCampusListener().unsubscribe();
   }
 
 }

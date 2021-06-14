@@ -22,6 +22,7 @@ import { MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from "@angular/m
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
@@ -48,6 +49,10 @@ import { EditarActividadComponent } from './main/campus/calendario/editar-activi
 import { InscripcionesComponent } from './main/campus/inscripciones/inscripciones.component';
 import { NuevaInscripcionComponent } from './main/campus/inscripciones/nueva-inscripcion/nueva-inscripcion.component';
 import { InscripcionService } from './inscripcion.service';
+import { EditarInscripcionComponent } from './main/campus/inscripciones/editar-inscripcion/editar-inscripcion.component';
+import { FormatNamePipe } from './format-name.pipe';
+import { FormatSurNamePipe } from './format-surname.pipe';
+import { ListadoComponent } from './main/campus/listado/listado.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +72,11 @@ import { InscripcionService } from './inscripcion.service';
     ActividadComponent,
     EditarActividadComponent,
     InscripcionesComponent,
-    NuevaInscripcionComponent
+    NuevaInscripcionComponent,
+    EditarInscripcionComponent,
+    FormatNamePipe,
+    FormatSurNamePipe,
+    ListadoComponent
   ],
   imports: [
     BrowserModule,
@@ -92,7 +101,8 @@ import { InscripcionService } from './inscripcion.service';
     MatTableModule,
     MatMomentDateModule,
     MatAutocompleteModule,
-    MatRadioModule
+    MatRadioModule,
+    MatDialogModule
   ],
   providers: [CampusService, 
     UserService, 

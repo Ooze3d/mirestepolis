@@ -18,28 +18,24 @@
     <div class="row justify-content-center">
         <div class="col-12 col-md-5 m-2">
             <mat-card>
-                <h2>Matrícula</h2>
-                <form class="d-flex flex-column" #inscripcionForm="ngForm"
-                    (ngSubmit)="onNewInscripcion(inscripcionForm)">
+                <h2>Editar Matrícula</h2>
+                <form class="d-flex flex-column" [formGroup]="inscripcionForm" (ngSubmit)="onEditInscripcion()">
                     <mat-form-field appearance="fill">
                         <mat-label>Nombre: </mat-label>
-                        <input type="text" matInput name="nombre" ngModel required #nombre="ngModel" />
-                        <mat-error *ngIf="nombre.invalid">Por favor, introduce el nombre</mat-error>
+                        <input type="text" name="nombre" matInput required formControlName="nombre" />
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Apellidos:</mat-label>
-                        <input type="text" matInput name="apellidos" ngModel required #apellidos="ngModel" />
-                        <mat-error *ngIf="apellidos.invalid">Por favor, introduce los apellidos</mat-error>
+                        <input type="text" name="apellidos" matInput required formControlName="apellidos" />
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Fecha de nacimiento</mat-label>
-                        <input matInput [matDatepicker]="nac" name="fechanac" ngModel required #fechanac="ngModel">
+                        <input matInput [matDatepicker]="nac" name="fechanac" matInput required
+                            formControlName="fechanac">
                         <mat-datepicker-toggle matSuffix [for]="nac"></mat-datepicker-toggle>
                         <mat-datepicker touchUi #nac></mat-datepicker>
-                        <mat-error *ngIf="fechanac.invalid">Por favor, introduce la fecha de nacimiento
-                        </mat-error>
                     </mat-form-field>
-                    <mat-radio-group name="pagada" aria-label="pagada" ngModel #pagada="ngModel">
+                    <mat-radio-group name="pagada" aria-label="pagada" formControlName="pagada">
                         <ul class="noitems">
                             <li>
                                 <mat-radio-button value="p">Matricula pagada</mat-radio-button>
@@ -51,7 +47,7 @@
                     </mat-radio-group>
                     <mat-form-field appearance="fill">
                         <mat-label>Grupo:</mat-label>
-                        <mat-select name="idgrupo" ngModel required #idgrupo="ngModel">
+                        <mat-select name="idgrupo" required formControlName="idgrupo">
                             <mat-option *ngFor="let grupo of campusService.gruposList" [value]="grupo.idgrupo">
                                 {{grupo.nombre}}
                             </mat-option>
@@ -63,7 +59,8 @@
                             [matAutocomplete]="ale" (input)="filterAleList()" (change)="addAlergia()">
                         <!--Real time search for previously saved activities-->
                         <mat-autocomplete #ale="matAutocomplete">
-                            <mat-option *ngFor="let ale of inscripcionService.allAlergiasList" [value]="ale.nombre" (click)="addAlergia()">
+                            <mat-option *ngFor="let ale of inscripcionService.allAlergiasList" [value]="ale.nombre"
+                                (click)="addAlergia()">
                                 {{ ale.nombre }}
                             </mat-option>
                         </mat-autocomplete>
@@ -71,10 +68,10 @@
                     <div class="d-flex flex-column">
                         <ul *ngFor="let ale of inscripcionService.inscripcion.alergias; index as i">
                             <li>{{ ale.nombre }}
-                                <button type="button" mat-icon-button
-                                    color="warn" (click)="deleteAle(i)">
+                                <button type="button" mat-icon-button color="warn" (click)="deleteAle(i)">
                                     <mat-icon>close</mat-icon>
-                                </button></li>
+                                </button>
+                            </li>
                         </ul>
                     </div>
                     <mat-form-field>
@@ -83,7 +80,8 @@
                             [matAutocomplete]="tras" (input)="filterTrasList()" (change)="addTrastorno()">
                         <!--Real time search for previously saved activities-->
                         <mat-autocomplete #tras="matAutocomplete">
-                            <mat-option *ngFor="let tras of inscripcionService.allTrastornosList" [value]="tras.nombre" (click)="addTrastorno()">
+                            <mat-option *ngFor="let tras of inscripcionService.allTrastornosList" [value]="tras.nombre"
+                                (click)="addTrastorno()">
                                 {{ tras.nombre }}
                             </mat-option>
                         </mat-autocomplete>
@@ -91,10 +89,10 @@
                     <div class="d-flex flex-column">
                         <ul *ngFor="let tras of inscripcionService.inscripcion.trastornos; index as i">
                             <li>{{ tras.nombre }}
-                                <button type="button" mat-icon-button
-                                    color="warn" (click)="deleteTras(i)">
+                                <button type="button" mat-icon-button color="warn" (click)="deleteTras(i)">
                                     <mat-icon>close</mat-icon>
-                                </button></li>
+                                </button>
+                            </li>
                         </ul>
                     </div>
                     <button mat-raised-button color="accent" type="submit">Guardar</button>
@@ -154,13 +152,26 @@
                 <hr />
                 <div class="d-flex flex-column">
                     <ul *ngFor="let fam of inscripcionService.inscripcion.famList; index as i">
-                        <li>{{ fam.nombre | formatName }} {{ fam.apellidos | formatSurName }} ({{ fam.tipofam }})<span
-                                *ngIf="fam.esprincipal"><strong>(P)</strong></span><button type="button" mat-icon-button
-                                color="warn" (click)="deleteFam(i)">
+                        <li><a (click)="rellenaFamMatricula(fam.dni)">{{ fam.nombre | formatName }} {{ fam.apellidos |
+                                formatSurName }} ({{ fam.tipofam }})<span
+                                    *ngIf="fam.esprincipal"><strong>(P)</strong></span></a><button type="button"
+                                mat-icon-button color="warn" (click)="deleteFam(i)">
                                 <mat-icon>close</mat-icon>
                             </button></li>
                     </ul>
                 </div>
+            </mat-card>
+        </div>
+        <div class="col-12 col-lg-10 m-2 p-lg-2">
+            <mat-card>
+                <h2>Días de asistencia</h2>
+                <mat-card *ngFor="let mes of inscripcionService.mesesList" class="col-12 m-2">
+                    <h3>{{mes.texto}}</h3>
+                        <div *ngFor="let dia of inscripcionService.inscripcion.dayList; index as i">
+                            <button *ngIf="extractMonth(dia.fecha)==mes.numero-1" style="float: left;" mat-mini-fab color="primary" class="m-2">{{ dia.fecha | date:'d' }}</button>
+                        </div>
+                        <div style="clear: both;"></div>
+                </mat-card>
             </mat-card>
         </div>
     </div>

@@ -11,7 +11,7 @@ import { UserService } from 'src/app/user.service';
   templateUrl: './nuevo-monitor.component.html',
   styleUrls: ['./nuevo-monitor.component.css']
 })
-export class NuevoMonitorComponent implements OnInit, OnDestroy {
+export class NuevoMonitorComponent implements OnInit {
 
   routeParams:Subscription = new Subscription();
   gruposList: { idgrupo: string, nombre: string }[] = [];
@@ -36,6 +36,7 @@ export class NuevoMonitorComponent implements OnInit, OnDestroy {
       return;
     else if (this.validaNif(f.value.dni)) {
       this.monitorService.addMonitor(f.value.dni, f.value.nombre, f.value.apellidos, f.value.telefono, f.value.email, f.value.especialidad, this.campusService.campus.idcampus, f.value.idgrupo);
+      this.userService.addUser(f.value.dni, 'monitor', 'monitor');
     } else {
       f.controls['dni'].setErrors({'incorrect': true});
       return;
@@ -56,12 +57,6 @@ export class NuevoMonitorComponent implements OnInit, OnDestroy {
         return true;
     }
     return false;
-  }
-
-  ngOnDestroy(): void {
-    this.routeParams.unsubscribe();
-    //this.campusService.getCampusListener().unsubscribe();
-    //this.monitorService.getErrorListener().unsubscribe();
   }
 
 }

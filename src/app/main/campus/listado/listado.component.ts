@@ -1,5 +1,5 @@
-import { formatNumber } from '@angular/common';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DialogService } from 'dialog-service';
 import { CampusService } from 'src/app/campus.service';
@@ -8,11 +8,11 @@ import { InscripcionService } from 'src/app/inscripcion.service';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'app-inscripciones',
-  templateUrl: './inscripciones.component.html',
-  styleUrls: ['./inscripciones.component.css']
+  selector: 'app-listado',
+  templateUrl: './listado.component.html',
+  styleUrls: ['./listado.component.css']
 })
-export class InscripcionesComponent implements OnInit, AfterViewInit {
+export class ListadoComponent implements OnInit, AfterViewInit {
 
   busca: string = '';
   listaFiltered: Inscripcion[] = [];
@@ -67,26 +67,12 @@ export class InscripcionesComponent implements OnInit, AfterViewInit {
     return a.apellidos.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') <= b.apellidos.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') ? -1 : 1;
   }
 
-  deletePeque(matricula: string, nombre: string) {
-    this.dialog.withConfirm('Estás seguro de que quieres borrar a ' + nombre + '?').subscribe(response => {
-      if (response) {
-        this.inscripcionService.deleteInscripcion(matricula);
-        this.editar = false;
-        this.inscripcionService.getInscripcionList();
-        this.inscripcionService.getInscripcionListListener().subscribe(list => {
-          this.listaFiltered = [];
-          this.listaFiltered = list.sort(this.compara);
-        });
-      }
-    });
+  onEntrada() {
+
   }
 
-  editarOn() {
-    this.editar = true;
-  }
-
-  editarOff() {
-    this.editar = false;
+  onSalida(f:NgForm) {
+    
   }
 
 }

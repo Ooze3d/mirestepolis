@@ -1,5 +1,6 @@
 import { Alergia } from "./alergia.model";
 import { Familiar } from "./familiar.model";
+import { Pago } from "./pago.model";
 import { Trastorno } from "./trastorno.model";
 
 export class Inscripcion {
@@ -8,6 +9,7 @@ export class Inscripcion {
     public alergias:Alergia[] = [];
     public trastornos:Trastorno[] = [];
     public famList:Familiar[] = [];
+    public dayList: Pago[] = [];
 
     constructor(public nombre:string, public apellidos:string, public fechanac:string, public pagada:number, public regalada:number, public idgrupo:string) { }
 
