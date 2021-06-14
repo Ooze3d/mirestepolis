@@ -5,6 +5,7 @@ import { Alergia } from './alergia.model';
 import { CampusService } from './campus.service';
 import { Familiar } from './familiar.model';
 import { Inscripcion } from './inscripcion.model';
+import { Pago } from './pago.model';
 import { Trastorno } from './trastorno.model';
 
 @Injectable({ providedIn: 'root' })
@@ -24,6 +25,7 @@ export class InscripcionService implements OnInit {
     private inscripcionListListener = new Subject<Inscripcion[]>();
     private alergiasListListener = new Subject<Alergia[]>();
     private trastornosListListener = new Subject<Trastorno[]>();
+    mesesList: { numero: number, texto: string }[] = [];
 
     constructor(private http: HttpClient, private campusService: CampusService) { }
 
@@ -55,17 +57,17 @@ export class InscripcionService implements OnInit {
         return this.trastornosListListener;
     }
 
-    getInscripcionList() {
-        this.http.get<Inscripcion[]>('http://localhost:3000/api/inscripciones/' + this.campusService.campus.idcampus).subscribe(inscripcionData => {
+    getInscripcionList() { //Get full child object, including family members, allergies and conditions
+        this.http.get<Inscripcion[]>('http://localhost:3000/api/inscripciones/all/' + this.campusService.campus.idcampus).subscribe(inscripcionData => {
             this.inscripcionList = inscripcionData;
             this.inscripcionList.forEach(peque => {
-                this.http.get<Alergia[]>('http://localhost:3000/api/inscripciones/allergies/child/'+peque.matricula).subscribe(alergiasList => {
+                this.http.get<Alergia[]>('http://localhost:3000/api/inscripciones/allergies/child/' + peque.matricula).subscribe(alergiasList => {
                     peque.alergias = alergiasList;
                 });
-                this.http.get<Alergia[]>('http://localhost:3000/api/inscripciones/conditions/child/'+peque.matricula).subscribe(trastornosList => {
+                this.http.get<Alergia[]>('http://localhost:3000/api/inscripciones/conditions/child/' + peque.matricula).subscribe(trastornosList => {
                     peque.trastornos = trastornosList;
                 });
-                this.http.get<Familiar[]>('http://localhost:3000/api/inscripciones/fam/child/'+peque.matricula).subscribe(famList => {
+                this.http.get<Familiar[]>('http://localhost:3000/api/inscripciones/fam/child/' + peque.matricula).subscribe(famList => {
                     peque.famList = famList;
                 });
             });
@@ -78,7 +80,31 @@ export class InscripcionService implements OnInit {
         });
     }
 
-    getFamList() {
+    getInscripcion(matricula: string) {
+        this.http.get<Inscripcion[]>('http://localhost:3000/api/inscripciones/' + matricula).subscribe(inscripcionData => {
+            this.inscripcion = inscripcionData[0];
+            this.http.get<Alergia[]>('http://localhost:3000/api/inscripciones/allergies/child/' + this.inscripcion.matricula).subscribe(alergiasList => {
+                this.inscripcion.alergias = alergiasList;
+            });
+            this.http.get<Alergia[]>('http://localhost:3000/api/inscripciones/conditions/child/' + this.inscripcion.matricula).subscribe(trastornosList => {
+                this.inscripcion.trastornos = trastornosList;
+            });
+            this.http.get<Familiar[]>('http://localhost:3000/api/inscripciones/fam/child/' + this.inscripcion.matricula).subscribe(famList => {
+                this.inscripcion.famList = famList;
+            });
+            this.http.get<Pago[]>('http://localhost:3000/api/inscripciones/days/' + this.inscripcion.matricula).subscribe(dayList => {
+                this.inscripcion.dayList = dayList;
+            });
+            this.http.get<{ numero: number, texto: string }[]>('http://localhost:3000/api/inscripciones/months/' + this.inscripcion.matricula).subscribe(monthList => {
+                this.mesesList = monthList;
+                this.convertNombres(this.mesesList);
+                console.log(this.mesesList);
+            });
+            this.inscripcionListener.next(this.inscripcion);
+        });
+    }
+
+    getFamList() { //Full list of already registered family members
         this.http.get<Familiar[]>('http://localhost:3000/api/inscripciones/fam').subscribe((famData) => {
             this.allFamList = famData;
             this.famListListener.next(this.allFamList);
@@ -90,7 +116,7 @@ export class InscripcionService implements OnInit {
         });
     }
 
-    getAlergiasList() {
+    getAlergiasList() { //Full list of allergies
         this.http.get<Alergia[]>('http://localhost:3000/api/inscripciones/allergies/all').subscribe((alergiaData) => {
             this.allAlergiasList = alergiaData;
             this.alergiasListListener.next(this.allAlergiasList);
@@ -102,18 +128,20 @@ export class InscripcionService implements OnInit {
         });
     }
 
-    newAlergia(nombre:string, descripcion:string) {
-        this.http.post<{ message:string }>('http://localhost:3000/api/inscripciones/allergies/new', [nombre, descripcion, this.inscripcion.matricula]).subscribe((response) => {
+    newAlergia(nombre: string, descripcion: string) {
+        this.http.post<{ message: string }>('http://localhost:3000/api/inscripciones/allergies/new', [nombre, descripcion, this.inscripcion.matricula]).subscribe((response) => {
             this.getAlergiasList();
         }, error => {
-            this.error = error.error.error;
-            setTimeout(() => {
-                this.error = '';
-            }, 3000);
+            if(error.error.error.code!='ER_DUP_ENTRY') {
+                this.error = error.error.error;
+                setTimeout(() => {
+                    this.error = '';
+                }, 3000);
+            }
         });
     }
 
-    getTrastornosList() {
+    getTrastornosList() { //Full list of conditions
         this.http.get<Trastorno[]>('http://localhost:3000/api/inscripciones/conditions/all').subscribe((trastornoData) => {
             this.allTrastornosList = trastornoData;
             this.trastornosListListener.next(this.allTrastornosList);
@@ -125,9 +153,27 @@ export class InscripcionService implements OnInit {
         });
     }
 
-    newTrastorno(nombre:string, descripcion:string) {
-        this.http.post<{ message:string }>('http://localhost:3000/api/inscripciones/conditions/new', [nombre, descripcion, this.inscripcion.matricula]).subscribe((response) => {
-            this.getAlergiasList();
+    newTrastorno(nombre: string, descripcion: string) {
+        this.http.post<{ message: string }>('http://localhost:3000/api/inscripciones/conditions/new', [nombre, descripcion, this.inscripcion.matricula]).subscribe((response) => {
+            this.getTrastornosList();
+        }, error => {
+            if(error.error.error.code!='ER_DUP_ENTRY') {
+                this.error = error.error.error;
+                setTimeout(() => {
+                    this.error = '';
+                }, 3000);
+            }
+        });
+    }
+
+    addInscripcion() { //Inscriptions with duplicate family members, allergies or conditions will ALWAYS give XHR errors, but they can be dismissed
+        this.http.post<{ message: string }>('http://localhost:3000/api/inscripciones/new/' + this.campusService.campus.idcampus, this.inscripcion).subscribe(response => {
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
+            this.getInscripcionList();
+            this.getInscripcionListListener().next(this.inscripcionList);
         }, error => {
             this.error = error.error.error;
             setTimeout(() => {
@@ -136,15 +182,18 @@ export class InscripcionService implements OnInit {
         });
     }
 
-    addInscripcion() {
-        this.http.post<{ message: string }>('http://localhost:3000/api/inscripciones/new/' + this.campusService.campus.idcampus, this.inscripcion).subscribe(response => {
+    deleteInscripcion(matricula:string) { 
+        this.http.delete<{ message: string }>('http://localhost:3000/api/inscripciones/delete/'+ matricula).subscribe(response => {
             this.exito = response.message;
+            console.log("Just deleted!");
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
             this.getInscripcionList();
+            this.getInscripcionListListener().next(this.inscripcionList);
         }, error => {
             this.error = error.error.error;
+            console.log(error);
             setTimeout(() => {
                 this.error = '';
             }, 3000);
@@ -153,16 +202,33 @@ export class InscripcionService implements OnInit {
 
     addFamiliar() {
         this.http.post<{ message: string }>('http://localhost:3000/api/inscripciones/fam/new/' + this.inscripcion.matricula, this.familiar).subscribe(response => {
-            this.exito += ' - '+response.message;
+            this.exito += ' - ' + response.message;
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
             this.getFamList();
         }, error => {
-            this.error = error.error.error;
-            setTimeout(() => {
-                this.error = '';
-            }, 3000);
+            if(error.error.error.code!='ER_DUP_ENTRY') {
+                this.error = error.error.error;
+                setTimeout(() => {
+                    this.error = '';
+                }, 3000);
+            }
+        });
+    }
+
+    addDias() {
+        this.inscripcion.dayList.forEach(x => {
+            this.http.post<{message: string}>('http://localhost:3000/api/inscripciones/days/new', x).subscribe(response => {
+                console.log(x.fecha+" añadido!");
+            });
+        });
+    }
+
+    convertNombres(list: {numero: number, texto: string}[]) {
+        let lista:string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        list.forEach(x => {
+            x.texto = lista[x.numero-1];
         });
     }
 

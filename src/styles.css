@@ -11,6 +11,15 @@ a {
    color: #0267c1; 
 }
 
+a:hover {
+    text-decoration: none;
+}
+
+.big-button {
+    font-size: large;
+    text-transform: capitalize;
+}
+
 mat-card {
     border-top: 5px solid #0267c1;
 }
@@ -28,19 +37,33 @@ mat-card {
     font-size: small;
 }
 
+.cool-shadow {
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+}
+
 .message-red {
     font-size: smaller;
     color:red;
 }
 
 .red-alert {
+    padding: 0.3em;
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
+    border-radius: 3px;
     font-size: small;
-    color:firebrick;
+    color:white;
+    background-color:crimson;
 }
 
 .green-alert {
+    padding: 0.3em;
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
+    border-radius: 3px;
+    color:white;
     font-size: small;
-    color:limegreen;
+    background-color:limegreen;
 }
 
 .campus-name {
@@ -63,4 +86,13 @@ mat-card {
 
 .noitems {
     list-style:none;
+}
+
+.actividad {
+    background-color:#25d366;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+    padding: 1em;
+    margin: 1em;
+    color: white;
+    border-radius: 4px;
 }

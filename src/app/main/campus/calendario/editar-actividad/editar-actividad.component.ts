@@ -16,7 +16,7 @@ import { UserService } from 'src/app/user.service';
 
 //If the page gets refreshed while on this form, the date on the service gets replaced for today
 
-export class EditarActividadComponent implements OnInit, AfterViewInit, OnDestroy {
+export class EditarActividadComponent implements OnInit, AfterViewInit {
 
   actividadForm = new FormGroup({ //FormGroup allows the form to be dynamically filled
     nombre: new FormControl(''),
@@ -106,15 +106,6 @@ export class EditarActividadComponent implements OnInit, AfterViewInit, OnDestro
         });
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    /*this.campusService.getCampusListener().unsubscribe();
-    this.actividadService.getAllActividadListListener().unsubscribe();
-    this.actividadService.getActividadListListener().unsubscribe();
-    this.actividadService.getActividadListener().unsubscribe();
-    this.monitorService.getMonitorListListener().unsubscribe();
-    this.actividadService.getErrorListener().unsubscribe();*/
   }
 
 }

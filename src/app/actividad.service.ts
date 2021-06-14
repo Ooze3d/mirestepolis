@@ -13,9 +13,11 @@ export class ActividadService implements OnInit {
     actividad: Actividad = new Actividad('nombre', 'descripcion', new Date().toISOString(), new Date().toISOString(), '#FFADAD', 'abc000', '00000000A');
     actividadList: Actividad[] = [];
     allActividadList: Actividad[] = [];
+    monitorActividadList: Actividad[] = [];
     private actividadListener = new Subject<Actividad>();
     private actividadListListener = new Subject<Actividad[]>();
     private allActividadListListener = new Subject<Actividad[]>();
+    private monitorActividadListListener = new Subject<Actividad[]>();
     private errorListener = new Subject<string>();
 
     constructor(private http: HttpClient, private campusService: CampusService) {
@@ -38,6 +40,10 @@ export class ActividadService implements OnInit {
         return this.allActividadListListener;
     }
 
+    getMonitorActividadListListener() {
+        return this.monitorActividadListListener;
+    }
+
     getErrorListener() {
         return this.errorListener;
     }
@@ -58,6 +64,18 @@ export class ActividadService implements OnInit {
         this.http.get<Actividad[]>('http://localhost:3000/api/actividades/campus/' + this.campusService.campus.idcampus + '/' + this.fecha.toISOString().substr(0, 10)).subscribe((actividadData) => {
             this.actividadList = actividadData;
             this.actividadListListener.next(this.actividadList);
+        }, error => {
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
+        });
+    }
+
+    getActividadListMonitor(dni: string, fecha: Date) {
+        this.http.get<Actividad[]>('http://localhost:3000/api/actividades/monitor/' + dni + '/' + fecha.toISOString().substr(0, 10)).subscribe((actividadData) => {
+            this.monitorActividadList = actividadData;
+            this.monitorActividadListListener.next(this.monitorActividadList);
         }, error => {
             this.error = error.error.error;
             setTimeout(() => {

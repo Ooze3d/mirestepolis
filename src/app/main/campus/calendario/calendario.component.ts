@@ -321,9 +321,6 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.canvas = null;
-    /*this.campusService.getCampusListener().unsubscribe();
-    this.campusService.getGruposListener().unsubscribe();
-    this.actividadService.getActividadListListener().unsubscribe();*/
   }
 
 }

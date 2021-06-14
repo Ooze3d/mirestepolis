@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const con = require('../mysql');
 const checkAuth = require('../middleware/check-auth');
+const bcrypt = require('bcrypt');
 
 //List of monitors by campus
 router.get('/campus/:idcampus', checkAuth, (req, res, next) => {
@@ -35,7 +36,7 @@ router.get('/:dni', checkAuth, (req, res, next) => {
 router.post('/new', checkAuth, (req, res, next) => {
     con.query('INSERT INTO monitores(dni, nombre, apellidos, telefono, email, especialidad, idcampus, idgrupo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [req.body.dni, req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email, req.body.especialidad, req.body.idcampus, req.body.idgrupo], function (error, results) {
         if (error) {
-            if(error.code=='ER_DUP_ENTRY') {
+            if (error.code == 'ER_DUP_ENTRY') {
                 res.status(400).json({
                     error: 'Ya existe un monitor con el mismo DNI. Por favor, comprueba los datos.'
                 });
@@ -46,7 +47,7 @@ router.post('/new', checkAuth, (req, res, next) => {
             }
         } else {
             res.status(200).json({
-                message: '¡'+req.body.nombre+' registrado!'
+                message: '¡' + req.body.nombre + ' registrado!'
             });
         }
     });
@@ -61,9 +62,27 @@ router.put('/update/:dni', checkAuth, (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                message: '¡'+req.body.nombre+' editado!'
+                message: '¡' + req.body.nombre + ' editado!'
             });
         }
+    });
+});
+
+//Edit password
+router.put('/newpass/:user', checkAuth, (req, res, next) => {
+    let user = req.params.user;
+    bcrypt.hash(req.body[0], 10).then(hash => {
+        con.query('UPDATE usuarios SET password=? WHERE user=?', [hash, user], function (error, results) {
+            if (error) {
+                res.status(400).json({
+                    error: error
+                });
+            } else {
+                res.status(200).json({
+                    message: '¡Nueva contraseña registrada!'
+                });
+            }
+        });
     });
 });
 

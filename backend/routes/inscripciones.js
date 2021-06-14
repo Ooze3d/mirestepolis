@@ -32,7 +32,7 @@ router.get('/fam/:dni', checkAuth, (req, res, next) => {
     });
 });
 
-//One family member by child ID
+//Family members by child ID
 router.get('/fam/child/:matricula', checkAuth, (req, res, next) => {
     let matricula = req.params.matricula;
     con.query('SELECT fam.*, ptf.tipofam, ptf.esprincipal FROM familiares fam, peque_tiene_familiar ptf WHERE ptf.matricula=? AND fam.dni=ptf.dnifamiliar', [matricula], function (error, results) {
@@ -48,6 +48,7 @@ router.get('/fam/child/:matricula', checkAuth, (req, res, next) => {
 
 //New family member
 router.post('/fam/new/:matricula', checkAuth, (req, res, next) => {
+    try {
     con.query('INSERT INTO familiares(dni, nombre, apellidos, telefono, email) VALUES (?, ?, ?, ?, ?)', [req.body.dni, req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email], function (error, results) {
         if (error) {
             if (error.code == 'ER_DUP_ENTRY') { //If the family member is already registered, the info is updated
@@ -69,6 +70,9 @@ router.post('/fam/new/:matricula', checkAuth, (req, res, next) => {
             next();
         }
     });
+} catch(err) {
+    
+}
 }, (req, res, next) => {
     let matricula = req.params.matricula;
     con.query('INSERT INTO peque_tiene_familiar(matricula, dnifamiliar, tipofam, esprincipal) VALUES (?, ?, ?, ?)', [matricula, req.body.dni, req.body.tipofam, req.body.esprincipal], function (error, results) {
@@ -103,9 +107,23 @@ router.put('/fam/update/:dni', checkAuth, (req, res, next) => {
 //Children
 
 //Get list of children by Campus ID
-router.get('/:idcampus', checkAuth, (req, res, next) => {
+router.get('/all/:idcampus', checkAuth, (req, res, next) => {
     let idcampus = req.params.idcampus;
     con.query('SELECT p.* FROM peques p, peque_asiste_campus pac WHERE pac.idcampus=? AND p.matricula=pac.matricula', [idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.json(results);
+        }
+    });
+});
+
+//Get child by ID
+router.get('/:matricula', checkAuth, (req, res, next) => {
+    let matricula = req.params.matricula;
+    con.query('SELECT p.* FROM peques p WHERE p.matricula=?', [matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -138,6 +156,97 @@ router.post('/new/:idcampus', checkAuth, (req, res, next) => {
             res.status(200).json({
                 message: '¡' + req.body.nombre + ' se ha registrado con éxito!'
             });
+        }
+    });
+});
+
+//Edit child
+router.put('/:matricula', checkAuth, (req, res, next) => {
+    let matricula = req.params.matricula;
+    con.query('UPDATE peques SET nombre=?, apellidos=?, fechanac=?, pagada=?, regalada=?, idgrupo=? WHERE matricula=?', [req.body.nombre, req.body.apellidos, req.body.fechanac, req.body.pagada, req.body.regalada, req.body.idgrupo, matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡' + req.body.nombre + ' editado!'
+            });
+        }
+    });
+});
+
+//Days
+
+//List of days by child ID
+router.get('/days/:matricula', checkAuth, (req, res, next) => {
+    let matricula = req.params.matricula;
+    con.query('SELECT * FROM pagos WHERE matriculapeque=?',[matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.json(results);
+        }
+    });
+});
+
+//New day by child ID
+router.post('/days/new', checkAuth, (req, res, next) => {
+    con.query('INSERT INTO pagos(fecha, matriculapeque, aulamat, comedor, postcom, entrada, salida, dnifamiliar) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',[req.body.fecha, req.body.matricula, req.body.aulamat, req.body.comedor, req.body.postcom, req.body.entrada, req.body.salida, req.body.dnifamiliar], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: 'Día registrado'
+            });
+        }
+    });
+});
+
+//New check in by child ID
+router.put('/days/checkin',checkAuth, (req, res, next) => {
+    con.query('UPDATE pagos SET entrada=1 WHERE fecha=DATE(?) AND matriculapeque=?',[req.body.fecha, req.body.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡Entrada registrada!'
+            });
+        }
+    });
+});
+
+//New check out by child ID
+router.put('/days/checkout',checkAuth, (req, res, next) => {
+    con.query('UPDATE pagos SET salida=1, dnifamiliar=? WHERE fecha=DATE(?) AND matriculapeque=?',[req.body.dnifamiliar, req.body.fecha, req.body.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡Entrada registrada!'
+            });
+        }
+    });
+});
+
+//List of months by child ID
+router.get('/months/:matricula', checkAuth, (req, res, next) => {
+    let matricula = req.params.matricula;
+    con.query('SELECT DISTINCT MONTH(fecha) as numero, MONTHNAME(fecha) as texto FROM pagos WHERE matriculapeque=?',[matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.json(results);
         }
     });
 });
@@ -311,6 +420,16 @@ router.delete('/delete/:matricula', checkAuth, (req, res, next) => {
     });
 }, (req, res, next) => {
     con.query('DELETE FROM peque_asiste_campus WHERE matricula=?', [req.params.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM pagos WHERE matriculapeque=?', [req.params.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error

@@ -70,7 +70,7 @@ router.post('/jornadas/new', checkAuth, (req, res, next) => {
 });
 
 //In time, enter button
-router.post('jornadas/newentrada', checkAuth, (req, res, next) => {
+router.post('/jornadas/entrada/new', checkAuth, (req, res, next) => {
     con.query('INSERT INTO jornadas(fecha, horaent, dnimonitor) VALUES (?, ?, ?)', [req.body.fecha, req.body.horaent, req.body.dnimonitor], function (error, results) {
         if (error) {
             if(error.code=='ER_DUP_ENTRY') {
@@ -91,8 +91,8 @@ router.post('jornadas/newentrada', checkAuth, (req, res, next) => {
 });
 
 //Out time, exit button
-router.put('/jornadas/newsalida', checkAuth, (req, res, next) => {
-    con.query('UPDATE jornadas SET horasal=? WHERE fecha=? AND dnimonitor=?', [req.body.horasal, req.body.fecha, req.body.dnimonitor], function (error, results) {
+router.put('/jornadas/salida/new', checkAuth, (req, res, next) => {
+    con.query('UPDATE jornadas SET horasal=? WHERE fecha=DATE(?) AND dnimonitor=?', [req.body.horasal, req.body.fecha, req.body.dnimonitor], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error

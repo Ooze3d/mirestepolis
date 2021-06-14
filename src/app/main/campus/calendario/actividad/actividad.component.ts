@@ -13,7 +13,7 @@ import { UserService } from 'src/app/user.service';
   styleUrls: ['./actividad.component.css']
 })
 
-export class ActividadComponent implements OnInit, OnDestroy {
+export class ActividadComponent implements OnInit {
 
   nombre:FormControl = new FormControl();
   filteredActividadList: Actividad[] = [];
@@ -56,12 +56,6 @@ export class ActividadComponent implements OnInit, OnDestroy {
 
   onNewActividad(f:NgForm) { //Simple call to service to register a new actiivity
     this.actividadService.addActividad(this.nombre.value, f.value.descripcion, f.value.horaini, f.value.minini, f.value.horafin, f.value.minfin, f.value.color, f.value.idgrupo, f.value.dnimonitor);
-  }
-
-  ngOnDestroy(): void {
-    /*this.campusService.getCampusListener().unsubscribe();
-    this.actividadService.getAllActividadListListener().unsubscribe();
-    this.actividadService.getErrorListener().unsubscribe();*/
   }
 
 }

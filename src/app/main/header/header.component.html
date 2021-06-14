@@ -8,11 +8,11 @@
             <mat-icon>settings</mat-icon>
             <span>Campus</span>
         </button>
-        <button mat-menu-item>
+        <button mat-menu-item routerLink="/main/campus/{{ campusService.campus.idcampus }}/listado">
             <mat-icon>how_to_reg</mat-icon>
             <span>Lista Diaria</span>
         </button>
-        <button mat-menu-item routerLink="/main/campus/{{ campusService.campus.idcampus }}/monitores">
+        <button *ngIf="userService.isAdmin()" mat-menu-item routerLink="/main/campus/{{ campusService.campus.idcampus }}/monitores">
             <mat-icon>assignments</mat-icon>
             <span>Monitores</span>
         </button>
@@ -25,7 +25,7 @@
             <span>Inscripciones</span>
         </button>
             <mat-menu #inscriptions="matMenu">
-                <button mat-menu-item routerLink="/main/campus/{{ campusService.campus.idcampus }}/inscripcion/nueva">
+                <button *ngIf="userService.isAdmin()" mat-menu-item routerLink="/main/campus/{{ campusService.campus.idcampus }}/inscripcion/nueva">
                     <mat-icon>account_box</mat-icon>
                     <span>Nueva inscripción</span>
                 </button>

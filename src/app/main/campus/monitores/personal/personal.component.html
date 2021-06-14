@@ -1,1 +1,64 @@
-<p>personal works!</p>
+<div *ngIf="monitorService.exito!=''" class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ monitorService.exito }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div *ngIf="monitorService.error!=''" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ monitorService.error }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="container animate__animated animate__fadeInUp">
+    <div class="row justify-content-center">
+        <div class="col-12 m-2">
+            <mat-card>
+                <div class="col-12 m-3 d-flex justify-content-start">
+                    <img src="../../assets/img/logo.png" />
+                </div>
+                <h2>Bienvenido a tu área personal, <strong>{{ monitorService.monitor.nombre }}</strong></h2>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 col-lg-5 ml-lg-3">
+                            <mat-card class="col-12 m-2">
+                                <h2>Jornada: <strong>{{ fecha | date:'dd/MM/yyyy' }}</strong></h2>
+                                <hr>
+                                <div class="d-flex justify-content-center">
+                                    <button mat-raised-button color="primary" class="big-button m-2" (click)="onComienzaDia()"><mat-icon>fingerprint</mat-icon>Comenzar</button>
+                                    <button mat-raised-button color="primary" class="big-button m-2" (click)="onTerminaDia()"><mat-icon>logout</mat-icon>Finalizar</button>
+                                </div>
+                            </mat-card>
+                            <mat-card class="col-12 m-2">
+                                <h2>Cambia tu contraseña</h2>
+                                <hr>
+                                <form #contraForm="ngForm" (ngSubmit)="onNewContra(contraForm)">
+                                    <mat-form-field appearance="fill">
+                                        <mat-label>Nueva contraseña</mat-label>
+                                        <input type="password" matInput name="password" ngModel #password="ngModel"
+                                            required />
+                                        <mat-error *ngIf="password.invalid">Por favor, introduce una contraseña
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <button mat-raised-button color="accent" type="submit" class="m-2">Guardar</button>
+                                </form>
+                            </mat-card>
+                        </div>
+                        <mat-card class="col-12 col-lg-6 m-2">
+                            <h2>Actividades de hoy</h2>
+                            <hr>
+                            <div *ngFor="let act of actividadService.monitorActividadList" class="actividad">
+                                <h2><strong>{{act.nombre}}</strong></h2>
+                                <hr>
+                                De {{ act.fechaini | date: 'hh:mm' }} a {{ act.fechafin | date: 'hh:mm' }} | Grupo: {{
+                                act.idgrupo | slice:7:10 }}
+                            </div>
+                        </mat-card>
+                    </div>
+                </div>
+            </mat-card>
+        </div>
+    </div>
+</div>

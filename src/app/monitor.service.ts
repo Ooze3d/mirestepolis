@@ -95,6 +95,21 @@ export class MonitorService implements OnInit {
         this.getMonitorList();
     }
 
+    updateContra(newContra: string) {
+        this.http.put<{ message: string }>('http://localhost:3000/api/monitores/newpass/' + this.monitor.dni, [newContra]).subscribe(response => {
+            this.error = '';
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
+        }, error => {
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
+        });
+    }
+
     deleteMonitor(dni: string) {
         this.http.delete<{ message: string }>('http://localhost:3000/api/monitores/delete/' + dni).subscribe(response => {
             this.error = '';
@@ -109,6 +124,48 @@ export class MonitorService implements OnInit {
             }, 3000);
         });
         this.getMonitorList();
+    }
+
+    horaEnt(fechaEnt: Date) {
+        let dia: Date = new Date(fechaEnt);
+        dia.setHours(2);
+        dia.setMinutes(0);
+        dia.setSeconds(0);
+        dia.setMilliseconds(0);
+        let conjunto = {fecha: dia.toISOString(), horaent: (fechaEnt.getHours()-2)+':'+fechaEnt.getMinutes(), dnimonitor: this.monitor.dni};
+        this.http.post<{ message: string }>('http://localhost:3000/api/nominas/jornadas/entrada/new', conjunto).subscribe(response => {
+            this.error = '';
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
+        }, error => {
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
+        });
+    }
+
+    horaSal(fechaSal: Date) {
+        let dia: Date = new Date(fechaSal);
+        dia.setHours(2);
+        dia.setMinutes(0);
+        dia.setSeconds(0);
+        dia.setMilliseconds(0);
+        let conjunto = {fecha: dia.toISOString(), horasal: (fechaSal.getHours()-2)+':'+fechaSal.getMinutes(), dnimonitor: this.monitor.dni};
+        this.http.put<{ message: string }>('http://localhost:3000/api/nominas/jornadas/salida/new', conjunto).subscribe(response => {
+            this.error = '';
+            this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
+        }, error => {
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
+        });
     }
 
 }
