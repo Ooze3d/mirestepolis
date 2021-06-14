@@ -36,7 +36,7 @@ export class CampusService implements OnInit {
     }
 
     getCampus(idcampus:string) {
-        this.http.get<Campus[]>('http://localhost:3000/api/campus/'+idcampus).subscribe((campusData) => {
+        this.http.get<Campus[]>('http://185.167.96.163:3000/api/campus/'+idcampus).subscribe((campusData) => {
             this.campus = campusData[0];
             this.campusListener.next(this.campus);
             this.getGruposList();
@@ -49,7 +49,7 @@ export class CampusService implements OnInit {
     }
 
     getCampusList() {
-        this.http.get<Campus[]>('http://localhost:3000/api/campus').subscribe((campusData) => {
+        this.http.get<Campus[]>('http://185.167.96.163:3000/api/campus').subscribe((campusData) => {
             this.campusList = campusData;
         }, error => {
             this.error = error.error.error;
@@ -61,7 +61,7 @@ export class CampusService implements OnInit {
     }
 
     getGruposList() {
-        this.http.get<{idgrupo:string, nombre:string}[]>('http://localhost:3000/api/campus/grupos/'+this.campus.idcampus).subscribe((gruposData) => {
+        this.http.get<{idgrupo:string, nombre:string}[]>('http://185.167.96.163:3000/api/campus/grupos/'+this.campus.idcampus).subscribe((gruposData) => {
             this.gruposList = gruposData;
             this.gruposListener.next(this.gruposList);
         }, error => {
@@ -75,7 +75,7 @@ export class CampusService implements OnInit {
     addCampus(nombre:string, direccion:string, fechaini:Date, fechafin:Date) {
         const idcampus:string = nombre.toLowerCase().substr(0,3)+Math.round(Math.random()*899+100); //Auto ID
         this.campus = new Campus(idcampus, nombre, direccion, fechaini.toISOString(), fechafin.toISOString());
-        this.http.post<{ message: string }>('http://localhost:3000/api/campus/new', this.campus).subscribe(response => {
+        this.http.post<{ message: string }>('http://185.167.96.163:3000/api/campus/new', this.campus).subscribe(response => {
             this.exito = response.message;
             setTimeout(() => {
                 this.exito = '';
@@ -92,7 +92,7 @@ export class CampusService implements OnInit {
 
     updateCampus(idcampus:string, nombre:string, direccion:string, fechaini:Date, fechafin:Date) {
         this.campus = new Campus(idcampus, nombre, direccion, fechaini.toISOString(), fechafin.toISOString());
-        this.http.put<{ message: string }>('http://localhost:3000/api/campus/update/'+idcampus, this.campus).subscribe(response => {
+        this.http.put<{ message: string }>('http://185.167.96.163:3000/api/campus/update/'+idcampus, this.campus).subscribe(response => {
             this.exito = response.message;
             setTimeout(() => {
                 this.exito = '';
@@ -107,7 +107,7 @@ export class CampusService implements OnInit {
     }
 
     deleteCampus(idcampus:string) {
-        this.http.delete<{ message: string }>('http://localhost:3000/api/campus/delete/'+idcampus).subscribe(response => {
+        this.http.delete<{ message: string }>('http://185.167.96.163:3000/api/campus/delete/'+idcampus).subscribe(response => {
             this.exito = response.message;
             this.getCampusList();
             this.campusListListener.next(this.campusList);

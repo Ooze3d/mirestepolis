@@ -34,7 +34,7 @@ export class JornadaService implements OnInit {
     }
 
     getJornadasList() { //Todas las jornadas de un monitor
-        this.http.get<Jornada[]>('http://localhost:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni).subscribe((jornadasData) => {
+        this.http.get<Jornada[]>('http://185.167.96.163:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni).subscribe((jornadasData) => {
             this.jornadasList = jornadasData;
         }, error => {
             this.error = error.error.error;
@@ -46,7 +46,7 @@ export class JornadaService implements OnInit {
     }
 
     getMesesList() {
-        this.http.get<MonthYear[]>('http://localhost:3000/api/nominas/'+this.monitorService.monitor.dni).subscribe((mesesData) => {
+        this.http.get<MonthYear[]>('http://185.167.96.163:3000/api/nominas/'+this.monitorService.monitor.dni).subscribe((mesesData) => {
             this.mesesList = mesesData;
         }, error => {
             this.error = error.error.error;
@@ -57,7 +57,7 @@ export class JornadaService implements OnInit {
     }
 
     getJornadasMes(year:number, month:number) { //Days worked by year and month
-        this.http.get<Jornada[]>('http://localhost:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni+'/'+year+'/'+month).subscribe((jornadasData) => {
+        this.http.get<Jornada[]>('http://185.167.96.163:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni+'/'+year+'/'+month).subscribe((jornadasData) => {
             this.jornadasList = jornadasData;
         }, error => {
             this.error = error.error.error;
@@ -86,7 +86,7 @@ export class JornadaService implements OnInit {
     }
 
     updateJornada() {
-        this.http.put<{message:string}>('http://localhost:3000/api/nominas/jornadas', this.jornada).subscribe(response => {
+        this.http.put<{message:string}>('http://185.167.96.163:3000/api/nominas/jornadas', this.jornada).subscribe(response => {
             this.exito = response.message;
             setTimeout(() => {
                 this.exito = '';
@@ -105,7 +105,7 @@ export class JornadaService implements OnInit {
 
     addJornada(fecha:string, horaent:string, horasal:string, dnimonitor:string) {
         this.jornada = new Jornada(fecha, horaent, horasal, dnimonitor);
-        this.http.post<{message:string}>('http://localhost:3000/api/nominas/jornadas/new', this.jornada).subscribe(response => {
+        this.http.post<{message:string}>('http://185.167.96.163:3000/api/nominas/jornadas/new', this.jornada).subscribe(response => {
             this.exito = response.message;
             setTimeout(() => {
                 this.exito = '';
@@ -127,7 +127,7 @@ export class JornadaService implements OnInit {
 
     deleteJornada() {
         let fecha = this.transformDate(this.jornada.fecha);
-        this.http.delete<{message:string}>('http://localhost:3000/api/nominas/jornadas/delete/'+fecha+'/'+this.jornada.dnimonitor).subscribe(response => {
+        this.http.delete<{message:string}>('http://185.167.96.163:3000/api/nominas/jornadas/delete/'+fecha+'/'+this.jornada.dnimonitor).subscribe(response => {
             this.exito = response.message;
             setTimeout(() => {
                 this.exito = '';

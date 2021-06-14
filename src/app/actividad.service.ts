@@ -49,7 +49,7 @@ export class ActividadService implements OnInit {
     }
 
     getActividad(idactividad: number) {
-        this.http.get<Actividad[]>('http://localhost:3000/api/actividades/' + idactividad).subscribe((actividadData) => {
+        this.http.get<Actividad[]>('http://185.167.96.163:3000/api/actividades/' + idactividad).subscribe((actividadData) => {
             this.actividad = actividadData[0];
             this.actividadListener.next(this.actividad);
         }, error => {
@@ -61,7 +61,7 @@ export class ActividadService implements OnInit {
     }
 
     getActividadList() {
-        this.http.get<Actividad[]>('http://localhost:3000/api/actividades/campus/' + this.campusService.campus.idcampus + '/' + this.fecha.toISOString().substr(0, 10)).subscribe((actividadData) => {
+        this.http.get<Actividad[]>('http://185.167.96.163:3000/api/actividades/campus/' + this.campusService.campus.idcampus + '/' + this.fecha.toISOString().substr(0, 10)).subscribe((actividadData) => {
             this.actividadList = actividadData;
             this.actividadListListener.next(this.actividadList);
         }, error => {
@@ -73,7 +73,7 @@ export class ActividadService implements OnInit {
     }
 
     getActividadListMonitor(dni: string, fecha: Date) {
-        this.http.get<Actividad[]>('http://localhost:3000/api/actividades/monitor/' + dni + '/' + fecha.toISOString().substr(0, 10)).subscribe((actividadData) => {
+        this.http.get<Actividad[]>('http://185.167.96.163:3000/api/actividades/monitor/' + dni + '/' + fecha.toISOString().substr(0, 10)).subscribe((actividadData) => {
             this.monitorActividadList = actividadData;
             this.monitorActividadListListener.next(this.monitorActividadList);
         }, error => {
@@ -85,7 +85,7 @@ export class ActividadService implements OnInit {
     }
 
     getAllActividadList() {
-        this.http.get<Actividad[]>('http://localhost:3000/api/actividades').subscribe((actividadData) => {
+        this.http.get<Actividad[]>('http://185.167.96.163:3000/api/actividades').subscribe((actividadData) => {
             this.allActividadList = actividadData;
             this.allActividadListListener.next(this.allActividadList);
         }, error => {
@@ -116,7 +116,7 @@ export class ActividadService implements OnInit {
             this.errorListener.next(this.error);
         } else {
             this.actividad = new Actividad(nombre, descripcion, fechaIni.toISOString(), fechaFin.toISOString(), color, idgrupo, dnimonitor);
-            this.http.post<{ message: string }>('http://localhost:3000/api/actividades/new', this.actividad).subscribe(response => {
+            this.http.post<{ message: string }>('http://185.167.96.163:3000/api/actividades/new', this.actividad).subscribe(response => {
                 this.exito = response.message;
                 setTimeout(() => {
                     this.exito = '';
@@ -146,7 +146,7 @@ export class ActividadService implements OnInit {
         } else {
             this.actividad = new Actividad(nombre, descripcion, fechaIni.toISOString(), fechaFin.toISOString(), color, idgrupo, dnimonitor);
             this.actividad.idactividad = idactividad;
-            this.http.put<{ message: string }>('http://localhost:3000/api/actividades/update/' + idactividad, this.actividad).subscribe(response => {
+            this.http.put<{ message: string }>('http://185.167.96.163:3000/api/actividades/update/' + idactividad, this.actividad).subscribe(response => {
                 this.exito = response.message;
                 setTimeout(() => {
                     this.exito = '';
@@ -162,7 +162,7 @@ export class ActividadService implements OnInit {
     }
 
     deleteActividad(idactividad: number) {
-        this.http.delete<{ message: string }>('http://localhost:3000/api/actividades/delete/' + idactividad).subscribe(response => {
+        this.http.delete<{ message: string }>('http://185.167.96.163:3000/api/actividades/delete/' + idactividad).subscribe(response => {
             this.exito = response.message;
             setTimeout(() => {
                 this.exito = '';
