@@ -38,8 +38,9 @@
                                     <mat-icon class="m-2">account_box</mat-icon>
                                     {{peque.apellidos }}, {{ peque.nombre }}
                                 </div>
-                                <button class="m-2" mat-raised-button color="primary">Entrada</button>
-                                <form class="d-flex flex-column" #salidaForm="ngForm" (ngSubmit)="onSalida(salidaForm)">
+                                <button class="m-2" mat-raised-button color="primary" (click)="onEntrada(i)" *ngIf="!checkEntrada(i)">Entrada</button>
+                                <button class="m-2" mat-raised-button color="standard" (click)="onEntrada(i)" *ngIf="checkEntrada(i)" disabled>Entrada</button>
+                                <form class="d-flex flex-column" #salidaForm="ngForm" (ngSubmit)="onSalida(i, salidaForm)">
                                 <button class="m-2" mat-raised-button color="accent" type="submit">Salida</button>
                                 <mat-form-field appearance="fill">
                                     <mat-label>Familiar:</mat-label>

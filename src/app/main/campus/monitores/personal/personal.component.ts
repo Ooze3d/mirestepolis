@@ -43,7 +43,9 @@ export class PersonalComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.monitorService.getMonitorListener().subscribe(newMonitor => {
       this.actividadService.getActividadListMonitor(newMonitor.dni, this.fecha);
-      this.actividadService.getMonitorActividadListListener().subscribe(() => {});
+      this.actividadService.getMonitorActividadListListener().subscribe(lista => {
+        console.log(lista);
+      });
     });
   }
 

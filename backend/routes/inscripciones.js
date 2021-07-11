@@ -209,7 +209,7 @@ router.post('/days/new', checkAuth, (req, res, next) => {
 
 //New check in by child ID
 router.put('/days/checkin',checkAuth, (req, res, next) => {
-    con.query('UPDATE pagos SET entrada=1 WHERE fecha=DATE(?) AND matriculapeque=?',[req.body.fecha, req.body.matricula], function (error, results) {
+    con.query("UPDATE pagos SET entrada=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -224,7 +224,7 @@ router.put('/days/checkin',checkAuth, (req, res, next) => {
 
 //New check out by child ID
 router.put('/days/checkout',checkAuth, (req, res, next) => {
-    con.query('UPDATE pagos SET salida=1, dnifamiliar=? WHERE fecha=DATE(?) AND matriculapeque=?',[req.body.dnifamiliar, req.body.fecha, req.body.matricula], function (error, results) {
+    con.query("UPDATE pagos SET salida=1, dnifamiliar=? WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.dnifamiliar, req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error

@@ -78,6 +78,7 @@ export class MonitorComponent implements OnInit, AfterViewInit {
   onMesChange() {
     this.jornadaService.mes = new MonthYear(this.jornadaService.monthyear);
     this.jornadaService.getJornadasMes(this.jornadaService.mes.year, this.jornadaService.mes.month);
+    this.jornadaService.getJornadasListListener().subscribe();
   }
 
   onClickEdit(i: number) {
@@ -88,13 +89,13 @@ export class MonitorComponent implements OnInit, AfterViewInit {
   onJornadaUpdate() {
     this.jornadaService.updateJornada();
     this.indexEdit = -1; //Turn off edit mode
-    //this.changes.detectChanges();
+    this.jornadaService.getJornadasListListener().subscribe();
   }
 
   onJornadaDelete() {
     this.jornadaService.deleteJornada();
     this.indexEdit = -1;
-    //this.changes.detectChanges();
+    this.jornadaService.getJornadasListListener().subscribe();
   }
 
   onNewJornada(f: NgForm) {
@@ -102,13 +103,13 @@ export class MonitorComponent implements OnInit, AfterViewInit {
       return;
     else {
       this.jornadaService.addJornada(new Date(f.value.fecha).toISOString(), f.value.horaent, f.value.horasal, this.monitorService.monitor.dni);
-      //this.changes.detectChanges();
+      this.jornadaService.getJornadasListListener().subscribe();
     }
   }
 
   onMonitorUpdate() {
     this.monitorService.updateMonitor(this.dni, this.monitorForm.value.nombre, this.monitorForm.value.apellidos, this.monitorForm.value.telefono, this.monitorForm.value.email, this.monitorForm.value.especialidad, this.monitorForm.value.idcampus, this.monitorForm.value.idgrupo);
-    this.changes.detectChanges();
+    //this.changes.detectChanges();
   }
 
 }

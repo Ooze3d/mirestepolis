@@ -68,11 +68,44 @@ export class ListadoComponent implements OnInit, AfterViewInit {
     return a.apellidos.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') <= b.apellidos.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') ? -1 : 1;
   }
 
-  onEntrada() {
-
+  checkEntrada(i:number): boolean {
+    let resp: boolean = false;
+    this.listaFiltered[i].dayList.forEach(x => {
+      let temp = new Date(x.fecha);
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.entrada==1)
+        resp = true;
+    });
+    return resp;
   }
 
-  onSalida(f:NgForm) {
+  checkSalida(i:number): boolean {
+    let resp: boolean = false;
+    this.listaFiltered[i].dayList.forEach(x => {
+      let temp = new Date(x.fecha);
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.salida==1)
+        resp = true;
+    });
+    return resp;
+  }
+
+  returnFam(i:number): string {
+    let fam: string = '';
+    this.listaFiltered[i].dayList.forEach(x => {
+      let temp = new Date(x.fecha);
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.salida==1)
+        fam = x.dnifamiliar;
+    });
+    return fam;
+  }
+
+  onEntrada(i:number) {
+    this.inscripcionService.newEntrada(this.fecha, this.listaFiltered[i].matricula);
+    this.inscripcionService.getInscripcionListListener().subscribe(list => {
+      this.listaFiltered = list.sort(this.compara);
+    });
+  }
+
+  onSalida(i:number, f:NgForm) {
     
   }
 

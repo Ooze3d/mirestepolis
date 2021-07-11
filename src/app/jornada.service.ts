@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { Jornada } from './jornada.model';
 import { MonitorService } from './monitor.service';
 import { MonthYear } from 'src/app/monthyear.model';
+import { Constants } from './constants';
 
 @Injectable({providedIn: 'root'})
 export class JornadaService implements OnInit {
@@ -22,11 +23,11 @@ export class JornadaService implements OnInit {
     }
 
     ngOnInit() {
-        console.log(this.monthyear);
         if(this.monthyear!='')
-            this.getJornadasMes(this.mes.year, this.mes.month);
-        else
-            this.getJornadasList();
+                this.getJornadasMes(this.mes.year, this.mes.month);
+            else
+                this.getJornadasList();
+        this.jornadasListListener.next(this.jornadasList);
     }
 
     getJornadasListListener() {
@@ -34,8 +35,9 @@ export class JornadaService implements OnInit {
     }
 
     getJornadasList() { //Todas las jornadas de un monitor
-        this.http.get<Jornada[]>('http://185.167.96.163:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni).subscribe((jornadasData) => {
+        this.http.get<Jornada[]>(Constants.url+'nominas/jornadas/'+this.monitorService.monitor.dni).subscribe((jornadasData) => {
             this.jornadasList = jornadasData;
+            this.jornadasListListener.next(this.jornadasList);
         }, error => {
             this.error = error.error.error;
             setTimeout(() => {
@@ -46,7 +48,7 @@ export class JornadaService implements OnInit {
     }
 
     getMesesList() {
-        this.http.get<MonthYear[]>('http://185.167.96.163:3000/api/nominas/'+this.monitorService.monitor.dni).subscribe((mesesData) => {
+        this.http.get<MonthYear[]>(Constants.url+'nominas/'+this.monitorService.monitor.dni).subscribe((mesesData) => {
             this.mesesList = mesesData;
         }, error => {
             this.error = error.error.error;
@@ -57,8 +59,9 @@ export class JornadaService implements OnInit {
     }
 
     getJornadasMes(year:number, month:number) { //Days worked by year and month
-        this.http.get<Jornada[]>('http://185.167.96.163:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni+'/'+year+'/'+month).subscribe((jornadasData) => {
+        this.http.get<Jornada[]>(Constants.url+'nominas/jornadas/'+this.monitorService.monitor.dni+'/'+year+'/'+month).subscribe((jornadasData) => {
             this.jornadasList = jornadasData;
+            this.jornadasListListener.next(this.jornadasList);
         }, error => {
             this.error = error.error.error;
             setTimeout(() => {
@@ -86,8 +89,13 @@ export class JornadaService implements OnInit {
     }
 
     updateJornada() {
-        this.http.put<{message:string}>('http://185.167.96.163:3000/api/nominas/jornadas', this.jornada).subscribe(response => {
+        this.http.put<{message:string}>(Constants.url+'nominas/jornadas', this.jornada).subscribe(response => {
             this.exito = response.message;
+            if(this.monthyear!='')
+                this.getJornadasMes(this.mes.year, this.mes.month);
+            else
+                this.getJornadasList();
+            this.jornadasListListener.next(this.jornadasList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
@@ -97,16 +105,18 @@ export class JornadaService implements OnInit {
                 this.error = '';
             }, 3000);
         });
-        if(this.monthyear!='')
-            this.getJornadasMes(this.mes.year, this.mes.month);
-        else
-            this.getJornadasList();
+
     }
 
     addJornada(fecha:string, horaent:string, horasal:string, dnimonitor:string) {
         this.jornada = new Jornada(fecha, horaent, horasal, dnimonitor);
-        this.http.post<{message:string}>('http://185.167.96.163:3000/api/nominas/jornadas/new', this.jornada).subscribe(response => {
+        this.http.post<{message:string}>(Constants.url+'nominas/jornadas/new', this.jornada).subscribe(response => {
             this.exito = response.message;
+            if(this.monthyear!='')
+                this.getJornadasMes(this.mes.year, this.mes.month);
+            else
+                this.getJornadasList();
+            this.jornadasListListener.next(this.jornadasList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
@@ -116,19 +126,17 @@ export class JornadaService implements OnInit {
                 this.error = '';
             }, 3000);
         });
-
-        if(this.monthyear!='')
-            this.getJornadasMes(this.mes.year, this.mes.month);
-        else
-            this.getJornadasList();
-
-        this.getMesesList();
     }
 
     deleteJornada() {
         let fecha = this.transformDate(this.jornada.fecha);
-        this.http.delete<{message:string}>('http://185.167.96.163:3000/api/nominas/jornadas/delete/'+fecha+'/'+this.jornada.dnimonitor).subscribe(response => {
+        this.http.delete<{message:string}>(Constants.url+'nominas/jornadas/delete/'+fecha+'/'+this.jornada.dnimonitor).subscribe(response => {
             this.exito = response.message;
+            if(this.monthyear!='')
+                this.getJornadasMes(this.mes.year, this.mes.month);
+            else
+                this.getJornadasList();
+            this.jornadasListListener.next(this.jornadasList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
@@ -138,13 +146,6 @@ export class JornadaService implements OnInit {
                 this.error = '';
             }, 3000);
         });
-
-        if(this.monthyear!='')
-            this.getJornadasMes(this.mes.year, this.mes.month);
-        else
-            this.getJornadasList();
-
-        this.getMesesList();
     }
 
     transformDate(fecha:string) {
