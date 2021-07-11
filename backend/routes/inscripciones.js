@@ -142,17 +142,6 @@ router.post('/new/:idcampus', checkAuth, (req, res, next) => {
                 error: error
             });
         } else {
-            next();
-        }
-    });
-}, (req, res, next) => {
-    let idcampus = req.params.idcampus;
-    con.query('INSERT INTO peque_asiste_campus(matricula, idcampus) VALUES (?, ?)', [req.body.matricula, idcampus], function (error, results) {
-        if (error) {
-            res.status(400).json({
-                error: error
-            });
-        } else {
             res.status(200).json({
                 message: '¡' + req.body.nombre + ' se ha registrado con éxito!'
             });
@@ -194,7 +183,7 @@ router.get('/days/:matricula', checkAuth, (req, res, next) => {
 
 //New day by child ID
 router.post('/days/new', checkAuth, (req, res, next) => {
-    con.query('INSERT INTO pagos(fecha, matriculapeque, aulamat, comedor, postcom, entrada, salida, dnifamiliar) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',[req.body.fecha, req.body.matricula, req.body.aulamat, req.body.comedor, req.body.postcom, req.body.entrada, req.body.salida, req.body.dnifamiliar], function (error, results) {
+    con.query('INSERT INTO pagos(fecha, matriculapeque, aulamat, comedor, postcom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',[req.body.fecha, req.body.matricula, req.body.aulamat, req.body.comedor, req.body.postcom, req.body.entrada, req.body.salida, req.body.dnifamiliar], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -209,7 +198,7 @@ router.post('/days/new', checkAuth, (req, res, next) => {
 
 //New check in by child ID
 router.put('/days/checkin',checkAuth, (req, res, next) => {
-    con.query("UPDATE pagos SET entrada=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.fecha, req.body.matricula], function (error, results) {
+    con.query("UPDATE paselista SET entrada=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -222,9 +211,54 @@ router.put('/days/checkin',checkAuth, (req, res, next) => {
     });
 });
 
+//New daycare in by child ID
+router.put('/days/daycare',checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET aulamat=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.fecha, req.body.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡Aula matinal registrada!'
+            });
+        }
+    });
+});
+
+//New meal in by child ID
+router.put('/days/meal',checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET comedor=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.fecha, req.body.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡Comedor registrado!'
+            });
+        }
+    });
+});
+
+//New postmeal in by child ID
+router.put('/days/postmeal',checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET postcom=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.fecha, req.body.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡Post-comedor registrado!'
+            });
+        }
+    });
+});
+
 //New check out by child ID
 router.put('/days/checkout',checkAuth, (req, res, next) => {
-    con.query("UPDATE pagos SET salida=1, dnifamiliar=? WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.dnifamiliar, req.body.fecha, req.body.matricula], function (error, results) {
+    con.query("UPDATE paselista SET salida=1, dnifamiliar=? WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.dnifamiliar, req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -237,7 +271,7 @@ router.put('/days/checkout',checkAuth, (req, res, next) => {
     });
 });
 
-//List of months by child ID
+//List of months by child ID (NOT NEEDED ANYMORE - ADD TO CAMPUS)
 router.get('/months/:matricula', checkAuth, (req, res, next) => {
     let matricula = req.params.matricula;
     con.query('SELECT DISTINCT MONTH(fecha) as numero, MONTHNAME(fecha) as texto FROM pagos WHERE matriculapeque=?',[matricula], function (error, results) {
@@ -430,6 +464,16 @@ router.delete('/delete/:matricula', checkAuth, (req, res, next) => {
     });
 }, (req, res, next) => {
     con.query('DELETE FROM pagos WHERE matriculapeque=?', [req.params.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM paselista WHERE matriculapeque=?', [req.params.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
