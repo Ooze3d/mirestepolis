@@ -124,7 +124,7 @@ router.delete('/delete/:idcampus', checkAuth, (req, res, next) => {
         }
     });
 }, (req, res, next) => {
-    con.query('DELETE FROM pagos WHERE matriculapeque IN (SELECT matricula FROM peque_asiste_campus WHERE idcampus=?)', [req.params.idcampus], function (error, results) {
+    con.query('DELETE FROM pagos WHERE matricula IN (SELECT matricula FROM peque_asiste_campus WHERE idcampus=?)', [req.params.idcampus], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error

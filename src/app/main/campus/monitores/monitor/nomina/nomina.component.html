@@ -1,7 +1,9 @@
 <p>Nómina de {{ monitorService.monitor.nombre }} {{ monitorService.monitor.apellidos }} de {{ month }}/{{ year }}</p>
+<p>Pero en realidad, tengo datos de: {{ jornadaService.mes.full }}</p>
 <p>El total de horas trabajadas es de: {{ totalHoras }}</p>
 <p>Salario Base: {{ salarioBase }}€</p>
 <p>PRORRATA: {{ extra }}€</p>
 <p>Total Devengado: {{ totalDevengado }}€</p>
+<canvas id="myCanvas" width="701" height="500"></canvas>
 
 <button mat-raised-button color="accent" routerLink="/main/campus/{{campusService.campus.idcampus}}/monitores/{{monitorService.monitor.dni}}">Atrás</button>

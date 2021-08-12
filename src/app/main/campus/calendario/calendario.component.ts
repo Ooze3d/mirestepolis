@@ -7,6 +7,8 @@ import { Actividad } from 'src/app/actividad.model';
 import { UserService } from 'src/app/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MonitorService } from 'src/app/monitor.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-calendario',
@@ -19,7 +21,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
   canvas!: any;
   x: number = 0;
   y: number = 0;
-  horas: { text: string, color: string }[] = [ //
+  horas: { text: string, color: string }[] = [ 
     { text: '08:00-09:00', color: 'rgba(254,207,57,0.5)' },
     { text: '09:00-10:00', color: 'rgba(254,207,57,0.3)' },
     { text: '10:00-11:00', color: 'rgba(254,207,57,0.5)' },
@@ -31,6 +33,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
   yellowTrans: string = 'rgba(254,207,57,0.3)';
   blueGrad: string[] = ['rgba(33, 150, 243, 0.4)', 'rgba(33, 150, 243, 0.6)', 'rgba(33, 150, 243, 0.8)', 'rgba(33, 150, 243, 1)'];
   colorText: string = 'darkorange';
+  destroyed: Subject<void> = new Subject<void>();
 
   constructor(public campusService: CampusService, public monitorService: MonitorService, public actividadService: ActividadService, public userService: UserService, private route: ActivatedRoute, private router: Router) {
 
@@ -44,7 +47,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       localStorage.setItem('fechaAct', this.actividadService.fecha.toISOString());
     }
-    this.route.params.subscribe((params) => {
+    this.route.params.pipe(takeUntil(this.destroyed)).subscribe((params) => {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //Checks the url and changes the campus attribute in the service if needed
         this.campusService.getCampus(id);
@@ -55,12 +58,12 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.campusService.getCampusListener().subscribe(() => {
-      this.campusService.getGruposListener().subscribe(() => {
+    this.campusService.getCampusListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
+      this.campusService.getGruposListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
         this.monitorService.getMonitorList();
         this.drawCalendar();
         this.actividadService.getActividadList(); //These two lines are duplicated, but they're needed since they're called in two different moments in time, depending on the page load
-        this.actividadService.getActividadListListener().subscribe(list => {
+        this.actividadService.getActividadListListener().pipe(takeUntil(this.destroyed)).subscribe(list => {
           try {
             this.drawActividades(list);
           } catch (e: any) { } //this.canvas appears as NULL inside the subscription but the method works
@@ -68,7 +71,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
     this.actividadService.getActividadList();
-    this.actividadService.getActividadListListener().subscribe(list => {
+    this.actividadService.getActividadListListener().pipe(takeUntil(this.destroyed)).subscribe(list => {
       try {
         this.drawActividades(list);
       } catch (e: any) { }
@@ -94,7 +97,7 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
       this.canvas.remove(this.canvas.item(this.canvas.getObjects().length - 1));
     }
     this.actividadService.getActividadList();
-    this.actividadService.getActividadListListener().subscribe(list => {
+    this.actividadService.getActividadListListener().pipe(takeUntil(this.destroyed)).subscribe(list => {
       try {
         this.drawActividades(list);
       } catch (e: any) { }
@@ -321,6 +324,8 @@ export class CalendarioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.canvas = null;
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
 }

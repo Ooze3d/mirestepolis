@@ -165,10 +165,11 @@
         <div class="col-12 col-lg-10 m-2 p-lg-2">
             <mat-card>
                 <h2>Días de asistencia</h2>
-                <mat-card *ngFor="let mes of inscripcionService.mesesList" class="col-12 m-2">
+                <mat-card *ngFor="let mes of campusService.mesesList" class="col-12 m-2">
                     <h3>{{mes.texto}}</h3>
-                        <div *ngFor="let dia of inscripcionService.inscripcion.dayList; index as i">
-                            <button *ngIf="extractMonth(dia.fecha)==mes.numero-1" style="float: left;" mat-mini-fab color="primary" class="m-2">{{ dia.fecha | date:'d' }}</button>
+                        <div *ngFor="let dia of campusService.daysList; index as i">
+                            <button *ngIf="dia.getMonth()==mes.numero-1 && !checkDayActive(dia)" style="float: left;" mat-mini-fab color="primary" class="m-2" (click)="onCheckDay(i)">{{ dia | date:'d' }}</button>
+                            <button *ngIf="dia.getMonth()==mes.numero-1 && checkDayActive(dia)" style="float: left;" mat-mini-fab color="accent" class="m-2" (click)="onCheckDay(i)">{{ dia | date:'d' }}</button>
                         </div>
                         <div style="clear: both;"></div>
                 </mat-card>

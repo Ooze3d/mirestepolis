@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const con = require('../mysql');
 const checkAuth = require('../middleware/check-auth');
+//const { consoleTestResultHandler } = require("tslint/lib/test");
 
 //Family members
 
@@ -49,30 +50,30 @@ router.get('/fam/child/:matricula', checkAuth, (req, res, next) => {
 //New family member
 router.post('/fam/new/:matricula', checkAuth, (req, res, next) => {
     try {
-    con.query('INSERT INTO familiares(dni, nombre, apellidos, telefono, email) VALUES (?, ?, ?, ?, ?)', [req.body.dni, req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email], function (error, results) {
-        if (error) {
-            if (error.code == 'ER_DUP_ENTRY') { //If the family member is already registered, the info is updated
-                con.query('UPDATE familiares SET nombre=?, apellidos=?, telefono=?, email=? WHERE dni=?', [req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email, req.body.dni], function (error, results) {
-                    if (error) {
-                        res.status(400).json({
-                            error: error
-                        });
-                    } else {
-                        next();
-                    }
-                });
+        con.query('INSERT INTO familiares(dni, nombre, apellidos, telefono, email) VALUES (?, ?, ?, ?, ?)', [req.body.dni, req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email], function (error, results) {
+            if (error) {
+                if (error.code == 'ER_DUP_ENTRY') { //If the family member is already registered, the info is updated
+                    con.query('UPDATE familiares SET nombre=?, apellidos=?, telefono=?, email=? WHERE dni=?', [req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email, req.body.dni], function (error, results) {
+                        if (error) {
+                            res.status(400).json({
+                                error: error
+                            });
+                        } else {
+                            next();
+                        }
+                    });
+                } else {
+                    res.status(400).json({
+                        error: error
+                    });
+                }
             } else {
-                res.status(400).json({
-                    error: error
-                });
+                next();
             }
-        } else {
-            next();
-        }
-    });
-} catch(err) {
-    
-}
+        });
+    } catch (err) {
+
+    }
 }, (req, res, next) => {
     let matricula = req.params.matricula;
     con.query('INSERT INTO peque_tiene_familiar(matricula, dnifamiliar, tipofam, esprincipal) VALUES (?, ?, ?, ?)', [matricula, req.body.dni, req.body.tipofam, req.body.esprincipal], function (error, results) {
@@ -142,6 +143,17 @@ router.post('/new/:idcampus', checkAuth, (req, res, next) => {
                 error: error
             });
         } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    let idcampus = req.params.idcampus;
+    con.query('INSERT INTO peque_asiste_campus(matricula, idcampus) VALUES (?, ?)', [req.body.matricula, idcampus], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
             res.status(200).json({
                 message: '¡' + req.body.nombre + ' se ha registrado con éxito!'
             });
@@ -167,10 +179,10 @@ router.put('/:matricula', checkAuth, (req, res, next) => {
 
 //Days
 
-//List of days by child ID
-router.get('/days/:matricula', checkAuth, (req, res, next) => {
+//List of paid days by child ID
+router.get('/dayspaid/:matricula', checkAuth, (req, res, next) => {
     let matricula = req.params.matricula;
-    con.query('SELECT * FROM pagos WHERE matriculapeque=?',[matricula], function (error, results) {
+    con.query('SELECT * FROM pagos WHERE matricula=?', [matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -181,9 +193,55 @@ router.get('/days/:matricula', checkAuth, (req, res, next) => {
     });
 });
 
-//New day by child ID
-router.post('/days/new', checkAuth, (req, res, next) => {
-    con.query('INSERT INTO pagos(fecha, matriculapeque, aulamat, comedor, postcom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',[req.body.fecha, req.body.matricula, req.body.aulamat, req.body.comedor, req.body.postcom, req.body.entrada, req.body.salida, req.body.dnifamiliar], function (error, results) {
+//List of days by child ID
+router.get('/days/:matricula', checkAuth, (req, res, next) => {
+    let matricula = req.params.matricula;
+    con.query('SELECT * FROM paselista WHERE matricula=?', [matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.json(results);
+        }
+    });
+});
+
+//New paid day by child ID
+router.post('/days/newpaid', checkAuth, (req, res, next) => {
+    con.query('INSERT INTO pagos(fecha, matricula, aulamat, comedor, postcom) VALUES (?, ?, ?, ?, ?)', [req.body.fecha, req.body.matricula, req.body.aulamat, req.body.comedor, req.body.postcom], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: 'Día registrado'
+            });
+        }
+    });
+});
+
+//Delete paid day
+router.delete('/dayspaid/:matricula/:fecha', checkAuth, (req, res, next) => {
+    let matricula = req.params.matricula;
+    let fecha = req.params.fecha;
+    con.query("DELETE FROM pagos WHERE matricula=? AND DATE_FORMAT(fecha, '%Y-%m-%d')=?", [matricula, fecha], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.json({
+                message: 'Día borrado'
+            });
+        }
+    });
+});
+
+//New complete day by child ID
+router.post('/days/newday', checkAuth, (req, res, next) => {
+    con.query('INSERT INTO paselista(fecha, matricula, aulamat, comedor, postcom, entrada, salida, dnifamiliar) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [req.body.fecha, req.body.matricula, req.body.aulamat, req.body.comedor, req.body.postcom, req.body.entrada, req.body.salida, req.body.dnifamiliar], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -197,8 +255,8 @@ router.post('/days/new', checkAuth, (req, res, next) => {
 });
 
 //New check in by child ID
-router.put('/days/checkin',checkAuth, (req, res, next) => {
-    con.query("UPDATE paselista SET entrada=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.fecha, req.body.matricula], function (error, results) {
+router.post('/days/checkin', checkAuth, (req, res, next) => {
+    con.query("INSERT INTO paselista(fecha, matricula, entrada) VALUES (?, ?, 1)", [req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -211,9 +269,24 @@ router.put('/days/checkin',checkAuth, (req, res, next) => {
     });
 });
 
+//Delete check in by child ID and date
+router.delete('/days/checkin/:fecha/:matricula', checkAuth, (req, res, next) => {
+    con.query("DELETE FROM paselista WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.params.fecha, req.params.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡Entrada borrada!'
+            });
+        }
+    });
+});
+
 //New daycare in by child ID
-router.put('/days/daycare',checkAuth, (req, res, next) => {
-    con.query("UPDATE paselista SET aulamat=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.fecha, req.body.matricula], function (error, results) {
+router.put('/days/daycare', checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET aulamat=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -226,9 +299,24 @@ router.put('/days/daycare',checkAuth, (req, res, next) => {
     });
 });
 
+//Delete daycare by child ID and date
+router.put('/days/deletedaycare', checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET aulamat=0 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.body.fecha, req.body.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡Aula matinal borrada!'
+            });
+        }
+    });
+});
+
 //New meal in by child ID
-router.put('/days/meal',checkAuth, (req, res, next) => {
-    con.query("UPDATE paselista SET comedor=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.fecha, req.body.matricula], function (error, results) {
+router.put('/days/meal', checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET comedor=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -241,24 +329,54 @@ router.put('/days/meal',checkAuth, (req, res, next) => {
     });
 });
 
-//New postmeal in by child ID
-router.put('/days/postmeal',checkAuth, (req, res, next) => {
-    con.query("UPDATE paselista SET postcom=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.fecha, req.body.matricula], function (error, results) {
+//Delete daycare by child ID and date
+router.put('/days/deletemeal', checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET comedor=0 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
             });
         } else {
             res.status(200).json({
-                message: '¡Post-comedor registrado!'
+                message: '¡Comedor borrado!'
+            });
+        }
+    });
+});
+
+//New postmeal in by child ID
+router.put('/days/postmeal', checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET postcom=1 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.body.fecha, req.body.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡Campus wait registrado!'
+            });
+        }
+    });
+});
+
+//Delete daycare by child ID and date
+router.put('/days/deletepostmeal', checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET postcom=0 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.body.fecha, req.body.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡Campus wait borrado!'
             });
         }
     });
 });
 
 //New check out by child ID
-router.put('/days/checkout',checkAuth, (req, res, next) => {
-    con.query("UPDATE paselista SET salida=1, dnifamiliar=? WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matriculapeque=?",[req.body.dnifamiliar, req.body.fecha, req.body.matricula], function (error, results) {
+router.put('/days/checkout', checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET salida=1, dnifamiliar=? WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.body.dnifamiliar, req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -271,10 +389,25 @@ router.put('/days/checkout',checkAuth, (req, res, next) => {
     });
 });
 
+//Delete check in by child ID and date
+router.put('/days/deletecheckout', checkAuth, (req, res, next) => {
+    con.query("UPDATE paselista SET salida=0, dnifamiliar=NULL WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.body.fecha, req.body.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            res.status(200).json({
+                message: '¡Salida borrada!'
+            });
+        }
+    });
+});
+
 //List of months by child ID (NOT NEEDED ANYMORE - ADD TO CAMPUS)
 router.get('/months/:matricula', checkAuth, (req, res, next) => {
     let matricula = req.params.matricula;
-    con.query('SELECT DISTINCT MONTH(fecha) as numero, MONTHNAME(fecha) as texto FROM pagos WHERE matriculapeque=?',[matricula], function (error, results) {
+    con.query('SELECT DISTINCT MONTH(fecha) as numero, MONTHNAME(fecha) as texto FROM pagos WHERE matricula=?', [matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -319,7 +452,7 @@ router.post('/allergies/new', checkAuth, (req, res, next) => {
     con.query('INSERT INTO alergias(nombre, descripcion) VALUES (?,?)', [req.body[0], req.body[1]], function (error, results) {
         if (error) {
             if (error.code == 'ER_DUP_ENTRY') { //If it finds an allergy with the same name
-                con.query('SELECT idalergia FROM alergias WHERE nombre=?',[req.body[0]], function (error, results) {
+                con.query('SELECT idalergia FROM alergias WHERE nombre=?', [req.body[0]], function (error, results) {
                     if (error) {
                         res.status(400).json({
                             error: error
@@ -384,10 +517,10 @@ router.get('/conditions/child/:matricula', checkAuth, (req, res, next) => {
 
 //New condition
 router.post('/conditions/new', checkAuth, (req, res, next) => {
-    con.query('INSERT INTO trastornos(nombre, descripcion) VALUES (?,?)',[req.body[0], req.body[1]], function (error, results) {
+    con.query('INSERT INTO trastornos(nombre, descripcion) VALUES (?,?)', [req.body[0], req.body[1]], function (error, results) {
         if (error) {
             if (error.code == 'ER_DUP_ENTRY') { //If it finds a condition with the same name
-                con.query('SELECT idtrastorno FROM trastornos WHERE nombre=?',[req.body[0]], function (error, results) {
+                con.query('SELECT idtrastorno FROM trastornos WHERE nombre=?', [req.body[0]], function (error, results) {
                     if (error) {
                         res.status(400).json({
                             error: error
@@ -417,6 +550,25 @@ router.post('/conditions/new', checkAuth, (req, res, next) => {
             res.status(200).json({
                 message: '¡' + req.body[0] + ' se ha registrado con éxito!'
             });
+        }
+    });
+});
+
+router.get('check/:matricula', checkAuth, (req, res, next) => {
+    con.query('SELECT * FROM peques WHERE matricula=?', [req.params.matricula], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            if (results.lenght > 0)
+                res.status(200).json({
+                    message: 'true'
+                });
+            else
+                res.status(200).json({
+                    message: 'false'
+                });
         }
     });
 });
@@ -463,7 +615,7 @@ router.delete('/delete/:matricula', checkAuth, (req, res, next) => {
         }
     });
 }, (req, res, next) => {
-    con.query('DELETE FROM pagos WHERE matriculapeque=?', [req.params.matricula], function (error, results) {
+    con.query('DELETE FROM pagos WHERE matricula=?', [req.params.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -473,7 +625,7 @@ router.delete('/delete/:matricula', checkAuth, (req, res, next) => {
         }
     });
 }, (req, res, next) => {
-    con.query('DELETE FROM paselista WHERE matriculapeque=?', [req.params.matricula], function (error, results) {
+    con.query('DELETE FROM paselista WHERE matricula=?', [req.params.matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error

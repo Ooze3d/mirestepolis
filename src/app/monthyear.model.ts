@@ -4,7 +4,7 @@ export class MonthYear {
     public year:number = 0;
 
     constructor(public full:string) {
-        this.month = Number(full.substr(0,2));
-        this.year = Number(full.substr(3,4));
+        this.month = Number(full.split('/')[0]); 
+        this.year = Number(full.split('/')[1]);
     }
 }

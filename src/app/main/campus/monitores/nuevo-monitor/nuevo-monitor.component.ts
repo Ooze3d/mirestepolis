@@ -5,26 +5,29 @@ import { Subscription } from 'rxjs';
 import { CampusService } from 'src/app/campus.service';
 import { MonitorService } from 'src/app/monitor.service';
 import { UserService } from 'src/app/user.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-nuevo-monitor',
   templateUrl: './nuevo-monitor.component.html',
   styleUrls: ['./nuevo-monitor.component.css']
 })
-export class NuevoMonitorComponent implements OnInit {
+export class NuevoMonitorComponent implements OnInit, OnDestroy {
 
   routeParams:Subscription = new Subscription();
   gruposList: { idgrupo: string, nombre: string }[] = [];
+  destroyed: Subject<void> = new Subject<void>();
 
   constructor(private userService: UserService, public monitorService: MonitorService, public campusService: CampusService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.userService.checkLogin();
-    this.routeParams = this.route.params.subscribe((params) => {
+    this.routeParams = this.route.params.pipe(takeUntil(this.destroyed)).subscribe((params) => {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //Checks the url for the campus and compares it to the service in case the page gets refreshed
         this.campusService.getCampus(id);
-        this.campusService.getCampusListener().subscribe(() => {
+        this.campusService.getCampusListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
           this.campusService.getGruposList();
         });
       }
@@ -57,6 +60,11 @@ export class NuevoMonitorComponent implements OnInit {
         return true;
     }
     return false;
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
 }

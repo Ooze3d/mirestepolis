@@ -7,17 +7,20 @@ import { MonitorService } from 'src/app/monitor.service';
 import { JornadaService } from 'src/app/jornada.service';
 import { Jornada } from 'src/app/jornada.model';
 import { MonthYear } from 'src/app/monthyear.model';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-monitor',
   templateUrl: './monitor.component.html',
   styleUrls: ['./monitor.component.css']
 })
-export class MonitorComponent implements OnInit, AfterViewInit {
+export class MonitorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public dni: string = '';
   public indexEdit: number = -1;
   public jornadasList: Jornada[] = [];
+  destroyed: Subject<void> = new Subject<void>();
 
   monitorForm = new FormGroup({ //FormGroup allows the form to be dynamically filled
     nombre: new FormControl(''),
@@ -34,13 +37,13 @@ export class MonitorComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.userService.checkLogin(); //Checking if the user is logged in
-    this.route.params.subscribe((params) => { //Monitor DNI gets extracted from the url
+    this.route.params.pipe(takeUntil(this.destroyed)).subscribe((params) => { //Monitor DNI gets extracted from the url
       this.dni = params['dni'];
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //In case the page is refreshed, the campus ID is also captured and used to check the service
         this.campusService.getCampus(id);
         this.campusService.getCampusList();
-        this.campusService.getCampusListener().subscribe(campus => {
+        this.campusService.getCampusListener().pipe(takeUntil(this.destroyed)).subscribe(campus => {
           this.monitorService.getMonitorList();
         });
       }
@@ -50,7 +53,7 @@ export class MonitorComponent implements OnInit, AfterViewInit {
 
     this.monitorService.getMonitor(this.dni); //The monitor gets loaded into the service using the DNI
 
-    this.monitorService.getMonitorListener().subscribe(newMonitor => { //The form gets dynamically filled
+    this.monitorService.getMonitorListener().pipe(takeUntil(this.destroyed)).subscribe(newMonitor => { //The form gets dynamically filled
       this.monitorForm.setValue({
         nombre: newMonitor.nombre,
         apellidos: newMonitor.apellidos,
@@ -78,7 +81,7 @@ export class MonitorComponent implements OnInit, AfterViewInit {
   onMesChange() {
     this.jornadaService.mes = new MonthYear(this.jornadaService.monthyear);
     this.jornadaService.getJornadasMes(this.jornadaService.mes.year, this.jornadaService.mes.month);
-    this.jornadaService.getJornadasListListener().subscribe();
+    this.jornadaService.getJornadasListListener().pipe(takeUntil(this.destroyed)).subscribe();
   }
 
   onClickEdit(i: number) {
@@ -89,13 +92,13 @@ export class MonitorComponent implements OnInit, AfterViewInit {
   onJornadaUpdate() {
     this.jornadaService.updateJornada();
     this.indexEdit = -1; //Turn off edit mode
-    this.jornadaService.getJornadasListListener().subscribe();
+    this.jornadaService.getJornadasListListener().pipe(takeUntil(this.destroyed)).subscribe();
   }
 
   onJornadaDelete() {
     this.jornadaService.deleteJornada();
     this.indexEdit = -1;
-    this.jornadaService.getJornadasListListener().subscribe();
+    this.jornadaService.getJornadasListListener().pipe(takeUntil(this.destroyed)).subscribe();
   }
 
   onNewJornada(f: NgForm) {
@@ -103,13 +106,17 @@ export class MonitorComponent implements OnInit, AfterViewInit {
       return;
     else {
       this.jornadaService.addJornada(new Date(f.value.fecha).toISOString(), f.value.horaent, f.value.horasal, this.monitorService.monitor.dni);
-      this.jornadaService.getJornadasListListener().subscribe();
+      this.jornadaService.getJornadasListListener().pipe(takeUntil(this.destroyed)).subscribe();
     }
   }
 
   onMonitorUpdate() {
     this.monitorService.updateMonitor(this.dni, this.monitorForm.value.nombre, this.monitorForm.value.apellidos, this.monitorForm.value.telefono, this.monitorForm.value.email, this.monitorForm.value.especialidad, this.monitorForm.value.idcampus, this.monitorForm.value.idgrupo);
-    //this.changes.detectChanges();
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
 }

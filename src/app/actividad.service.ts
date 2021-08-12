@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { Actividad } from './actividad.model';
 import { CampusService } from './campus.service';
 import { Constants } from './constants';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
-export class ActividadService implements OnInit {
+export class ActividadService implements OnInit, OnDestroy {
 
     error: string = '';
     exito: string = '';
@@ -20,6 +21,7 @@ export class ActividadService implements OnInit {
     private allActividadListListener = new Subject<Actividad[]>();
     private monitorActividadListListener = new Subject<Actividad[]>();
     private errorListener = new Subject<string>();
+    destroyed: Subject<void> = new Subject<void>();
 
     constructor(private http: HttpClient, private campusService: CampusService) {
 
@@ -50,7 +52,7 @@ export class ActividadService implements OnInit {
     }
 
     getActividad(idactividad: number) {
-        this.http.get<Actividad[]>(Constants.url+'actividades/' + idactividad).subscribe((actividadData) => {
+        this.http.get<Actividad[]>(Constants.url+'actividades/' + idactividad).pipe(takeUntil(this.destroyed)).subscribe((actividadData) => {
             this.actividad = actividadData[0];
             this.actividadListener.next(this.actividad);
         }, error => {
@@ -62,7 +64,7 @@ export class ActividadService implements OnInit {
     }
 
     getActividadList() {
-        this.http.get<Actividad[]>(Constants.url+'actividades/campus/' + this.campusService.campus.idcampus + '/' + this.fecha.toISOString().substr(0, 10)).subscribe((actividadData) => {
+        this.http.get<Actividad[]>(Constants.url+'actividades/campus/' + this.campusService.campus.idcampus + '/' + this.fecha.toISOString().substr(0, 10)).pipe(takeUntil(this.destroyed)).subscribe((actividadData) => {
             this.actividadList = actividadData;
             this.actividadListListener.next(this.actividadList);
         }, error => {
@@ -74,7 +76,7 @@ export class ActividadService implements OnInit {
     }
 
     getActividadListMonitor(dni: string, fecha: Date) {
-        this.http.get<Actividad[]>(Constants.url+'actividades/monitor/' + dni + '/' + fecha.toISOString().substr(0, 10)).subscribe((actividadData) => {
+        this.http.get<Actividad[]>(Constants.url+'actividades/monitor/' + dni + '/' + fecha.toISOString().substr(0, 10)).pipe(takeUntil(this.destroyed)).subscribe((actividadData) => {
             this.monitorActividadList = actividadData;
             this.monitorActividadListListener.next(this.monitorActividadList);
         }, error => {
@@ -86,7 +88,7 @@ export class ActividadService implements OnInit {
     }
 
     getAllActividadList() {
-        this.http.get<Actividad[]>(Constants.url+'actividades').subscribe((actividadData) => {
+        this.http.get<Actividad[]>(Constants.url+'actividades').pipe(takeUntil(this.destroyed)).subscribe((actividadData) => {
             this.allActividadList = actividadData;
             this.allActividadListListener.next(this.allActividadList);
         }, error => {
@@ -117,7 +119,7 @@ export class ActividadService implements OnInit {
             this.errorListener.next(this.error);
         } else {
             this.actividad = new Actividad(nombre, descripcion, fechaIni.toISOString(), fechaFin.toISOString(), color, idgrupo, dnimonitor);
-            this.http.post<{ message: string }>(Constants.url+'actividades/new', this.actividad).subscribe(response => {
+            this.http.post<{ message: string }>(Constants.url+'actividades/new', this.actividad).pipe(takeUntil(this.destroyed)).subscribe(response => {
                 this.exito = response.message;
                 setTimeout(() => {
                     this.exito = '';
@@ -147,7 +149,7 @@ export class ActividadService implements OnInit {
         } else {
             this.actividad = new Actividad(nombre, descripcion, fechaIni.toISOString(), fechaFin.toISOString(), color, idgrupo, dnimonitor);
             this.actividad.idactividad = idactividad;
-            this.http.put<{ message: string }>(Constants.url+'actividades/update/' + idactividad, this.actividad).subscribe(response => {
+            this.http.put<{ message: string }>(Constants.url+'actividades/update/' + idactividad, this.actividad).pipe(takeUntil(this.destroyed)).subscribe(response => {
                 this.exito = response.message;
                 setTimeout(() => {
                     this.exito = '';
@@ -163,7 +165,7 @@ export class ActividadService implements OnInit {
     }
 
     deleteActividad(idactividad: number) {
-        this.http.delete<{ message: string }>(Constants.url+'actividades/delete/' + idactividad).subscribe(response => {
+        this.http.delete<{ message: string }>(Constants.url+'actividades/delete/' + idactividad).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.exito = response.message;
             setTimeout(() => {
                 this.exito = '';
@@ -176,5 +178,10 @@ export class ActividadService implements OnInit {
         });
         this.getActividadList();
     }
+
+    ngOnDestroy(): void {
+        this.destroyed.next();
+        this.destroyed.complete();
+      }
 
 }

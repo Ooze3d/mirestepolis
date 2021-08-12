@@ -33,24 +33,44 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let peque of listaFiltered; index as i">
-                            <td class="d-flex flex-column">
+                            <td *ngIf="checkPaidDay(i)" class="d-flex flex-column">
                                 <div>
                                     <mat-icon class="m-2">account_box</mat-icon>
                                     {{peque.apellidos }}, {{ peque.nombre }}
                                 </div>
-                                <button class="m-2" mat-raised-button color="primary" (click)="onEntrada(i)" *ngIf="!checkEntrada(i)">Entrada</button>
-                                <button class="m-2" mat-raised-button color="standard" (click)="onEntrada(i)" *ngIf="checkEntrada(i)" disabled>Entrada</button>
-                                <form class="d-flex flex-column" #salidaForm="ngForm" (ngSubmit)="onSalida(i, salidaForm)">
-                                <button class="m-2" mat-raised-button color="accent" type="submit">Salida</button>
-                                <mat-form-field appearance="fill">
-                                    <mat-label>Familiar:</mat-label>
-                                    <mat-select name="dnifamiliar" ngModel required #dnifamiliar="ngModel">
-                                        <mat-option *ngFor="let fam of peque.famList" [value]="fam.dni">
-                                            {{fam.nombre}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
+                                <button class="m-2" mat-raised-button color="primary" (click)="onEntrada(i)"
+                                    *ngIf="!checkEntrada(i)">Entrada</button>
+                                <button class="m-2" mat-raised-button color="accent" (click)="onDeleteEntrada(i)"
+                                    *ngIf="checkEntrada(i)">Entrada</button>
+                                <button class="m-2" mat-raised-button color="primary" (click)="onAulaMat(i)"
+                                    *ngIf="checkPaidAulaMat(i) && !checkAulaMat(i)">Aula Matinal</button>
+                                <button class="m-2" mat-raised-button color="accent" (click)="onDeleteAulaMat(i)"
+                                    *ngIf="checkPaidAulaMat(i) && checkAulaMat(i)">Aula Matinal</button>
+                                <button class="m-2" mat-raised-button color="primary" (click)="onComedor(i)"
+                                    *ngIf="checkPaidComedor(i) && !checkComedor(i)">Comedor</button>
+                                <button class="m-2" mat-raised-button color="accent" (click)="onDeleteComedor(i)"
+                                    *ngIf="checkPaidComedor(i) && checkComedor(i)">Comedor</button>
+                                <button class="m-2" mat-raised-button color="primary" (click)="onPostCom(i)"
+                                    *ngIf="checkPaidPostCom(i) && !checkPostCom(i)">Campus Wait</button>
+                                <button class="m-2" mat-raised-button color="accent" (click)="onDeletePostCom(i)"
+                                    *ngIf="checkPaidPostCom(i) && checkPostCom(i)">Campus Wait</button>
+                                <form class="d-flex flex-column" #salidaForm="ngForm">
+                                    <button class="m-2" mat-raised-button color="primary"
+                                        (click)="onSalida(i, salidaForm)" type="button"
+                                        *ngIf="!checkSalida(i)">Salida</button>
+                                    <button class="m-2" mat-raised-button color="accent" (click)="onDeleteSalida(i)"
+                                        type="button" *ngIf="checkSalida(i)">Salida</button>
+                                    <mat-form-field appearance="fill" *ngIf="!returnFam(i)">
+                                        <mat-label>Familiar:</mat-label>
+                                        <mat-select name="dnifamiliar" ngModel required #dnifamiliar="ngModel">
+                                            <mat-option *ngFor="let fam of peque.famList" [value]="fam.dni">
+                                                {{fam.nombre}} {{fam.apellidos}}
+                                            </mat-option>
+                                            <mat-option value="00000000A">Otro familiar</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
                                 </form>
+                                <p *ngIf="returnFam(i)" class="ml-3">Familiar: <strong>{{ returnFam(i) }}</strong></p>
                             </td>
                         </tr>
                     </tbody>

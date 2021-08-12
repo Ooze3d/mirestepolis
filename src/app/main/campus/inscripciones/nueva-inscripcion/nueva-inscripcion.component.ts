@@ -5,9 +5,11 @@ import { Alergia } from 'src/app/alergia.model';
 import { CampusService } from 'src/app/campus.service';
 import { Familiar } from 'src/app/familiar.model';
 import { InscripcionService } from 'src/app/inscripcion.service';
-import { Pago } from 'src/app/pago.model';
+//import { Pago } from 'src/app/pago.model';
 import { Trastorno } from 'src/app/trastorno.model';
 import { UserService } from 'src/app/user.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-nueva-inscripcion',
@@ -32,6 +34,7 @@ export class NuevaInscripcionComponent implements OnInit, AfterViewInit {
   filteredFamList: Familiar[] = []; //List of possible family members filtered from the list of all family members in the database
   filteredAleList: Alergia[] = [];
   filteredTrasList: Alergia[] = [];
+  destroyed: Subject<void> = new Subject<void>();
 
   constructor(private userService: UserService, public campusService: CampusService, private route: ActivatedRoute, public inscripcionService: InscripcionService) { }
 
@@ -42,11 +45,11 @@ export class NuevaInscripcionComponent implements OnInit, AfterViewInit {
     this.inscripcionService.inscripcion.trastornos = [];
     this.inscripcionService.getAlergiasList();
     this.inscripcionService.getTrastornosList();
-    this.route.params.subscribe((params) => {
+    this.route.params.pipe(takeUntil(this.destroyed)).subscribe((params) => {
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) { //Checks the url for the campus and compares it to the service in case the page gets refreshed
         this.campusService.getCampus(id);
-        this.campusService.getCampusListener().subscribe(() => {
+        this.campusService.getCampusListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
           this.campusService.getGruposList();
           this.inscripcionService.getInscripcionList();
           this.inscripcionService.getFamList();
@@ -61,13 +64,13 @@ export class NuevaInscripcionComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.inscripcionService.getInscripcionListener();
     this.inscripcionService.getInscripcionListListener();
-    this.inscripcionService.getAlergiasListListener().subscribe(() => {
+    this.inscripcionService.getAlergiasListListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
       //console.log(this.inscripcionService.allAlergiasList);
     });
-    this.inscripcionService.getTrastornosListListener().subscribe(() => {
+    this.inscripcionService.getTrastornosListListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
       //console.log(this.inscripcionService.allTrastornosList);
     });
-    this.inscripcionService.getFamListListener().subscribe(() => {
+    this.inscripcionService.getFamListListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
       //console.log(this.inscripcionService.allFamList);
     });
   }
@@ -83,6 +86,7 @@ export class NuevaInscripcionComponent implements OnInit, AfterViewInit {
       return;
     } else {
       let matriculapeque:string = f.value.nombre.trim().substr(0,3)+f.value.apellidos.trim().substr(0,3)+Math.round(Math.random()*899+100); //Creates id
+      matriculapeque = matriculapeque.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); //Avoids accents
       let pagada:number = f.value.pagada=='p'? 1 : 0;
       let regalada:number = f.value.pagada=='r'? 1 : 0;
 
@@ -96,7 +100,7 @@ export class NuevaInscripcionComponent implements OnInit, AfterViewInit {
 
       this.inscripcionService.addInscripcion();
 
-      this.inscripcionService.getInscripcionListListener().subscribe(() => { //Once the child is created, we can register family members
+      this.inscripcionService.getInscripcionListListener().pipe(takeUntil(this.destroyed)).subscribe(() => { //Once the child is created, we can register family members
         this.inscripcionService.inscripcion.famList.forEach(fam => {
           this.inscripcionService.familiar = fam;
           this.inscripcionService.addFamiliar();
@@ -107,7 +111,6 @@ export class NuevaInscripcionComponent implements OnInit, AfterViewInit {
         this.inscripcionService.inscripcion.trastornos.forEach(tras => { //And conditions
           this.inscripcionService.newTrastorno(tras.nombre, tras.descripcion);
         });
-        this.rellenaDias(); //Add all blank days and register them on the database
       });
     }
   }
@@ -166,15 +169,6 @@ export class NuevaInscripcionComponent implements OnInit, AfterViewInit {
     }
   }
 
-  rellenaDias() { //Fill the day list with every single day the campus is open
-    let dia:Date = new Date(this.campusService.campus.fechaini);
-    while(dia<=(new Date(this.campusService.campus.fechafin))) {
-      this.inscripcionService.inscripcion.dayList.push(new Pago(dia.toISOString(), this.inscripcionService.inscripcion.matricula)); //Date needs to be NEW or it will point to the original "dia"
-      dia.setDate(dia.getDate()+1);
-    }
-    this.inscripcionService.addDias();
-  }
-
   filterFamList() { //Checks if the DNI the user is entering has a match in the main family members list
     this.filteredFamList = this.inscripcionService.allFamList.filter(x => x.dni.toLowerCase().includes(this.dni.value.toLowerCase()));
   }
@@ -205,6 +199,11 @@ export class NuevaInscripcionComponent implements OnInit, AfterViewInit {
 
   checkForPrincipal(): boolean { //Checks if a certain family member is set as MAIN
     return this.inscripcionService.inscripcion.famList.find(x => x.esprincipal)!=undefined;
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
 }

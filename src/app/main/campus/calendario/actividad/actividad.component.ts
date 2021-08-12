@@ -6,6 +6,8 @@ import { ActividadService } from 'src/app/actividad.service';
 import { CampusService } from 'src/app/campus.service';
 import { MonitorService } from 'src/app/monitor.service';
 import { UserService } from 'src/app/user.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-actividad',
@@ -13,7 +15,7 @@ import { UserService } from 'src/app/user.service';
   styleUrls: ['./actividad.component.css']
 })
 
-export class ActividadComponent implements OnInit {
+export class ActividadComponent implements OnInit, OnDestroy {
 
   nombre:FormControl = new FormControl();
   filteredActividadList: Actividad[] = [];
@@ -30,6 +32,8 @@ export class ActividadComponent implements OnInit {
     {nombre: "Mauve", hex: "#FFC6FF"}
   ];
 
+  destroyed: Subject<void> = new Subject<void>();
+
   constructor(private userService:UserService, public campusService:CampusService, public actividadService:ActividadService, public monitorService:MonitorService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
@@ -37,14 +41,14 @@ export class ActividadComponent implements OnInit {
     if(localStorage.getItem('fechaAct')!='')
             this.actividadService.fecha = new Date(localStorage.getItem('fechaAct')!);
     this.actividadService.error = '';
-    this.route.params.subscribe((params) => { //Page refresh failsafe checks if the page is showing the info that the url is pointing to
+    this.route.params.pipe(takeUntil(this.destroyed)).subscribe((params) => { //Page refresh failsafe checks if the page is showing the info that the url is pointing to
       let id = params['idcampus'];
       if (this.campusService.campus.idcampus != id) {
         this.campusService.getCampus(id);
-        this.campusService.getCampusListener().subscribe(() => {
+        this.campusService.getCampusListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
           this.monitorService.getMonitorList();
           this.actividadService.getAllActividadList(); //A full list of all activities ever created is needed
-          this.actividadService.getAllActividadListListener().subscribe();
+          this.actividadService.getAllActividadListListener().pipe(takeUntil(this.destroyed)).subscribe();
         });
       }
     });
@@ -56,6 +60,11 @@ export class ActividadComponent implements OnInit {
 
   onNewActividad(f:NgForm) { //Simple call to service to register a new actiivity
     this.actividadService.addActividad(this.nombre.value, f.value.descripcion, f.value.horaini, f.value.minini, f.value.horafin, f.value.minfin, f.value.color, f.value.idgrupo, f.value.dnimonitor);
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
 }
