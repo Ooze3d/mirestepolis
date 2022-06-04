@@ -83,6 +83,7 @@ export class CampusService implements OnInit, OnDestroy {
         let dia: Date = new Date(this.campus.fechaini);
         let mes: number = dia.getMonth();
         let lista: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        this.daysList = [];
         do {
             if(this.mesesList.find(x => x.texto == lista[mes])==undefined) {
                 this.mesesList.push({numero: mes+1, texto:lista[mes]});

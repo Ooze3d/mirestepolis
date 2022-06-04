@@ -67,6 +67,7 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
           this.inscripcionService.getInscripcion(matricula);
         });
       } else {
+        this.campusService.getDiasList();
         this.inscripcionService.getInscripcionList();
         this.inscripcionService.getFamList();
         this.inscripcionService.getInscripcion(matricula);

@@ -27,8 +27,8 @@
                                 <h2>Jornada: <strong>{{ fecha | date:'dd/MM/yyyy' }}</strong></h2>
                                 <hr>
                                 <div class="d-flex justify-content-center">
-                                    <button [disabled]="checkBoton" mat-raised-button color="primary" class="big-button m-2" (click)="onComienzaDia()"><mat-icon>fingerprint</mat-icon>Comenzar</button>
-                                    <button  mat-raised-button color="primary" class="big-button m-2" (click)="onTerminaDia()"><mat-icon>logout</mat-icon>Finalizar</button>
+                                    <button [disabled]="checkBoton" mat-raised-button color="primary" class="big-button m-2" (click)="onComienzaDia()"><mat-icon>fingerprint</mat-icon>Entrada</button>
+                                    <button  mat-raised-button color="primary" class="big-button m-2" (click)="onTerminaDia()"><mat-icon>logout</mat-icon>Salida</button>
                                 </div>
                             </mat-card>
                             <mat-card class="col-12 m-2">
