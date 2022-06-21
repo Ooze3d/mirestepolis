@@ -18,7 +18,7 @@ export class InscripcionService implements OnInit, OnDestroy {
     exito: string = '';
     error: string = '';
     inscripcion: Inscripcion = new Inscripcion('Nombre', 'Apellidos', new Date().toISOString(), 0, 0, 'idgrupo');
-    familiar: Familiar = new Familiar('00000000A', 'Nombre', 'Apellidos', 999111222, 'nombre@mail.com', 'tipofam', 0);
+    familiar: Familiar = new Familiar(999111222, 'Nombre', 'Apellidos', 'nombre@mail.com', 'tipofam', 0);
     allFamList: Familiar[] = [];
     allAlergiasList: Alergia[] = [];
     allTrastornosList: Trastorno[] = [];

@@ -20,13 +20,12 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDestroy { //TODO finish component
 
-  dni: FormControl = new FormControl();
+  tlf: FormControl = new FormControl();
   alergia: FormControl = new FormControl();
   trastorno: FormControl = new FormControl();
   famForm = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
     apellidos: new FormControl('', [Validators.required]),
-    telefono: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
     tipofam: new FormControl('', [Validators.required]),
     esprincipal: new FormControl('')
@@ -188,9 +187,9 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
   onNewFam() { //Adds new family member to list
     if (this.famForm.invalid)
       return;
-    else if (this.validaNif(this.dni.value)) { //TODO check for duplicate in full list
-      if (!this.inscripcionService.inscripcion.famList.find(x => x.dni.toLowerCase() === this.dni.value.toLowerCase())) {
-        this.inscripcionService.inscripcion.famList.push(new Familiar(this.dni.value, this.famForm.value.nombre, this.famForm.value.apellidos, this.famForm.value.telefono, this.famForm.value.email, this.famForm.value.tipofam, this.famForm.value.esprincipal | 0));
+    else if (this.validaTlf(this.tlf.value)) { //TODO check for duplicate in full list
+      if (!this.inscripcionService.inscripcion.famList.find(x => x.tlf.toString() === this.tlf.value.toString())) {
+        this.inscripcionService.inscripcion.famList.push(new Familiar(this.tlf.value, this.famForm.value.nombre, this.famForm.value.apellidos, this.famForm.value.email, this.famForm.value.tipofam, this.famForm.value.esprincipal | 0));
         this.famForm.reset();
       } else {
         this.inscripcionService.error = 'El familiar ya está en la lista';
@@ -199,7 +198,7 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
         }, 3000);
       }
     } else {
-      this.famForm.value.dni.setErrors({ 'incorrect': true });
+      this.famForm.value.tlf.setErrors({ 'incorrect': true });
       return;
     }
   }
@@ -227,25 +226,23 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
   }
 
   rellenaFam() { //Fill the family member form with info from the main family members list
-    if (this.inscripcionService.allFamList.find(x => x.dni.toLowerCase() === this.dni.value.toLowerCase())) {
-      this.inscripcionService.familiar = this.inscripcionService.allFamList.find(x => x.dni.toLowerCase() === this.dni.value.toLowerCase())!;
+    if (this.inscripcionService.allFamList.find(x => x.tlf.toString() === this.tlf.value.toString())) {
+      this.inscripcionService.familiar = this.inscripcionService.allFamList.find(x => x.tlf.toString() === this.tlf.value.toString())!;
       this.famForm.patchValue({
         nombre: this.inscripcionService.familiar.nombre,
         apellidos: this.inscripcionService.familiar.apellidos,
-        telefono: this.inscripcionService.familiar.telefono,
         email: this.inscripcionService.familiar.email
       });
     }
   }
 
-  rellenaFamMatricula(dni: string) { //Fill the family member form with info from the child's family members list
-    if (this.inscripcionService.inscripcion.famList.find(x => x.dni.toLowerCase() === dni.toLowerCase())) {
-      this.inscripcionService.familiar = this.inscripcionService.inscripcion.famList.find(x => x.dni.toLowerCase() === dni.toLowerCase())!;
-      this.dni.patchValue(this.inscripcionService.familiar.dni);
+  rellenaFamMatricula(tlf: string) { //Fill the family member form with info from the child's family members list
+    if (this.inscripcionService.inscripcion.famList.find(x => x.tlf.toString() === tlf.toString())) {
+      this.inscripcionService.familiar = this.inscripcionService.inscripcion.famList.find(x => x.tlf.toString() === tlf.toString())!;
+      this.tlf.patchValue(this.inscripcionService.familiar.tlf);
       this.famForm.patchValue({
         nombre: this.inscripcionService.familiar.nombre,
         apellidos: this.inscripcionService.familiar.apellidos,
-        telefono: this.inscripcionService.familiar.telefono,
         email: this.inscripcionService.familiar.email,
         tipofam: this.inscripcionService.familiar.tipofam,
         esprincipal: this.inscripcionService.familiar.esprincipal
@@ -254,7 +251,7 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
   }
 
   filterFamList() { //Checks if the DNI the user is entering has a match in the main family members list
-    this.filteredFamList = this.inscripcionService.allFamList.filter(x => x.dni.toLowerCase().includes(this.dni.value.toLowerCase()));
+    this.filteredFamList = this.inscripcionService.allFamList.filter(x => x.tlf.toString().includes(this.tlf.value.toString()));
   }
 
   filterAleList() { //Checks if the allergy the user is entering has a match in the list
@@ -265,20 +262,8 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
     this.filteredTrasList = this.inscripcionService.allTrastornosList.filter(x => x.nombre.toLowerCase().includes(this.trastorno.value.toLowerCase()));
   }
 
-  validaNif(docu: string) { //DNI letter validator
-    let codigo: string[] = ['T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E'];
-    docu = docu.trim();
-    if (docu.length != 9) {
-      return false;
-    } else {
-      let letra: string = docu.slice(-1);
-      let numeros: number = Number(docu.slice(0, 8));
-      if (Number(numeros) == NaN)
-        return false;
-      else if (codigo[Number(numeros) % 23] == letra)
-        return true;
-    }
-    return false;
+  validaTlf(tlf: number) { //TLF validator
+    return tlf.toString().length == 9;
   }
 
   checkForPrincipal(): boolean { //Checks if a certain family member is set as MAIN

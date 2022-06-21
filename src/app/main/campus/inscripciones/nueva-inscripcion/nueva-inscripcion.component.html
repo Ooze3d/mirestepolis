@@ -109,17 +109,17 @@
                 <h2>Familiares</h2>
                 <form class="d-flex flex-column" [formGroup]="famForm" (ngSubmit)="onNewFam()">
                     <mat-form-field>
-                        <mat-label>DNI: </mat-label>
-                        <input type="text" aria-label="dni" matInput required autocomplete="off" [formControl]="dni"
+                        <mat-label>Teléfono: </mat-label>
+                        <input type="number" aria-label="tlf" matInput required autocomplete="off" [formControl]="tlf"
                             [matAutocomplete]="auto" (input)="filterFamList()" (change)="rellenaFam()">
                         <!--Real time search for previously saved activities-->
                         <mat-autocomplete #auto="matAutocomplete">
-                            <mat-option *ngFor="let fam of filteredFamList" [value]="fam.dni" (click)="rellenaFam()">
-                                {{fam.nombre}} {{fam.apellidos}} ({{fam.dni}})
+                            <mat-option *ngFor="let fam of filteredFamList" [value]="fam.tlf" (click)="rellenaFam()">
+                                {{fam.nombre}} {{fam.apellidos}} ({{fam.tlf}})
                             </mat-option>
                         </mat-autocomplete>
-                        <mat-error *ngIf="dni.errors?.required">Por favor, introduce el DNI del familiar</mat-error>
-                        <mat-error *ngIf="dni.errors?.incorrect">El dni es incorrecto</mat-error>
+                        <mat-error *ngIf="tlf.errors?.required">Por favor, introduce el teléfono del familiar</mat-error>
+                        <mat-error *ngIf="tlf.errors?.incorrect">El teléfono es incorrecto</mat-error>
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Nombre: </mat-label>
@@ -128,10 +128,6 @@
                     <mat-form-field appearance="fill">
                         <mat-label>Apellidos:</mat-label>
                         <input type="text" name="apellidos" matInput required formControlName="apellidos" />
-                    </mat-form-field>
-                    <mat-form-field appearance="fill">
-                        <mat-label>Teléfono:</mat-label>
-                        <input type="number" name="telefono" matInput required formControlName="telefono" />
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Email:</mat-label>

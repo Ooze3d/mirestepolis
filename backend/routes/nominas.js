@@ -17,7 +17,7 @@ router.get('/jornadas/:dnimonitor', checkAuth, (req, res, next) => {
     });
 });
 
-//List of days worked by moth
+//List of days worked by month
 router.get('/jornadas/:dnimonitor/:year/:month', checkAuth, (req, res, next) => {
     let dnimonitor = req.params.dnimonitor;
     let year = req.params.year;

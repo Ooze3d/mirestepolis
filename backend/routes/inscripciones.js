@@ -19,10 +19,10 @@ router.get('/fam', checkAuth, (req, res, next) => {
     });
 });
 
-//One family member by ID
-router.get('/fam/:dni', checkAuth, (req, res, next) => {
-    let dni = req.params.dni;
-    con.query('SELECT * FROM familiares WHERE dni=?', [dni], function (error, results) {
+//One family member by TLF
+router.get('/fam/:tlf', checkAuth, (req, res, next) => {
+    let tlf = req.params.tlf;
+    con.query('SELECT * FROM familiares WHERE tlf=?', [tlf], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -36,7 +36,7 @@ router.get('/fam/:dni', checkAuth, (req, res, next) => {
 //Family members by child ID
 router.get('/fam/child/:matricula', checkAuth, (req, res, next) => {
     let matricula = req.params.matricula;
-    con.query('SELECT fam.*, ptf.tipofam, ptf.esprincipal FROM familiares fam, peque_tiene_familiar ptf WHERE ptf.matricula=? AND fam.dni=ptf.dnifamiliar', [matricula], function (error, results) {
+    con.query('SELECT fam.*, ptf.tipofam, ptf.esprincipal FROM familiares fam, peque_tiene_familiar ptf WHERE ptf.matricula=? AND fam.tlf=ptf.tlffamiliar', [matricula], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -50,10 +50,10 @@ router.get('/fam/child/:matricula', checkAuth, (req, res, next) => {
 //New family member
 router.post('/fam/new/:matricula', checkAuth, (req, res, next) => {
     try {
-        con.query('INSERT INTO familiares(dni, nombre, apellidos, telefono, email) VALUES (?, ?, ?, ?, ?)', [req.body.dni, req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email], function (error, results) {
+        con.query('INSERT INTO familiares(tlf, nombre, apellidos, email) VALUES (?, ?, ?, ?)', [req.body.tlf, req.body.nombre, req.body.apellidos, req.body.email], function (error, results) {
             if (error) {
                 if (error.code == 'ER_DUP_ENTRY') { //If the family member is already registered, the info is updated
-                    con.query('UPDATE familiares SET nombre=?, apellidos=?, telefono=?, email=? WHERE dni=?', [req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email, req.body.dni], function (error, results) {
+                    con.query('UPDATE familiares SET nombre=?, apellidos=?, email=? WHERE tlf=?', [req.body.nombre, req.body.apellidos, req.body.email, req.body.tlf], function (error, results) {
                         if (error) {
                             res.status(400).json({
                                 error: error
@@ -76,7 +76,7 @@ router.post('/fam/new/:matricula', checkAuth, (req, res, next) => {
     }
 }, (req, res, next) => {
     let matricula = req.params.matricula;
-    con.query('INSERT INTO peque_tiene_familiar(matricula, dnifamiliar, tipofam, esprincipal) VALUES (?, ?, ?, ?)', [matricula, req.body.dni, req.body.tipofam, req.body.esprincipal], function (error, results) {
+    con.query('INSERT INTO peque_tiene_familiar(matricula, tlffamiliar, tipofam, esprincipal) VALUES (?, ?, ?, ?)', [matricula, req.body.tlf, req.body.tipofam, req.body.esprincipal], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -90,9 +90,9 @@ router.post('/fam/new/:matricula', checkAuth, (req, res, next) => {
 });
 
 //Edit family member
-router.put('/fam/update/:dni', checkAuth, (req, res, next) => {
-    let dni = req.params.dni;
-    con.query('UPDATE familiares SET nombre=?, apellidos=?, telefono=?, email=? WHERE dni=?', [req.body.nombre, req.body.apellidos, req.body.telefono, req.body.email, dni], function (error, results) {
+router.put('/fam/update/:tlf', checkAuth, (req, res, next) => {
+    let tlf = req.params.tlf;
+    con.query('UPDATE familiares SET nombre=?, apellidos=?, email=? WHERE tlf=?', [req.body.nombre, req.body.apellidos, req.body.email, tlf], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
@@ -329,7 +329,7 @@ router.put('/days/meal', checkAuth, (req, res, next) => {
     });
 });
 
-//Delete daycare by child ID and date
+//Delete meal by child ID and date
 router.put('/days/deletemeal', checkAuth, (req, res, next) => {
     con.query("UPDATE paselista SET comedor=0 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {
@@ -359,7 +359,7 @@ router.put('/days/postmeal', checkAuth, (req, res, next) => {
     });
 });
 
-//Delete daycare by child ID and date
+//Delete postmeal by child ID and date
 router.put('/days/deletepostmeal', checkAuth, (req, res, next) => {
     con.query("UPDATE paselista SET postcom=0 WHERE DATE_FORMAT(fecha, '%Y-%m-%d')=? AND matricula=?", [req.body.fecha, req.body.matricula], function (error, results) {
         if (error) {

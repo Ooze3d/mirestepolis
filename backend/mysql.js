@@ -4,9 +4,9 @@ const con = mysql.createConnection({
     host     : 'localhost',
     user     : 'usuario',
     password : 'usuario',
-    database : 'dbs543657',
+    database : 'dbs543657a',
     multipleStatements: 'true',
-    timezone: '+00:00'
+    timezone: '+02:00'
   });
 
 con.connect(function(err) {

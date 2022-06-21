@@ -52,15 +52,16 @@ export class InscripcionesComponent implements OnInit, AfterViewInit, OnDestroy 
         return x.nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(this.busca.toLowerCase()) || //Avoid accents in the search
           x.apellidos.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(this.busca.toLowerCase())
       });
-    this.inscripcionService.inscripcionList.forEach(x => { //Exclusive for family members DNI
+    this.inscripcionService.inscripcionList.forEach(x => { //Exclusive for family members TLF
       let found = false;
       x.famList.forEach(fam => {
-        if (fam.dni.toLowerCase().includes(this.busca.toLowerCase())) { //Find DNI match
+        //if (fam.dni.toLowerCase().includes(this.busca.toLowerCase())) { //Find DNI match
+        if (fam.tlf.toString().includes(this.busca)) { //Find TLF match
           found = true;
           return;
         }
       });
-      if (found && !this.listaFiltered.includes(x)) //If not already in the list, add it
+      if (found && !this.listaFiltered.includes(x)) //If a child matches cryteria and they're not already on the list, add them
         this.listaFiltered.push(x);
     });
     this.listaFiltered.sort(this.compara);
