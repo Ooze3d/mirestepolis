@@ -62,11 +62,11 @@
                                         type="button" *ngIf="checkSalida(i)">Salida</button>
                                     <mat-form-field appearance="fill" *ngIf="!returnFam(i)">
                                         <mat-label>Familiar:</mat-label>
-                                        <mat-select name="dnifamiliar" ngModel required #dnifamiliar="ngModel">
-                                            <mat-option *ngFor="let fam of peque.famList" [value]="fam.dni">
+                                        <mat-select name="tlffamiliar" ngModel required #dnifamiliar="ngModel">
+                                            <mat-option *ngFor="let fam of peque.famList" [value]="fam.tlf">
                                                 {{fam.nombre}} {{fam.apellidos}}
                                             </mat-option>
-                                            <mat-option value="00000000A">Otro familiar</mat-option>
+                                            <mat-option value="600111222">Otro familiar</mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                 </form>

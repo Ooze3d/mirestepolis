@@ -53,10 +53,10 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
         return x.nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(this.busca.toLowerCase()) || //Avoid accents in the search
           x.apellidos.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(this.busca.toLowerCase())
       });
-    this.inscripcionService.inscripcionList.forEach(x => { //Exclusive for family members DNI
+    this.inscripcionService.inscripcionList.forEach(x => { //Exclusive for family members TLF
       let found = false;
       x.famList.forEach(fam => {
-        if (fam.dni.toLowerCase().includes(this.busca.toLowerCase())) { //Find DNI match
+        if (fam.tlf.toString().includes(this.busca)) { //Find TLF match
           found = true;
           return;
         }
@@ -162,15 +162,15 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   returnFam(i:number): string | undefined {
-    let fam: string = '';
+    let fam: number = 0;
     this.listaFiltered[i].dayList.forEach(x => {
       let temp = new Date(x.fecha);
       if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.salida==1)
-        fam = x.dnifamiliar;
+        fam = x.tlffamiliar;
     });
 
-    if(fam!='') { //Even 'Other' returns a DNI, so if fam is empty, the search returned no values
-      let nombre: string | undefined = this.listaFiltered[i].famList.find(x => x.dni==fam)?.nombre + ' ' + this.listaFiltered[i].famList.find(x => x.dni==fam)?.apellidos;
+    if(fam!=0) { //Even 'Other' returns a DNI, so if fam is empty, the search returned no values
+      let nombre: string | undefined = this.listaFiltered[i].famList.find(x => x.tlf==fam)?.nombre + ' ' + this.listaFiltered[i].famList.find(x => x.tlf==fam)?.apellidos;
       if (nombre=='undefined undefined')
         return 'Otro familiar';
       else

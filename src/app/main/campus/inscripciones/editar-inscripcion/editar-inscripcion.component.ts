@@ -236,7 +236,7 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
     }
   }
 
-  rellenaFamMatricula(tlf: string) { //Fill the family member form with info from the child's family members list
+  rellenaFamMatricula(tlf: number) { //Fill the family member form with info from the child's family members list
     if (this.inscripcionService.inscripcion.famList.find(x => x.tlf.toString() === tlf.toString())) {
       this.inscripcionService.familiar = this.inscripcionService.inscripcion.famList.find(x => x.tlf.toString() === tlf.toString())!;
       this.tlf.patchValue(this.inscripcionService.familiar.tlf);

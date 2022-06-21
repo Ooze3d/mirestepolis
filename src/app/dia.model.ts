@@ -5,7 +5,7 @@ export class Dia {
     public postcom: number = 0;
     public entrada: number = 0;
     public salida: number = 0;
-    public dnifamiliar: string = '';
+    public tlffamiliar: number = 0;
 
     constructor(public fecha: string, public matricula: string) {}
 
