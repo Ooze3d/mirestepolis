@@ -8,14 +8,6 @@ const actividadesRoutes = require('./routes/actividades');
 const inscripcionesRoutes = require('./routes/inscripciones');
 const app = express(); //Loading ExpressJS module
 
-/*app.use((req,res,next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method,');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-    res.setHeader('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
-    next();
-});*/
-
 app.use(cors()); //Substitute of the previous set of headers to avoid cors problems
 
 app.use(express.json()); //Express module to export results in JSON format

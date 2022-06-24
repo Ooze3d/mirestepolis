@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { CampusService } from './campus.service';
+import { Constants } from './constants';
 import { Monitor } from './monitor.model';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
-export class MonitorService implements OnInit {
+export class MonitorService implements OnInit, OnDestroy {
 
     error: string = '';
     exito: string = '';
@@ -15,6 +17,8 @@ export class MonitorService implements OnInit {
     private monitorListener = new Subject<Monitor>();
     private monitorListListener = new Subject<Monitor[]>();
     private errorListener = new Subject<string>();
+
+    destroyed: Subject<void> = new Subject<void>();
 
     constructor(private http: HttpClient, private campusService: CampusService) {
 
@@ -37,7 +41,7 @@ export class MonitorService implements OnInit {
     }
 
     getMonitor(dni: string) {
-        this.http.get<Monitor[]>('http://localhost:3000/api/monitores/' + dni).subscribe((monitorData) => {
+        this.http.get<Monitor[]>(Constants.url+'monitores/' + dni).pipe(takeUntil(this.destroyed)).subscribe((monitorData) => {
             this.monitor = monitorData[0];
             this.monitorListener.next(this.monitor);
         }, error => {
@@ -49,7 +53,7 @@ export class MonitorService implements OnInit {
     }
 
     getMonitorList() {
-        this.http.get<Monitor[]>('http://localhost:3000/api/monitores/campus/' + this.campusService.campus.idcampus).subscribe((monitorData) => {
+        this.http.get<Monitor[]>(Constants.url+'monitores/campus/' + this.campusService.campus.idcampus).pipe(takeUntil(this.destroyed)).subscribe((monitorData) => {
             this.monitorList = monitorData;
             this.monitorListListener.next(this.monitorList);
         }, error => {
@@ -63,40 +67,46 @@ export class MonitorService implements OnInit {
 
     addMonitor(dni: string, nombre: string, apellidos: string, telefono: number, email: string, especialidad: string, idcampus: string, idgrupo: string) {
         this.monitor = new Monitor(dni, nombre, apellidos, telefono, email, especialidad, idcampus, idgrupo);
-        this.http.post<{ message: string }>('http://localhost:3000/api/monitores/new', this.monitor).subscribe(response => {
+        this.http.post<{ message: string }>(Constants.url+'monitores/new', this.monitor).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.error = '';
             this.exito = response.message;
+            this.getMonitorList();
+            this.monitorListListener.next(this.monitorList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
         }, error => {
             this.error = error.error.error;
+            this.getMonitorList();
+            this.monitorListListener.next(this.monitorList);
             setTimeout(() => {
                 this.error = '';
             }, 3000);
         });
-        this.getMonitorList();
     }
 
     updateMonitor(dni: string, nombre: string, apellidos: string, telefono: number, email: string, especialidad: string, idcampus: string, idgrupo: string) {
         this.monitor = new Monitor(dni, nombre, apellidos, telefono, email, especialidad, idcampus, idgrupo);
-        this.http.put<{ message: string }>('http://localhost:3000/api/monitores/update/' + dni, this.monitor).subscribe(response => {
+        this.http.put<{ message: string }>(Constants.url+'monitores/update/' + dni, this.monitor).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.error = '';
             this.exito = response.message;
+            this.getMonitorList();
+            this.monitorListListener.next(this.monitorList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
         }, error => {
             this.error = error.error.error;
+            this.getMonitorList();
+            this.monitorListListener.next(this.monitorList);
             setTimeout(() => {
                 this.error = '';
             }, 3000);
         });
-        this.getMonitorList();
     }
 
     updateContra(newContra: string) {
-        this.http.put<{ message: string }>('http://localhost:3000/api/monitores/newpass/' + this.monitor.dni, [newContra]).subscribe(response => {
+        this.http.put<{ message: string }>(Constants.url+'monitores/newpass/' + this.monitor.dni, [newContra]).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.error = '';
             this.exito = response.message;
             setTimeout(() => {
@@ -111,19 +121,22 @@ export class MonitorService implements OnInit {
     }
 
     deleteMonitor(dni: string) {
-        this.http.delete<{ message: string }>('http://localhost:3000/api/monitores/delete/' + dni).subscribe(response => {
+        this.http.delete<{ message: string }>(Constants.url+'monitores/delete/' + dni).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.error = '';
             this.exito = response.message;
+            this.getMonitorList();
+            this.monitorListListener.next(this.monitorList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
         }, error => {
             this.error = error.error.error;
+            this.getMonitorList();
+            this.monitorListListener.next(this.monitorList);
             setTimeout(() => {
                 this.error = '';
             }, 3000);
         });
-        this.getMonitorList();
     }
 
     horaEnt(fechaEnt: Date) {
@@ -133,7 +146,7 @@ export class MonitorService implements OnInit {
         dia.setSeconds(0);
         dia.setMilliseconds(0);
         let conjunto = {fecha: dia.toISOString(), horaent: (fechaEnt.getHours()-2)+':'+fechaEnt.getMinutes(), dnimonitor: this.monitor.dni};
-        this.http.post<{ message: string }>('http://localhost:3000/api/nominas/jornadas/entrada/new', conjunto).subscribe(response => {
+        this.http.post<{ message: string }>(Constants.url+'nominas/jornadas/entrada/new', conjunto).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.error = '';
             this.exito = response.message;
             setTimeout(() => {
@@ -154,7 +167,7 @@ export class MonitorService implements OnInit {
         dia.setSeconds(0);
         dia.setMilliseconds(0);
         let conjunto = {fecha: dia.toISOString(), horasal: (fechaSal.getHours()-2)+':'+fechaSal.getMinutes(), dnimonitor: this.monitor.dni};
-        this.http.put<{ message: string }>('http://localhost:3000/api/nominas/jornadas/salida/new', conjunto).subscribe(response => {
+        this.http.put<{ message: string }>(Constants.url+'nominas/jornadas/salida/new', conjunto).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.error = '';
             this.exito = response.message;
             setTimeout(() => {
@@ -167,5 +180,10 @@ export class MonitorService implements OnInit {
             }, 3000);
         });
     }
+
+    ngOnDestroy(): void {
+        this.destroyed.next();
+        this.destroyed.complete();
+      }
 
 }

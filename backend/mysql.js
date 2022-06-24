@@ -1,12 +1,13 @@
 const mysql = require('mysql');
 
 const con = mysql.createConnection({
-    host     : 'localhost',
+    //host     : 'localhost',
+    host: '185.167.96.163',
     user     : 'usuario',
     password : 'usuario',
-    database : 'dbs543657',
+    database : 'dbs543657a',
     multipleStatements: 'true',
-    timezone: '+00:00'
+    timezone: '+02:00'
   });
 
 con.connect(function(err) {

@@ -1,12 +1,14 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { Jornada } from './jornada.model';
 import { MonitorService } from './monitor.service';
 import { MonthYear } from 'src/app/monthyear.model';
+import { Constants } from './constants';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
-export class JornadaService implements OnInit {
+export class JornadaService implements OnInit, OnDestroy {
 
     error:string = '';
     exito:string = '';
@@ -16,26 +18,40 @@ export class JornadaService implements OnInit {
     mesesList:MonthYear[] = [];
     monthyear:string = '';
     mes:MonthYear = new MonthYear('01/1970');
+    destroyed: Subject<void> = new Subject<void>();
+    jornadaIn: boolean = false;
+    private jornadaInListener = new Subject<boolean>();
+    jornadaOut: boolean = false;
+    private jornadaOutListener = new Subject<boolean>();
 
     constructor(private http:HttpClient, private monitorService:MonitorService) {
         
     }
 
     ngOnInit() {
-        console.log(this.monthyear);
         if(this.monthyear!='')
-            this.getJornadasMes(this.mes.year, this.mes.month);
-        else
-            this.getJornadasList();
+                this.getJornadasMes(this.mes.year, this.mes.month);
+            else
+                this.getJornadasList();
+        this.jornadasListListener.next(this.jornadasList);
     }
 
     getJornadasListListener() {
         return this.jornadasListListener;
     }
 
+    getJornadaInListener() {
+        return this.jornadaInListener;
+    }
+
+    getJornadaOutListener() {
+        return this.jornadaOutListener;
+    }
+
     getJornadasList() { //Todas las jornadas de un monitor
-        this.http.get<Jornada[]>('http://localhost:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni).subscribe((jornadasData) => {
+        this.http.get<Jornada[]>(Constants.url+'nominas/jornadas/'+this.monitorService.monitor.dni).pipe(takeUntil(this.destroyed)).subscribe((jornadasData) => {
             this.jornadasList = jornadasData;
+            this.jornadasListListener.next(this.jornadasList);
         }, error => {
             this.error = error.error.error;
             setTimeout(() => {
@@ -46,7 +62,7 @@ export class JornadaService implements OnInit {
     }
 
     getMesesList() {
-        this.http.get<MonthYear[]>('http://localhost:3000/api/nominas/'+this.monitorService.monitor.dni).subscribe((mesesData) => {
+        this.http.get<MonthYear[]>(Constants.url+'nominas/'+this.monitorService.monitor.dni).pipe(takeUntil(this.destroyed)).subscribe((mesesData) => {
             this.mesesList = mesesData;
         }, error => {
             this.error = error.error.error;
@@ -57,8 +73,9 @@ export class JornadaService implements OnInit {
     }
 
     getJornadasMes(year:number, month:number) { //Days worked by year and month
-        this.http.get<Jornada[]>('http://localhost:3000/api/nominas/jornadas/'+this.monitorService.monitor.dni+'/'+year+'/'+month).subscribe((jornadasData) => {
+        this.http.get<Jornada[]>(Constants.url+'nominas/jornadas/'+this.monitorService.monitor.dni+'/'+year+'/'+month).pipe(takeUntil(this.destroyed)).subscribe((jornadasData) => {
             this.jornadasList = jornadasData;
+            this.jornadasListListener.next(this.jornadasList);
         }, error => {
             this.error = error.error.error;
             setTimeout(() => {
@@ -86,8 +103,13 @@ export class JornadaService implements OnInit {
     }
 
     updateJornada() {
-        this.http.put<{message:string}>('http://localhost:3000/api/nominas/jornadas', this.jornada).subscribe(response => {
+        this.http.put<{message:string}>(Constants.url+'nominas/jornadas', this.jornada).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.exito = response.message;
+            if(this.monthyear!='')
+                this.getJornadasMes(this.mes.year, this.mes.month);
+            else
+                this.getJornadasList();
+            this.jornadasListListener.next(this.jornadasList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
@@ -97,16 +119,18 @@ export class JornadaService implements OnInit {
                 this.error = '';
             }, 3000);
         });
-        if(this.monthyear!='')
-            this.getJornadasMes(this.mes.year, this.mes.month);
-        else
-            this.getJornadasList();
+
     }
 
     addJornada(fecha:string, horaent:string, horasal:string, dnimonitor:string) {
         this.jornada = new Jornada(fecha, horaent, horasal, dnimonitor);
-        this.http.post<{message:string}>('http://localhost:3000/api/nominas/jornadas/new', this.jornada).subscribe(response => {
+        this.http.post<{message:string}>(Constants.url+'nominas/jornadas/new', this.jornada).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.exito = response.message;
+            if(this.monthyear!='')
+                this.getJornadasMes(this.mes.year, this.mes.month);
+            else
+                this.getJornadasList();
+            this.jornadasListListener.next(this.jornadasList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
@@ -116,19 +140,17 @@ export class JornadaService implements OnInit {
                 this.error = '';
             }, 3000);
         });
-
-        if(this.monthyear!='')
-            this.getJornadasMes(this.mes.year, this.mes.month);
-        else
-            this.getJornadasList();
-
-        this.getMesesList();
     }
 
     deleteJornada() {
         let fecha = this.transformDate(this.jornada.fecha);
-        this.http.delete<{message:string}>('http://localhost:3000/api/nominas/jornadas/delete/'+fecha+'/'+this.jornada.dnimonitor).subscribe(response => {
+        this.http.delete<{message:string}>(Constants.url+'nominas/jornadas/delete/'+fecha+'/'+this.jornada.dnimonitor).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.exito = response.message;
+            if(this.monthyear!='')
+                this.getJornadasMes(this.mes.year, this.mes.month);
+            else
+                this.getJornadasList();
+            this.jornadasListListener.next(this.jornadasList);
             setTimeout(() => {
                 this.exito = '';
             }, 3000);
@@ -138,17 +160,41 @@ export class JornadaService implements OnInit {
                 this.error = '';
             }, 3000);
         });
+    }
 
-        if(this.monthyear!='')
-            this.getJornadasMes(this.mes.year, this.mes.month);
-        else
-            this.getJornadasList();
+    checkJornadaIn() {
+        let fecha = this.transformDate(this.jornada.fecha);
+        this.http.get<{message: string}>(Constants.url+'nominas/jornadas/check/in/'+fecha+'/'+this.monitorService.monitor.dni).pipe(takeUntil(this.destroyed)).subscribe(response => {
+            this.jornadaIn = response.message=='true';
+            this.jornadaInListener.next(this.jornadaIn);
+        }, error => {
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
+        });
+    }
 
-        this.getMesesList();
+    checkJornadaOut() {
+        let fecha = this.transformDate(this.jornada.fecha);
+        this.http.get<{message: string}>(Constants.url+'nominas/jornadas/checkout/monitor/personal/'+fecha+'/'+this.monitorService.monitor.dni).pipe(takeUntil(this.destroyed)).subscribe(response => {
+            this.jornadaOut = response.message=='true';
+            this.jornadaOutListener.next(this.jornadaOut);
+        }, error => {
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
+        });
     }
 
     transformDate(fecha:string) {
         return fecha.split('/').join('-').substr(0,10);
     }
+
+    ngOnDestroy(): void {
+        this.destroyed.next();
+        this.destroyed.complete();
+      }
 
 }

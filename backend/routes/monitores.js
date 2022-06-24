@@ -88,8 +88,37 @@ router.put('/newpass/:user', checkAuth, (req, res, next) => {
 
 //Delete monitor
 router.delete('/delete/:dni', checkAuth, (req, res, next) => {
-    let dni = req.params.dni;
-    con.query('DELETE FROM monitores WHERE dni=?', [dni], function (error, results) {
+    con.query('DELETE FROM jornadas WHERE dnimonitor=?', [req.params.dni], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM actividades WHERE dnimonitor=?', [req.params.dni], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM usuarios WHERE user=?', [req.params.dni], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            next();
+        }
+    });
+}, (req, res, next) => {
+    con.query('DELETE FROM monitores WHERE dni=?', [req.params.dni], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error

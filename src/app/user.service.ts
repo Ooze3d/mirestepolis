@@ -1,13 +1,15 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { User } from './user.model';
-import { Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CampusService } from './campus.service';
 import { MonitorService } from './monitor.service';
+import { Constants } from './constants';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
-export class UserService implements OnInit {
+export class UserService implements OnInit, OnDestroy {
 
     error: string = '';
     exito: string = '';
@@ -16,6 +18,7 @@ export class UserService implements OnInit {
     justLoggedOut: boolean = false;
     private token: string = '';
     private userStatusListener = new Subject<boolean>();
+    destroyed: Subject<void> = new Subject<void>();
 
     constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private campusService: CampusService, private monitorService: MonitorService) {
 
@@ -54,8 +57,11 @@ export class UserService implements OnInit {
     addUser(user: string, password: string, level: string) {
         this.user = new User(user, password);
         this.user.level = level;
-        this.http.post<{ message: string }>('http://localhost:3000/api/usuarios/signup', this.user).subscribe((response) => {
+        this.http.post<{ message: string }>(Constants.url+'usuarios/signup', this.user).pipe(takeUntil(this.destroyed)).subscribe((response) => {
             this.exito = response.message;
+            setTimeout(() => {
+                this.exito = '';
+            }, 3000);
         }, (error) => {
             this.error = error.error.error;
             setTimeout(() => {
@@ -66,7 +72,7 @@ export class UserService implements OnInit {
 
     loginUser(user: string, password: string) {
         this.user = new User(user, password);
-        this.http.post<{ token: string, expiresIn: number, user:string, level:string }>('http://localhost:3000/api/usuarios/login', this.user).subscribe((userBack) => {
+        this.http.post<{ token: string, expiresIn: number, user:string, level:string }>(Constants.url+'usuarios/login', this.user).pipe(takeUntil(this.destroyed)).subscribe((userBack) => {
             this.token = userBack.token;
             const expiresInDuration = userBack.expiresIn;
             this.login = true;
@@ -137,5 +143,10 @@ export class UserService implements OnInit {
         localStorage.removeItem('fechaAct');
         localStorage.removeItem('level');
     }
+
+    ngOnDestroy(): void {
+        this.destroyed.next();
+        this.destroyed.complete();
+      }
 
 }

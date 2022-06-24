@@ -17,8 +17,8 @@ router.get('/jornadas/:dnimonitor', checkAuth, (req, res, next) => {
     });
 });
 
-//List of days worked by moth
-router.get('/jornadas/:dnimonitor/:year/:month', (req, res, next) => {
+//List of days worked by month
+router.get('/jornadas/:dnimonitor/:year/:month', checkAuth, (req, res, next) => {
     let dnimonitor = req.params.dnimonitor;
     let year = req.params.year;
     let month = req.params.month;
@@ -28,14 +28,13 @@ router.get('/jornadas/:dnimonitor/:year/:month', (req, res, next) => {
                 error: error
             });
         } else {
-            console.log(results);
             res.json(results);
         }
     });
 });
 
 //List of months worked
-router.get('/:dnimonitor', (req, res, next) => {
+router.get('/:dnimonitor', checkAuth, (req, res, next) => {
     let dnimonitor = req.params.dnimonitor;
     con.query("SELECT DISTINCT DATE_FORMAT(fecha, '%m/%Y') AS 'full' FROM jornadas WHERE dnimonitor=?", [dnimonitor], function (error, results) {
         if (error) {
@@ -101,6 +100,42 @@ router.put('/jornadas/salida/new', checkAuth, (req, res, next) => {
             res.status(200).json({
                 message: '¡Salida registrada!'
             });
+        }
+    });
+});
+
+//Check in time
+router.get('/jornadas/check/in/:fecha/:dnimonitor', checkAuth, (req, res, next) => { //Estructura repetida
+    let dnimonitor = req.params.dnimonitor;
+    let fecha = req.params.fecha;
+    con.query("SELECT horaent FROM jornadas WHERE fecha=? AND dnimonitor=?", [fecha, dnimonitor], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            if(results.length>0)
+                res.status(200).json({message: 'true'});
+            else
+                res.status(200).json({message: 'false'});
+        }
+    });
+});
+
+//Check out time
+router.get('/jornadas/checkout/monitor/personal/:fecha/:dnimonitor', checkAuth, (req, res, next) => { //NUNCA repitas estructura!!
+    let dnimonitor = req.params.dnimonitor;
+    let fecha = req.params.fecha;
+    con.query("SELECT horasal FROM jornadas WHERE fecha=? AND dnimonitor=?", [fecha, dnimonitor], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            if(results.length>0)
+                res.status(200).json({message: 'true'});
+            else
+                res.status(200).json({message: 'false'});
         }
     });
 });

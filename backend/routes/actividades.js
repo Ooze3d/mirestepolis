@@ -7,7 +7,7 @@ const checkAuth = require('../middleware/check-auth');
 router.get('/campus/:idcampus/:date', (req, res, next) => {
     let idcampus = req.params.idcampus;
     let fecha = req.params.date;
-    con.query("SELECT actividades.* FROM actividades, grupos WHERE grupos.idcampus=? AND DATE_FORMAT(fechaini, '%Y-%m-%d')=? AND actividades.idgrupo=grupos.idgrupo", [idcampus, fecha], function (error, results) { //No es una N:M corriente
+    con.query("SELECT actividades.* FROM actividades, grupos WHERE grupos.idcampus=? AND DATE_FORMAT(fechaini, '%Y-%m-%d')=? AND actividades.idgrupo=grupos.idgrupo", [idcampus, fecha], function (error, results) { 
         if (error) {
             res.status(400).json({
                 error: error
@@ -22,7 +22,7 @@ router.get('/campus/:idcampus/:date', (req, res, next) => {
 router.get('/monitor/:dni/:date', (req, res, next) => {
     let dni = req.params.dni;
     let fecha = req.params.date;
-    con.query("SELECT * FROM actividades WHERE dnimonitor=? AND DATE_FORMAT(fechaini, '%Y-%m-%d')=?", [dni, fecha], function (error, results) { //No es una N:M corriente
+    con.query("SELECT * FROM actividades WHERE dnimonitor=? AND DATE_FORMAT(fechaini, '%Y-%m-%d')=?", [dni, fecha], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error
