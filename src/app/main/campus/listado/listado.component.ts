@@ -42,7 +42,9 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.inscripcionService.getInscripcionListListener().pipe(takeUntil(this.destroyed)).subscribe(list => {
+      console.log(list[0].payList);
       this.listaFiltered = list.sort(this.compara);
+      //console.log(this.listaFiltered[0].payList);
     });
   }
 
@@ -75,8 +77,9 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
     let resp: boolean = false;
     this.listaFiltered[i].payList.forEach(x => {
       let temp = new Date(x.fecha);
-      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay())
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDate()==this.fecha.getDate())
         resp = true;
+
     });
     return resp;
   }
@@ -85,7 +88,7 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
     let resp: boolean = false;
     this.listaFiltered[i].payList.forEach(x => {
       let temp = new Date(x.fecha);
-      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.aulamat==1)
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDate()==this.fecha.getDate() && x.aulamat==1)
         resp = true;
     });
     return resp;
@@ -95,7 +98,7 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
     let resp: boolean = false;
     this.listaFiltered[i].payList.forEach(x => {
       let temp = new Date(x.fecha);
-      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.comedor==1)
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDate()==this.fecha.getDate() && x.comedor==1)
         resp = true;
     });
     return resp;
@@ -105,7 +108,7 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
     let resp: boolean = false;
     this.listaFiltered[i].payList.forEach(x => {
       let temp = new Date(x.fecha);
-      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.postcom==1)
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDate()==this.fecha.getDate() && x.postcom==1)
         resp = true;
     });
     return resp;
@@ -115,7 +118,7 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
     let resp: boolean = false;
     this.listaFiltered[i].dayList.forEach(x => {
       let temp = new Date(x.fecha);
-      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.entrada==1)
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDate()==this.fecha.getDate() && x.entrada==1)
         resp = true;
     });
     return resp;
@@ -125,7 +128,7 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
     let resp: boolean = false;
     this.listaFiltered[i].dayList.forEach(x => {
       let temp = new Date(x.fecha);
-      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.aulamat==1)
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDate()==this.fecha.getDate() && x.aulamat==1)
         resp = true;
     });
     return resp;
@@ -135,7 +138,7 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
     let resp: boolean = false;
     this.listaFiltered[i].dayList.forEach(x => {
       let temp = new Date(x.fecha);
-      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.comedor==1)
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDate()==this.fecha.getDate() && x.comedor==1)
         resp = true;
     });
     return resp;
@@ -145,7 +148,7 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
     let resp: boolean = false;
     this.listaFiltered[i].dayList.forEach(x => {
       let temp = new Date(x.fecha);
-      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.postcom==1)
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDate()==this.fecha.getDate() && x.postcom==1)
         resp = true;
     });
     return resp;
@@ -155,7 +158,7 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
     let resp: boolean = false;
     this.listaFiltered[i].dayList.forEach(x => {
       let temp = new Date(x.fecha);
-      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.salida==1)
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDate()==this.fecha.getDate() && x.salida==1)
         resp = true;
     });
     return resp;
@@ -165,7 +168,7 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
     let fam: number = 0;
     this.listaFiltered[i].dayList.forEach(x => {
       let temp = new Date(x.fecha);
-      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDay()==this.fecha.getDay() && x.salida==1)
+      if(temp.getFullYear()==this.fecha.getFullYear() && temp.getMonth()==this.fecha.getMonth() && temp.getDate()==this.fecha.getDate() && x.salida==1)
         fam = x.tlffamiliar;
     });
 

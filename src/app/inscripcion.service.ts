@@ -77,9 +77,19 @@ export class InscripcionService implements OnInit, OnDestroy {
                 });
                 this.http.get<Pago[]>(Constants.url+'inscripciones/dayspaid/per/child/' + peque.matricula).pipe(takeUntil(this.destroyed)).subscribe(payList => {
                     peque.payList = payList;
+                    peque.payList.forEach(x =>{
+                        let dia: Date = new Date(x.fecha);
+                        dia.setHours(dia.getHours() + 2);
+                        x.fecha = dia.toISOString();
+                    });
                 });
                 this.http.get<Dia[]>(Constants.url+'inscripciones/check/list/' + peque.matricula).pipe(takeUntil(this.destroyed)).subscribe(dayList => {
                     peque.dayList = dayList;
+                    peque.dayList.forEach(x =>{
+                        let dia: Date = new Date(x.fecha);
+                        dia.setHours(dia.getHours() + 2);
+                        x.fecha = dia.toISOString();
+                    });
                 });
             });
             this.inscripcionListListener.next(this.inscripcionList);
