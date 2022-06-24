@@ -105,10 +105,28 @@ router.put('/jornadas/salida/new', checkAuth, (req, res, next) => {
 });
 
 //Check in time
-router.get('/jornadas/:fecha/:dnimonitor', checkAuth, (req, res, next) => {
+router.get('/jornadas/check/in/:fecha/:dnimonitor', checkAuth, (req, res, next) => { //Estructura repetida
     let dnimonitor = req.params.dnimonitor;
     let fecha = req.params.fecha;
-    con.query("SELECT * FROM jornadas WHERE fecha=? AND dnimonitor=?", [fecha, dnimonitor], function (error, results) {
+    con.query("SELECT horaent FROM jornadas WHERE fecha=? AND dnimonitor=?", [fecha, dnimonitor], function (error, results) {
+        if (error) {
+            res.status(400).json({
+                error: error
+            });
+        } else {
+            if(results.length>0)
+                res.status(200).json({message: 'true'});
+            else
+                res.status(200).json({message: 'false'});
+        }
+    });
+});
+
+//Check out time
+router.get('/jornadas/checkout/monitor/personal/:fecha/:dnimonitor', checkAuth, (req, res, next) => { //NUNCA repitas estructura!!
+    let dnimonitor = req.params.dnimonitor;
+    let fecha = req.params.fecha;
+    con.query("SELECT horasal FROM jornadas WHERE fecha=? AND dnimonitor=?", [fecha, dnimonitor], function (error, results) {
         if (error) {
             res.status(400).json({
                 error: error

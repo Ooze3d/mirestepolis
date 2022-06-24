@@ -19,8 +19,10 @@ export class JornadaService implements OnInit, OnDestroy {
     monthyear:string = '';
     mes:MonthYear = new MonthYear('01/1970');
     destroyed: Subject<void> = new Subject<void>();
-    jornadaRegistrada: boolean = false;
-    private jornadaRegistradaListener = new Subject<boolean>();
+    jornadaIn: boolean = false;
+    private jornadaInListener = new Subject<boolean>();
+    jornadaOut: boolean = false;
+    private jornadaOutListener = new Subject<boolean>();
 
     constructor(private http:HttpClient, private monitorService:MonitorService) {
         
@@ -38,8 +40,12 @@ export class JornadaService implements OnInit, OnDestroy {
         return this.jornadasListListener;
     }
 
-    getJornadaRegistradaListener() {
-        return this.jornadaRegistradaListener;
+    getJornadaInListener() {
+        return this.jornadaInListener;
+    }
+
+    getJornadaOutListener() {
+        return this.jornadaOutListener;
     }
 
     getJornadasList() { //Todas las jornadas de un monitor
@@ -158,9 +164,22 @@ export class JornadaService implements OnInit, OnDestroy {
 
     checkJornadaIn() {
         let fecha = this.transformDate(this.jornada.fecha);
-        this.http.get<{message: string}>(Constants.url+'nominas/jornadas/'+fecha+'/'+this.monitorService.monitor.dni).pipe(takeUntil(this.destroyed)).subscribe(response => {
-            this.jornadaRegistrada = response.message=='true';
-            this.jornadaRegistradaListener.next(this.jornadaRegistrada);
+        this.http.get<{message: string}>(Constants.url+'nominas/jornadas/check/in/'+fecha+'/'+this.monitorService.monitor.dni).pipe(takeUntil(this.destroyed)).subscribe(response => {
+            this.jornadaIn = response.message=='true';
+            this.jornadaInListener.next(this.jornadaIn);
+        }, error => {
+            this.error = error.error.error;
+            setTimeout(() => {
+                this.error = '';
+            }, 3000);
+        });
+    }
+
+    checkJornadaOut() {
+        let fecha = this.transformDate(this.jornada.fecha);
+        this.http.get<{message: string}>(Constants.url+'nominas/jornadas/checkout/monitor/personal/'+fecha+'/'+this.monitorService.monitor.dni).pipe(takeUntil(this.destroyed)).subscribe(response => {
+            this.jornadaOut = response.message=='true';
+            this.jornadaOutListener.next(this.jornadaOut);
         }, error => {
             this.error = error.error.error;
             setTimeout(() => {

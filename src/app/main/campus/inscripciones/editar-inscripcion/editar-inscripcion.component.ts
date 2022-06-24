@@ -10,8 +10,9 @@ import { InscripcionService } from 'src/app/inscripcion.service';
 import { Pago } from 'src/app/pago.model';
 import { Trastorno } from 'src/app/trastorno.model';
 import { UserService } from 'src/app/user.service';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Inscripcion } from 'src/app/inscripcion.model';
 
 @Component({
   selector: 'app-editar-inscripcion',
@@ -45,7 +46,8 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
   filteredAleList: Alergia[] = [];
   filteredTrasList: Alergia[] = [];
   destroyed: Subject<void> = new Subject<void>();
-
+  mat: String = '';
+  ins: Inscripcion | undefined;
 
   constructor(private userService: UserService, public campusService: CampusService, private route: ActivatedRoute, public inscripcionService: InscripcionService, private dialog: DialogService) { }
 
@@ -56,6 +58,7 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
     this.route.params.pipe(takeUntil(this.destroyed)).subscribe((params) => {
       let id = params['idcampus'];
       let matricula = params['matricula']
+      this.mat = matricula;
       if (this.campusService.campus.idcampus != id) { //Checks the url for the campus and compares it to the service in case the page gets refreshed
         this.campusService.getCampus(id);
         this.campusService.getCampusListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
@@ -89,9 +92,9 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
         pagada: pagada,
         idgrupo: inscripcion.idgrupo
       });
-      //console.log(this.inscripcionService.inscripcion);
+      this.ins = inscripcion;
     });
-    this.inscripcionService.getInscripcionListListener();
+    //this.inscripcionService.getInscripcionListListener();
     this.inscripcionService.getAlergiasListListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
       //console.log(this.inscripcionService.allAlergiasList);
     });
@@ -99,7 +102,7 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
       //console.log(this.inscripcionService.allTrastornosList);
     });
     this.inscripcionService.getFamListListener().pipe(takeUntil(this.destroyed)).subscribe(() => {
-      //console.log(this.inscripcionService.allFamList);
+      //console.log(this.inscripcionService.inscripcion);
     });
   }
 
@@ -320,11 +323,7 @@ export class EditarInscripcionComponent implements OnInit, AfterViewInit, OnDest
   }
 
   checkDayActive(dia: Date): boolean {
-    dia = new Date(dia.setHours(2,0,0,0));
-    if(this.inscripcionService.inscripcion.payList!=undefined && this.inscripcionService.inscripcion.payList.find(x => x.fecha==dia.toISOString()) != undefined) {
-      return true;
-    }
-    return false;
+    return this.ins!=undefined && this.ins.payList!=undefined && this.ins.payList.find(x => x.fecha==dia.toISOString()) != undefined;
   }
 
   ngOnDestroy(): void {

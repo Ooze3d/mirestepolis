@@ -17,8 +17,9 @@ import { takeUntil } from 'rxjs/operators';
 export class PersonalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public dni: string = '';
-  fecha: Date = new Date(new Date().getTime() + (2 * 60 * 60 * 1000)); //Compensando la zona horaria
-  checkBoton: boolean = false;
+  fecha: Date = new Date(new Date().getTime() + (/*2 * */60 * 60 * 1000)); //Compensando la zona horaria
+  checkEntrada: boolean = false;
+  checkSalida: boolean = false;
   destroyed: Subject<void> = new Subject<void>();
 
   constructor(public campusService: CampusService, private userService: UserService, private route: ActivatedRoute,
@@ -47,13 +48,19 @@ export class PersonalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.monitorService.getMonitorListener().pipe(takeUntil(this.destroyed)).subscribe(newMonitor => {
       this.actividadService.getActividadListMonitor(newMonitor.dni, this.fecha);
       this.jornadaService.checkJornadaIn();
+      this.jornadaService.checkJornadaOut();
     });
     this.actividadService.getMonitorActividadListListener().pipe(takeUntil(this.destroyed)).subscribe(lista => {
       //console.log(lista);
     });
-    this.jornadaService.getJornadaRegistradaListener().pipe(takeUntil(this.destroyed)).subscribe(res => {
-      this.checkBoton = res;
+    this.jornadaService.getJornadaInListener().pipe(takeUntil(this.destroyed)).subscribe(res => {
+      this.checkEntrada = res;
     });
+    this.jornadaService.getJornadaOutListener().pipe(takeUntil(this.destroyed)).subscribe(res => {
+      this.checkSalida = res;
+    });
+    console.log("Entrada: " + this.checkEntrada);
+    console.log("Salida: " + this.checkSalida);
   }
 
   onNewContra(f:NgForm) {
@@ -64,14 +71,19 @@ export class PersonalComponent implements OnInit, AfterViewInit, OnDestroy {
     let comienzo: Date = new Date(new Date().getTime() + (2 * 60 * 60 * 1000));
     this.monitorService.horaEnt(comienzo);
     this.jornadaService.checkJornadaIn();
-    this.jornadaService.getJornadaRegistradaListener().pipe(takeUntil(this.destroyed)).subscribe(res => {
-      this.checkBoton = res;
+    this.jornadaService.getJornadaInListener().pipe(takeUntil(this.destroyed)).subscribe(res => {
+      console.log(res);
+      this.checkEntrada = res;
     });
   }
 
   onTerminaDia() {
     let fin: Date = new Date(new Date().getTime() + (2 * 60 * 60 * 1000));
     this.monitorService.horaSal(fin);
+    this.jornadaService.checkJornadaOut();
+    this.jornadaService.getJornadaOutListener().pipe(takeUntil(this.destroyed)).subscribe(res => {
+      this.checkSalida = res;
+    });
   }
 
   ngOnDestroy(): void {

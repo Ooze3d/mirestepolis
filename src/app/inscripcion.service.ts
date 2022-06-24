@@ -75,10 +75,10 @@ export class InscripcionService implements OnInit, OnDestroy {
                 this.http.get<Familiar[]>(Constants.url+'inscripciones/fam/child/' + peque.matricula).pipe(takeUntil(this.destroyed)).subscribe(famList => {
                     peque.famList = famList;
                 });
-                this.http.get<Pago[]>(Constants.url+'inscripciones/dayspaid/' + peque.matricula).pipe(takeUntil(this.destroyed)).subscribe(payList => {
+                this.http.get<Pago[]>(Constants.url+'inscripciones/dayspaid/per/child/' + peque.matricula).pipe(takeUntil(this.destroyed)).subscribe(payList => {
                     peque.payList = payList;
                 });
-                this.http.get<Dia[]>(Constants.url+'inscripciones/days/' + peque.matricula).pipe(takeUntil(this.destroyed)).subscribe(dayList => {
+                this.http.get<Dia[]>(Constants.url+'inscripciones/check/list/' + peque.matricula).pipe(takeUntil(this.destroyed)).subscribe(dayList => {
                     peque.dayList = dayList;
                 });
             });
@@ -103,12 +103,20 @@ export class InscripcionService implements OnInit, OnDestroy {
             this.http.get<Familiar[]>(Constants.url+'inscripciones/fam/child/' + this.inscripcion.matricula).pipe(takeUntil(this.destroyed)).subscribe(famList => {
                 this.inscripcion.famList = famList;
             });
-            this.http.get<Pago[]>(Constants.url+'inscripciones/dayspaid/' + this.inscripcion.matricula).pipe(takeUntil(this.destroyed)).subscribe(payList => {
+            this.http.get<Pago[]>(Constants.url+'inscripciones/dayspaid/per/child/' + this.inscripcion.matricula).pipe(takeUntil(this.destroyed)).subscribe(payList => {
                 this.inscripcion.payList = payList;
+                this.inscripcion.payList.forEach(x =>{
+                    let dia: Date = new Date(x.fecha);
+                    dia.setHours(dia.getHours() + 2);
+                    x.fecha = dia.toISOString();
+                });
             });
-            this.http.get<Dia[]>(Constants.url+'inscripciones/days/' + this.inscripcion.matricula).pipe(takeUntil(this.destroyed)).subscribe(dayList => {
+            this.http.get<Dia[]>(Constants.url+'inscripciones/check/list/' + this.inscripcion.matricula).pipe(takeUntil(this.destroyed)).subscribe(dayList => {
                 this.inscripcion.dayList = dayList;
             });
+            let fecnac: Date = new Date(this.inscripcion.fechanac);
+            fecnac.setHours(fecnac.getHours() + 2);
+            this.inscripcion.fechanac = fecnac.toISOString();
             this.inscripcionListener.next(this.inscripcion);
         });
     }
@@ -391,8 +399,8 @@ export class InscripcionService implements OnInit, OnDestroy {
         });
     }
 
-    newSalida(dnifam: string, fecha: Date, matricula: string) {
-        this.http.put<{ message: string }>(Constants.url+'inscripciones/days/checkout', { dnifamiliar: dnifam, fecha: fecha.toISOString().split('/').join('-').substr(0,10), matricula: matricula }).pipe(takeUntil(this.destroyed)).subscribe(response => {
+    newSalida(tlffam: number, fecha: Date, matricula: string) {
+        this.http.put<{ message: string }>(Constants.url+'inscripciones/days/checkout', { tlffamiliar: tlffam, fecha: fecha.toISOString().split('/').join('-').substr(0,10), matricula: matricula }).pipe(takeUntil(this.destroyed)).subscribe(response => {
             this.exito = response.message;
             this.getInscripcionList();
             this.getInscripcionListListener().next(this.inscripcionList);
@@ -400,7 +408,7 @@ export class InscripcionService implements OnInit, OnDestroy {
                 this.exito = '';
             }, 3000);
         }, error => {
-            this.error = 'Error registrando la entrada';
+            this.error = 'Error registrando la salida';
             this.getInscripcionList();
             this.getInscripcionListListener().next(this.inscripcionList);
             setTimeout(() => {

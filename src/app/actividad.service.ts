@@ -54,6 +54,12 @@ export class ActividadService implements OnInit, OnDestroy {
     getActividad(idactividad: number) {
         this.http.get<Actividad[]>(Constants.url+'actividades/' + idactividad).pipe(takeUntil(this.destroyed)).subscribe((actividadData) => {
             this.actividad = actividadData[0];
+            let ini:Date = new Date(this.actividad.fechaini);
+            ini.setHours(ini.getHours() + 2);
+            let fin:Date = new Date(this.actividad.fechafin);
+            fin.setHours(fin.getHours() + 2);
+            this.actividad.fechaini = ini.toISOString();
+            this.actividad.fechafin = fin.toISOString();
             this.actividadListener.next(this.actividad);
         }, error => {
             this.error = error.error.error;
@@ -66,6 +72,14 @@ export class ActividadService implements OnInit, OnDestroy {
     getActividadList() {
         this.http.get<Actividad[]>(Constants.url+'actividades/campus/' + this.campusService.campus.idcampus + '/' + this.fecha.toISOString().substr(0, 10)).pipe(takeUntil(this.destroyed)).subscribe((actividadData) => {
             this.actividadList = actividadData;
+            this.actividadList.forEach(x => {
+                let ini:Date = new Date(x.fechaini);
+                ini.setHours(ini.getHours() + 2);
+                let fin:Date = new Date(x.fechafin);
+                fin.setHours(fin.getHours() + 2);
+                x.fechaini = ini.toISOString();
+                x.fechafin = fin.toISOString();
+            });
             this.actividadListListener.next(this.actividadList);
         }, error => {
             this.error = error.error.error;
@@ -78,6 +92,14 @@ export class ActividadService implements OnInit, OnDestroy {
     getActividadListMonitor(dni: string, fecha: Date) {
         this.http.get<Actividad[]>(Constants.url+'actividades/monitor/' + dni + '/' + fecha.toISOString().substr(0, 10)).pipe(takeUntil(this.destroyed)).subscribe((actividadData) => {
             this.monitorActividadList = actividadData;
+            /*this.monitorActividadList.forEach(x => {
+                let ini:Date = new Date(x.fechaini);
+                ini.setHours(ini.getHours() + 2);
+                let fin:Date = new Date(x.fechafin);
+                fin.setHours(fin.getHours() + 2);
+                x.fechaini = ini.toISOString();
+                x.fechafin = fin.toISOString();
+            });*/
             this.monitorActividadListListener.next(this.monitorActividadList);
         }, error => {
             this.error = error.error.error;

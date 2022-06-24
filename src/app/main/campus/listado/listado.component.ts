@@ -169,7 +169,7 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
         fam = x.tlffamiliar;
     });
 
-    if(fam!=0) { //Even 'Other' returns a DNI, so if fam is empty, the search returned no values
+    if(fam!=0) { //Even 'Other' returns a TLF, so if fam is empty, the search returned no values
       let nombre: string | undefined = this.listaFiltered[i].famList.find(x => x.tlf==fam)?.nombre + ' ' + this.listaFiltered[i].famList.find(x => x.tlf==fam)?.apellidos;
       if (nombre=='undefined undefined')
         return 'Otro familiar';
@@ -195,14 +195,14 @@ export class ListadoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSalida(i:number, f:NgForm) {
-    if(f.value.dnifamiliar=='') {
+    if(f.value.tlffamiliar=='') {
       this.inscripcionService.error = 'Por favor, elige un familiar';
       setTimeout(() => {
         this.inscripcionService.error = '';
     }, 3000);
       return;
     } else {
-      this.inscripcionService.newSalida(f.value.dnifamiliar, this.fecha, this.listaFiltered[i].matricula);
+      this.inscripcionService.newSalida(f.value.tlffamiliar, this.fecha, this.listaFiltered[i].matricula);
       this.inscripcionService.getInscripcionListListener().pipe(takeUntil(this.destroyed)).subscribe(list => {
         this.listaFiltered = list.sort(this.compara);
       });

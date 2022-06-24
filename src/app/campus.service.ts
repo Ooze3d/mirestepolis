@@ -44,6 +44,12 @@ export class CampusService implements OnInit, OnDestroy {
     getCampus(idcampus:string) {
         this.http.get<Campus[]>(Constants.url+'campus/'+idcampus).pipe(takeUntil(this.destroyed)).subscribe((campusData) => {
             this.campus = campusData[0];
+            let ini: Date = new Date(this.campus.fechaini);
+            ini.setHours(ini.getHours() + 2);
+            let fin:Date = new Date(this.campus.fechafin);
+            fin.setHours(fin.getHours() + 2);
+            this.campus.fechaini = ini.toISOString();
+            this.campus.fechafin = fin.toISOString();
             this.campusListener.next(this.campus);
             this.getGruposList();
             this.getDiasList();
